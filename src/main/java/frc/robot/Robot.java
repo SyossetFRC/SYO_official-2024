@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax.IdleMode;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -48,7 +46,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
 
     m_container.reset();
-    m_container.setIdleMode(IdleMode.kBrake);
+    m_container.setIdleMode("brake");
   }
 
   /** This function is called periodically during autonomous. */
@@ -63,7 +61,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     CommandScheduler.getInstance().cancelAll();
     
-    m_container.setIdleMode(IdleMode.kCoast);
+    m_container.setIdleMode("coast");
   }
 
   /** This function is called periodically during operator control. */

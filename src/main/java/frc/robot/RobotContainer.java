@@ -1,7 +1,5 @@
 package frc.robot;
 
-import com.revrobotics.CANSparkMax.IdleMode;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -30,8 +28,8 @@ public class RobotContainer {
         m_resetGyro.whenPressed(m_drivetrainSubsystem::resetGyroscope);
 
         Button m_brake = new Button(() -> m_driveController.getRawButton(10));
-        m_brake.whenPressed(() -> setIdleMode(IdleMode.kBrake));
-        m_brake.whenReleased(() -> setIdleMode(IdleMode.kCoast));
+        m_brake.whenPressed(() -> setIdleMode("brake"));
+        m_brake.whenReleased(() -> setIdleMode("coast"));
 
         Button m_rotateLeft = new Button(() -> m_driveController.getRawButton(11));
         m_rotateLeft.whenPressed(() -> setRotatePower("left"));
@@ -46,12 +44,8 @@ public class RobotContainer {
         m_drivetrainSubsystem.resetGyroscope();
     }
 
-    public void updateOdometry() {
-        m_drivetrainSubsystem.updateOdometry();
-    }
-
-    public void setIdleMode(IdleMode mode) {
-        m_drivetrainSubsystem.setIdleMode(mode);
+    public void setIdleMode(String idleMode) {
+        m_drivetrainSubsystem.setIdleMode(idleMode);
       }
 
     public void setRotatePower(String state) {

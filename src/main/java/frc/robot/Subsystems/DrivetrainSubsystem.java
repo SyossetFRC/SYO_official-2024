@@ -34,7 +34,7 @@ import frc.robot.Constants;
 public class DrivetrainSubsystem extends SubsystemBase {
   private static final double kTrackWidth = 0.51;
 
-  public static final double kMaxSpeed = 5676.0 / 60.0 * 0.12280701754 * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
+  public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // radians per second
 
   private final Translation2d m_frontLeftLocation = new Translation2d(kTrackWidth / 2.0, kTrackWidth / 2.0);
@@ -47,7 +47,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SwerveModule m_backLeft;
   private final SwerveModule m_backRight;
 
-  private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
+  private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200);
 
   private final SwerveDriveKinematics m_kinematics;
 
@@ -132,7 +132,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   /** Changes the drive motor idle modes. */
-  public void setIdleMode(IdleMode idleMode) {
+  public void setIdleMode(String idleMode) {
     m_frontLeft.setIdleMode(idleMode);
     m_frontRight.setIdleMode(idleMode);
     m_backLeft.setIdleMode(idleMode);
@@ -166,7 +166,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   private class SwerveModule {
-    private static final double kWheelRadius = 0.050165;
+    private static final double kWheelRadius = 0.050165; // meters
+    private static final double kGearRatio = 0.12280701754;
 
     private final CANSparkMax m_driveMotor;
     private final CANSparkMax m_turningMotor;
@@ -197,8 +198,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_driveEncoder = m_driveMotor.getEncoder();
       m_turningEncoder = new CANCoder(turningEncoderChannel);
 
-      m_driveEncoder.setPositionConversionFactor(0.12280701754 * SwerveModule.kWheelRadius * 2 * Math.PI);
-      m_driveEncoder.setVelocityConversionFactor(0.12280701754 * SwerveModule.kWheelRadius * 2 * Math.PI / 60.0);
+      m_driveEncoder.setPositionConversionFactor(kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI); // meters
+      m_driveEncoder.setVelocityConversionFactor(kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI / 60.0); // meters per second
 
       m_turningEncoder.configFeedbackCoefficient(0.0015339807878818, "rad", SensorTimeBase.PerSecond);
       m_moduleOffset = moduleOffset;
@@ -245,8 +246,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_turningMotor.setVoltage(turnOutput);
     }
 
-    public void setIdleMode(IdleMode idleMode) {
-      m_driveMotor.setIdleMode(idleMode);
+    public void setIdleMode(String idleMode) {
+      if (idleMode.equals("brake")) {
+        m_driveMotor.setIdleMode(IdleMode.kBrake);
+      }
+      if (idleMode.equals("coast")) {
+        m_driveMotor.setIdleMode(IdleMode.kCoast);
+      }
     }
   }
 }
