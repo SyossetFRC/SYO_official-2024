@@ -87,9 +87,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     backRightLayout.add("Steer Angle", m_backRight.getState().angle.getDegrees());
 
     ShuffleboardLayout odometryLayout = tab.getLayout("Odometry", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 2);
-    odometryLayout.add("X Position", m_odometry.getPoseMeters().getX());
-    odometryLayout.add("Y Position", m_odometry.getPoseMeters().getY());
-    odometryLayout.add("Angle", m_odometry.getPoseMeters().getRotation());
+    odometryLayout.add("X Position", getPosition().getX());
+    odometryLayout.add("Y Position", getPosition().getY());
+    odometryLayout.add("Angle", getAngle().getDegrees());
   }
 
   /**
