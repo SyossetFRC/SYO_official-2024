@@ -86,11 +86,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     backRightLayout.add("Drive Speed", m_backRight.getState().speedMetersPerSecond);
     backRightLayout.add("Steer Angle", m_backRight.getState().angle.getDegrees());
 
-    ShuffleboardLayout odometryLayout = tab.getLayout("Odometry", BuiltInLayouts.kList).withSize(2, 2).withPosition(0, 2);
+    ShuffleboardLayout odometryLayout = tab.getLayout("Odometry", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 2);
     odometryLayout.add("X Position", m_odometry.getPoseMeters().getX());
     odometryLayout.add("Y Position", m_odometry.getPoseMeters().getY());
-
-    tab.add("Gyroscope Angle", m_navx.getRotation2d().getDegrees()).withPosition(2, 2);
+    odometryLayout.add("Angle", m_odometry.getPoseMeters().getRotation());
   }
 
   /**
@@ -108,27 +107,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_fieldRelative = fieldRelative;
   }
 
-  /** Updates the field relative position of the robot. */
-  public void updateOdometry() {
-    m_odometry.update(
-        m_navx.getRotation2d(),
-        getModulePositions()
-    );
+  /** Returns the current odometric position of the robot. */
+  public Translation2d getPosition() {
+    return m_odometry.getPoseMeters().getTranslation();
   }
 
-  /** Returns the current odometric position of the robot. */
-  public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+  /** Returns the current odometric angle of the robot. */
+  public Rotation2d getAngle() {
+    return m_odometry.getPoseMeters().getRotation();
   }
 
   /** Resets the gyroscope angle to re-adjust drive POV. */
   public void resetGyroscope() {
     m_navx.zeroYaw();
-  }
-
-  /** Returns the gyroscope angle. */
-  public Rotation2d getAngle() {
-    return m_navx.getRotation2d();
   }
 
   /** Changes the drive motor idle modes. */
@@ -154,7 +145,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
             m_fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(m_xSpeed, m_ySpeed, m_rot, m_navx.getRotation2d())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(m_xSpeed, m_ySpeed, m_rot, getAngle())
                 : new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -162,7 +153,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
 
-    updateOdometry();
+    m_odometry.update(
+        m_navx.getRotation2d(),
+        getModulePositions()
+    );
   }
 
   private class SwerveModule {

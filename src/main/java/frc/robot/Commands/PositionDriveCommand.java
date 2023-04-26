@@ -2,8 +2,8 @@ package frc.robot.Commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
@@ -21,7 +21,7 @@ public class PositionDriveCommand extends CommandBase {
     private DoubleSupplier m_translationYSupplier;
     private DoubleSupplier m_rotationSupplier;
 
-    private Pose2d m_initialPose;
+    private Translation2d m_initialPosition;
     private Rotation2d m_initialAngle;
 
     private boolean m_isXFinished = false;
@@ -56,11 +56,11 @@ public class PositionDriveCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        m_initialPose = m_drivetrainSubsystem.getPose();
+        m_initialPosition = m_drivetrainSubsystem.getPosition();
         m_initialAngle = m_drivetrainSubsystem.getAngle();
 
-        double distanceX = m_x - m_initialPose.getX();
-        double distanceY = m_y - m_initialPose.getY();
+        double distanceX = m_x - m_initialPosition.getX();
+        double distanceY = m_y - m_initialPosition.getY();
 
         m_translationXSupplier = () -> (distanceX / Math.hypot(distanceX, distanceY) * m_translationalVelocity);
         m_translationYSupplier = () -> (distanceY / Math.hypot(distanceX, distanceY) * m_translationalVelocity);
@@ -76,11 +76,11 @@ public class PositionDriveCommand extends CommandBase {
                 true
         );
 
-        if (Math.abs(m_drivetrainSubsystem.getPose().getX() - m_x) < 0.05) {
+        if (Math.abs(m_drivetrainSubsystem.getPosition().getX() - m_x) < 0.05) {
             m_translationXSupplier = () -> 0;
             m_isXFinished = true;
         }
-        if (Math.abs(m_drivetrainSubsystem.getPose().getY() - m_y) < 0.05) {
+        if (Math.abs(m_drivetrainSubsystem.getPosition().getY() - m_y) < 0.05) {
             m_translationYSupplier = () -> 0;
             m_isYFinished = true;
         }
