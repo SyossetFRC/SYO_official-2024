@@ -66,7 +66,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-    m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions(), new Pose2d(0, 0, new Rotation2d(0)));
+    m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
 
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
@@ -95,9 +95,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /**
    * Method to drive the robot using joystick info.
    *
-   * @param xSpeed Speed of the robot in the x direction (forward).
-   * @param ySpeed Speed of the robot in the y direction (sideways).
-   * @param rot Angular rate of the robot.
+   * @param xSpeed Speed of the robot in the x direction (m/s).
+   * @param ySpeed Speed of the robot in the y direction (m/s).
+   * @param rot Angular rate of the robot (rad/s).
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -115,6 +115,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /** Returns the current odometric angle of the robot. */
   public Rotation2d getAngle() {
     return m_odometry.getPoseMeters().getRotation();
+  }
+
+  /**
+   * Method to set the odometric position and angle of the robot
+   *
+   * @param xPos Position of the robot in the x direction (m).
+   * @param yPos Position of the robot in the y direction (m).
+   * @param theta Angle of the robot (rad).
+   */
+  public void setPose(double xPos, double yPos, double theta) {
+    m_odometry.resetPosition(m_navx.getRotation2d(), getModulePositions(), new Pose2d(xPos, yPos, new Rotation2d(theta)));
   }
 
   /** Resets the gyroscope angle to re-adjust drive POV. */
@@ -192,8 +203,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_driveEncoder = m_driveMotor.getEncoder();
       m_turningEncoder = new CANCoder(turningEncoderChannel);
 
-      m_driveEncoder.setPositionConversionFactor(kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI); // meters
-      m_driveEncoder.setVelocityConversionFactor(kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI / 60.0); // meters per second
+      m_driveEncoder.setPositionConversionFactor(kGearRatio * kWheelRadius * 2 * Math.PI); // meters
+      m_driveEncoder.setVelocityConversionFactor(kGearRatio * kWheelRadius * 2 * Math.PI / 60.0); // meters per second
 
       m_turningEncoder.configFeedbackCoefficient(0.0015339807878818, "rad", SensorTimeBase.PerSecond);
       m_moduleOffset = moduleOffset;
@@ -216,7 +227,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current distance of the drive encoder in meters as a SwerveModulePosition.
      */
     public SwerveModulePosition getDrivePosition() {
-      return new SwerveModulePosition(m_driveEncoder.getPosition(), getState().angle);
+      return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_turningEncoder.getAbsolutePosition() - m_moduleOffset));
     }
 
     /**
@@ -225,19 +236,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @param desiredState Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState desiredState) {
-      // Optimize the reference state to avoid spinning further than 90 degrees
+      // Optimizes the reference state to avoid spinning further than 90 degrees
       SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(m_turningEncoder.getAbsolutePosition() - m_moduleOffset));
 
-      // Calculate the drive output from the drive PID controller and feedforward controller.
-      double speedRadiansPerSecond = state.speedMetersPerSecond / kWheelRadius;
+      // Calculates the turning motor output from the turning PID controller.
+      final double turnOutput = m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition() - m_moduleOffset, state.angle.getRadians());
+      m_turningMotor.setVoltage(turnOutput);
+
+      // Updates velocity based on turn error
+      state.speedMetersPerSecond *= Math.cos(m_turningPIDController.getPositionError());
+
+      // Calculates the drive output from the drive PID controller and feedforward controller.
+      final double speedRadiansPerSecond = state.speedMetersPerSecond / kWheelRadius;
       final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity() / kWheelRadius, speedRadiansPerSecond);
       final double driveFeedForward = m_driveFeedforward.calculate(speedRadiansPerSecond);
-
-      // Calculate the turning motor output from the turning PID controller.
-      final double turnOutput = m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition() - m_moduleOffset, state.angle.getRadians());
-
       m_driveMotor.setVoltage(driveOutput + driveFeedForward);
-      m_turningMotor.setVoltage(turnOutput);
     }
 
     public void setIdleMode(String idleMode) {
