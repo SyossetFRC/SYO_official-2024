@@ -15,6 +15,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   RobotContainer m_container;
+
+  private double m_startXPos;
+  private double m_startYPos;
+  private double m_startTheta;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -46,6 +51,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
 
     m_container.reset();
+    m_container.setPose(m_startXPos, m_startYPos, m_startTheta);
     m_container.setIdleMode("brake");
   }
 
