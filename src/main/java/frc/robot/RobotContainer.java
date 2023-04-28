@@ -25,7 +25,7 @@ public class RobotContainer {
 
     private void configureButtons() {
       Button m_resetGyro = new Button(() -> m_driveController.getRawButton(6));
-      m_resetGyro.whenPressed(() -> reset());
+      m_resetGyro.whenPressed(() -> setPose(m_drivetrainSubsystem.getPosition().getX(), m_drivetrainSubsystem.getPosition().getY(), 0));
 
       Button m_brake = new Button(() -> m_driveController.getRawButton(10));
       m_brake.whenPressed(() -> setIdleMode("brake"));
@@ -38,10 +38,6 @@ public class RobotContainer {
       Button m_rotateRight = new Button(() -> m_driveController.getRawButton(12));
       m_rotateRight.whenPressed(() -> setRotatePower("right"));
       m_rotateRight.whenReleased(() -> setRotatePower("none"));
-    }
-
-    public void reset() {
-      m_drivetrainSubsystem.resetGyroscope();
     }
 
     public void setPose(double xPos, double yPos, double theta) {

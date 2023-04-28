@@ -128,11 +128,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_odometry.resetPosition(m_navx.getRotation2d(), getModulePositions(), new Pose2d(xPos, yPos, new Rotation2d(theta)));
   }
 
-  /** Resets the gyroscope angle to re-adjust drive POV. */
-  public void resetGyroscope() {
-    m_navx.zeroYaw();
-  }
-
   /** Changes the drive motor idle modes. */
   public void setIdleMode(String idleMode) {
     m_frontLeft.setIdleMode(idleMode);

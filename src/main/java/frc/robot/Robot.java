@@ -50,7 +50,6 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    m_container.reset();
     m_container.setPose(m_startXPos, m_startYPos, m_startTheta);
     m_container.setIdleMode("brake");
   }
