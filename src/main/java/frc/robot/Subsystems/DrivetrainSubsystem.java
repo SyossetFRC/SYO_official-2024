@@ -107,18 +107,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_fieldRelative = fieldRelative;
   }
 
-  /** Returns the current odometric position of the robot. */
+  /** Returns the current odometric position of the robot.
+   * 
+   * @return The current odometric position of the robot.
+   */
   public Translation2d getPosition() {
     return m_odometry.getPoseMeters().getTranslation();
   }
 
-  /** Returns the current odometric angle of the robot. */
+  /** Returns the current odometric angle of the robot. 
+   * 
+   * @return The current odometric angle of the robot.
+   */
   public Rotation2d getAngle() {
     return m_odometry.getPoseMeters().getRotation();
   }
 
   /**
-   * Method to set the odometric position and angle of the robot
+   * Method to set the odometric position and angle of the robot.
    *
    * @param xPos Position of the robot in the x direction (m).
    * @param yPos Position of the robot in the y direction (m).
@@ -128,7 +134,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_odometry.resetPosition(m_navx.getRotation2d(), getModulePositions(), new Pose2d(xPos, yPos, new Rotation2d(theta)));
   }
 
-  /** Changes the drive motor idle modes. */
+  /** Changes the drive motor idle modes.
+   * 
+   * @param idleMode The idle mode to set the drive motors to: "brake" -> kBrake and "coast" -> kCoast.
+   */
   public void setIdleMode(String idleMode) {
     m_frontLeft.setIdleMode(idleMode);
     m_frontRight.setIdleMode(idleMode);
@@ -136,7 +145,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_backRight.setIdleMode(idleMode);
   }
 
-  /** Returns initial positions of the swerve modules as SwerveModulePosition[] */
+  /** Returns initial positions of the swerve modules as a SwerveModulePosition[].
+   * 
+   * @return Initial positions of the swerve modules as a SwerveModulePosition[].
+   */
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
         m_frontLeft.getDrivePosition(),
@@ -183,10 +195,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
      *
-     * @param driveMotorChannel CAN output for the drive motor
-     * @param turningMotorChannel CAN output for the turning motor
-     * @param turningEncoderChannel CAN input for the turning encoder
-     * @param moduleOffset Angle offset for the turning encoder (rad)
+     * @param driveMotorChannel CAN output for the drive motor.
+     * @param turningMotorChannel CAN output for the turning motor.
+     * @param turningEncoderChannel CAN input for the turning encoder.
+     * @param moduleOffset Angle offset for the turning encoder (rad).
      */
     private SwerveModule(int driveMotorChannel, int turningMotorChannel, int turningEncoderChannel, double moduleOffset) {
       m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
@@ -231,14 +243,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @param desiredState Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState desiredState) {
-      // Optimizes the reference state to avoid spinning further than 90 degrees
+      // Optimizes the reference state to avoid spinning further than 90 degrees.
       SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(m_turningEncoder.getAbsolutePosition() - m_moduleOffset));
 
       // Calculates the turning motor output from the turning PID controller.
       final double turnOutput = m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition() - m_moduleOffset, state.angle.getRadians());
       m_turningMotor.setVoltage(turnOutput);
 
-      // Updates velocity based on turn error
+      // Updates velocity based on turn error.
       state.speedMetersPerSecond *= Math.cos(m_turningPIDController.getPositionError());
 
       // Calculates the drive output from the drive PID controller and feedforward controller.
@@ -248,6 +260,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_driveMotor.setVoltage(driveOutput + driveFeedForward);
     }
 
+    /** Changes the drive motor idle mode.
+     * 
+     * @param idleMode The idle mode to set the drive motor to: "brake" -> kBrake and "coast" -> kCoast.
+     */
     public void setIdleMode(String idleMode) {
       if (idleMode.equals("brake")) {
         m_driveMotor.setIdleMode(IdleMode.kBrake);

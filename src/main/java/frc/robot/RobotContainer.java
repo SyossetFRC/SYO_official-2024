@@ -48,7 +48,7 @@ public class RobotContainer {
       m_drivetrainSubsystem.setIdleMode(idleMode);
     }
 
-    public void setRotatePower(String state) {
+    private void setRotatePower(String state) {
       if (state.equals("left")) {
         m_rotatePower = 0.25;
       }

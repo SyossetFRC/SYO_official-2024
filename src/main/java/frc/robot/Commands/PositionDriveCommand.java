@@ -29,13 +29,14 @@ public class PositionDriveCommand extends CommandBase {
     private boolean m_isThetaFinished = false;
 
     /**
-    * Method to drive the robot using joystick info.
+    * Method to drive the robot autonomously.
     *
-    * @param x X coordinate to move to (m).
-    * @param y Y coordinate to move to (m).
-    * @param theta Angle to rotate to (rad).
-    * @param translationalVelocity Translational velocity (m/s).
-    * @param rotationalVelocity Rotational velocity (rad/s).
+    * @param drivetrainSubsystem The swerve drive subsystem.
+    * @param x The x coordinate to move to (m).
+    * @param y The y coordinate to move to (m).
+    * @param theta The angle to rotate to (rad).
+    * @param translationalVelocity The resultant translational velocity (m/s).
+    * @param rotationalVelocity The rotational velocity (rad/s).
     */
     public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
                                 double x,

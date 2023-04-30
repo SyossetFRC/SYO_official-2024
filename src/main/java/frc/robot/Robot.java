@@ -45,16 +45,16 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
   }
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    // This makes sure that all lingering commands stopsrunning when
+    // autonomous starts running.
     CommandScheduler.getInstance().cancelAll();
 
     m_container.setPose(m_startXPos, m_startYPos, m_startTheta);
     m_container.setIdleMode("brake");
   }
 
-  /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {}
 
@@ -69,7 +69,6 @@ public class Robot extends TimedRobot {
     m_container.setIdleMode("coast");
   }
 
-  /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {}
 }
