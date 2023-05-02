@@ -15,8 +15,8 @@ public class RobotContainer {
     public RobotContainer() {
       m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
           m_drivetrainSubsystem,
-          () -> MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * (-m_driveController.getRawAxis(3) + 1) * DrivetrainSubsystem.kMaxSpeed,
-          () -> MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * (-m_driveController.getRawAxis(3) + 1) * DrivetrainSubsystem.kMaxSpeed,
+          () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * (-m_driveController.getRawAxis(3) + 1) * DrivetrainSubsystem.kMaxSpeed,
+          () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * (-m_driveController.getRawAxis(3) + 1) * DrivetrainSubsystem.kMaxSpeed,
           () -> m_rotatePower * (-m_driveController.getRawAxis(3) + 1) * DrivetrainSubsystem.kMaxAngularSpeed
       ));
 
