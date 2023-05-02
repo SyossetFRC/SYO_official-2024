@@ -32,15 +32,15 @@ import frc.robot.Constants;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
-  private static final double kTrackWidth = 0.51;
+  private static final double kTrackWidth = 0.51; // meters
 
   public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // radians per second
 
-  private final Translation2d m_frontLeftLocation = new Translation2d(kTrackWidth / 2.0, kTrackWidth / 2.0);
-  private final Translation2d m_frontRightLocation = new Translation2d(kTrackWidth / 2.0, -kTrackWidth / 2.0);
-  private final Translation2d m_backLeftLocation = new Translation2d(-kTrackWidth / 2.0, kTrackWidth / 2.0);
-  private final Translation2d m_backRightLocation = new Translation2d(-kTrackWidth / 2.0, -kTrackWidth / 2.0);
+  private static final Translation2d m_frontLeftLocation = new Translation2d(kTrackWidth / 2.0, kTrackWidth / 2.0);
+  private static final Translation2d m_frontRightLocation = new Translation2d(kTrackWidth / 2.0, -kTrackWidth / 2.0);
+  private static final Translation2d m_backLeftLocation = new Translation2d(-kTrackWidth / 2.0, kTrackWidth / 2.0);
+  private static final Translation2d m_backRightLocation = new Translation2d(-kTrackWidth / 2.0, -kTrackWidth / 2.0);
 
   private final SwerveModule m_frontLeft;
   private final SwerveModule m_frontRight;
@@ -95,9 +95,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /**
    * Method to drive the robot using joystick info.
    *
-   * @param xSpeed Speed of the robot in the x direction (m/s).
-   * @param ySpeed Speed of the robot in the y direction (m/s).
-   * @param rot Angular rate of the robot (rad/s).
+   * @param xSpeed The speed of the robot in the x direction (m/s).
+   * @param ySpeed The speed of the robot in the y direction (m/s).
+   * @param rot The angular rate of the robot (rad/s).
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -126,9 +126,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /**
    * Method to set the odometric position and angle of the robot.
    *
-   * @param xPos Position of the robot in the x direction (m).
-   * @param yPos Position of the robot in the y direction (m).
-   * @param theta Angle of the robot (rad).
+   * @param xPos The position of the robot in the x direction (m).
+   * @param yPos The position of the robot in the y direction (m).
+   * @param theta The angle of the robot (rad).
    */
   public void setPose(double xPos, double yPos, double theta) {
     m_odometry.resetPosition(m_navx.getRotation2d(), getModulePositions(), new Pose2d(xPos, yPos, new Rotation2d(theta)));
@@ -147,7 +147,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   /** Returns initial positions of the swerve modules as a SwerveModulePosition[].
    * 
-   * @return Initial positions of the swerve modules as a SwerveModulePosition[].
+   * @return The initial positions of the swerve modules as a SwerveModulePosition[].
    */
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
@@ -195,10 +195,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
      *
-     * @param driveMotorChannel CAN output for the drive motor.
-     * @param turningMotorChannel CAN output for the turning motor.
-     * @param turningEncoderChannel CAN input for the turning encoder.
-     * @param moduleOffset Angle offset for the turning encoder (rad).
+     * @param driveMotorChannel The CAN output for the drive motor.
+     * @param turningMotorChannel The CAN output for the turning motor.
+     * @param turningEncoderChannel The CAN input for the turning encoder.
+     * @param moduleOffset The angle offset for the turning encoder (rad).
      */
     private SwerveModule(int driveMotorChannel, int turningMotorChannel, int turningEncoderChannel, double moduleOffset) {
       m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
@@ -240,7 +240,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     /**
      * Sets the desired state for the module.
      *
-     * @param desiredState Desired state with speed and angle.
+     * @param desiredState The desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState desiredState) {
       // Optimizes the reference state to avoid spinning further than 90 degrees.
