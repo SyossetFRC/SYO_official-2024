@@ -68,32 +68,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
 
-    ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-
-    ShuffleboardLayout frontLeftLayout = tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(0, 0);
-    frontLeftLayout.add("Drive Speed", m_frontLeft.getState().speedMetersPerSecond);
-    frontLeftLayout.add("Steer Angle", m_frontLeft.getState().angle.getDegrees());
-    
-    ShuffleboardLayout frontRightLayout = tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
-    frontRightLayout.add("Drive Speed", m_frontRight.getState().speedMetersPerSecond);
-    frontRightLayout.add("Steer Angle", m_frontRight.getState().angle.getDegrees());
-
-    ShuffleboardLayout backLeftLayout = tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(4, 0);
-    backLeftLayout.add("Drive Speed", m_backLeft.getState().speedMetersPerSecond);
-    backLeftLayout.add("Steer Angle", m_backLeft.getState().angle.getDegrees());
-
-    ShuffleboardLayout backRightLayout = tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(6, 0);
-    backRightLayout.add("Drive Speed", m_backRight.getState().speedMetersPerSecond);
-    backRightLayout.add("Steer Angle", m_backRight.getState().angle.getDegrees());
-
-    ShuffleboardLayout odometryLayout = tab.getLayout("Odometry", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 2);
-    odometryLayout.add("X Position", getPosition().getX());
-    odometryLayout.add("Y Position", getPosition().getY());
-    odometryLayout.add("Angle", getAngle().getDegrees());
+    updateShuffleboard();
   }
 
   /**
-   * Method to drive the robot using joystick info.
+   * Drives the robot using joystick info.
    *
    * @param xSpeed The speed of the robot in the x direction (m/s).
    * @param ySpeed The speed of the robot in the y direction (m/s).
@@ -124,7 +103,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   /**
-   * Method to set the odometric position and angle of the robot.
+   * Sets the odometric position and angle of the robot.
    *
    * @param xPos The position of the robot in the x direction (m).
    * @param yPos The position of the robot in the y direction (m).
@@ -175,6 +154,34 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_navx.getRotation2d(),
         getModulePositions()
     );
+
+    updateShuffleboard();
+  }
+
+  /** Displays the periodically updated robot poses on the Shuffleboard */
+  public void updateShuffleboard() {
+    ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+
+    ShuffleboardLayout frontLeftLayout = tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(0, 0);
+    frontLeftLayout.add("Drive Speed", m_frontLeft.getState().speedMetersPerSecond);
+    frontLeftLayout.add("Steer Angle", m_frontLeft.getState().angle.getDegrees());
+    
+    ShuffleboardLayout frontRightLayout = tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
+    frontRightLayout.add("Drive Speed", m_frontRight.getState().speedMetersPerSecond);
+    frontRightLayout.add("Steer Angle", m_frontRight.getState().angle.getDegrees());
+
+    ShuffleboardLayout backLeftLayout = tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(4, 0);
+    backLeftLayout.add("Drive Speed", m_backLeft.getState().speedMetersPerSecond);
+    backLeftLayout.add("Steer Angle", m_backLeft.getState().angle.getDegrees());
+
+    ShuffleboardLayout backRightLayout = tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(6, 0);
+    backRightLayout.add("Drive Speed", m_backRight.getState().speedMetersPerSecond);
+    backRightLayout.add("Steer Angle", m_backRight.getState().angle.getDegrees());
+
+    ShuffleboardLayout odometryLayout = tab.getLayout("Odometry", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 2);
+    odometryLayout.add("X Position", getPosition().getX());
+    odometryLayout.add("Y Position", getPosition().getY());
+    odometryLayout.add("Angle", getAngle().getDegrees());
   }
 
   private class SwerveModule {
