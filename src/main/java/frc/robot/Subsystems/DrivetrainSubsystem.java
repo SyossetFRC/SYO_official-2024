@@ -224,7 +224,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final double m_moduleOffset;
 
     private final PIDController m_drivePIDController = new PIDController(0.1, 0, 0);
-    private final PIDController m_turningPIDController = new PIDController(2.0, 0, 0.1);
+    private final PIDController m_turningPIDController = new PIDController(3.0, 0, 0.1);
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.18868, 0.12825);
 
     /**

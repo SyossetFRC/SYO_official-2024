@@ -53,6 +53,8 @@ public class Robot extends TimedRobot {
 
     m_container.setPose(m_startXPos, m_startYPos, m_startTheta);
     m_container.setIdleMode("brake");
+
+    m_container.autonomousCommands().schedule();
   }
 
   @Override
