@@ -13,7 +13,7 @@ public class DefaultDriveCommand extends CommandBase {
     private final DoubleSupplier m_rotationSupplier;
 
     /**
-    * Method to drive the robot using joystick input.
+    * Command to drive the robot using joystick input.
     *
     * @param drivetrainSubsystem The swerve drive subsystem.
     * @param translationXSupplier The x translational velocity (m/s).

@@ -29,7 +29,7 @@ public class PositionDriveCommand extends CommandBase {
     private boolean m_isThetaFinished = false;
 
     /**
-    * Method to drive the robot autonomously.
+    * Command to drive the robot autonomously.
     *
     * @param drivetrainSubsystem The swerve drive subsystem.
     * @param x The x coordinate to move to (m).

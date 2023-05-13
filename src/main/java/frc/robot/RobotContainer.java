@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
@@ -27,17 +28,18 @@ public class RobotContainer {
 
     public SequentialCommandGroup autonomousCommands() {
       return new SequentialCommandGroup(
-          new PositionDriveCommand(m_drivetrainSubsystem, 1, 0, Math.PI / 2, 0.5, Math.PI / 4)
+          new PositionDriveCommand(m_drivetrainSubsystem, 3.5, 0.5, Math.PI / 2, 3, Math.PI / 2),
+          new PositionDriveCommand(m_drivetrainSubsystem, 4, 1, Math.PI / 2, 0.75, Math.PI / 4)
       );
     }
 
     private void configureButtons() {
-      Button m_resetGyro = new Button(() -> m_driveController.getRawButton(6));
-      m_resetGyro.whenPressed(() -> setPose(m_drivetrainSubsystem.getPosition().getX(), m_drivetrainSubsystem.getPosition().getY(), 0));
+      Button m_resetPose = new Button(() -> m_driveController.getRawButton(6));
+      m_resetPose.whenPressed(() -> setPose(0, 0, 0));
 
       Button m_brake = new Button(() -> m_driveController.getRawButton(10));
-      m_brake.whenPressed(() -> setIdleMode("brake"));
-      m_brake.whenReleased(() -> setIdleMode("coast"));
+      m_brake.whenPressed(new BrakeCommand(m_drivetrainSubsystem));
+      m_brake.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
 
       Button m_rotateLeft = new Button(() -> m_driveController.getRawButton(11));
       m_rotateLeft.whenPressed(() -> setRotatePower("left"));
