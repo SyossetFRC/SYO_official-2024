@@ -29,7 +29,7 @@ public class RobotContainer {
 
     public SequentialCommandGroup autonomousCommands() {
       return new SequentialCommandGroup(
-          new PositionDriveCommand(m_drivetrainSubsystem, 3.0, 1.5, Math.toRadians(90), 3, Math.toRadians(90))
+          new PositionDriveCommand(m_drivetrainSubsystem, 3.0, 1.0, Math.toRadians(90), 3, Math.toRadians(90))
       );
     }
 
@@ -50,13 +50,9 @@ public class RobotContainer {
       m_rotateRight.whenReleased(() -> setRotatePower("none"));
     }
 
-    public void setPose(double xPos, double yPos, double theta) {
-      m_drivetrainSubsystem.setPose(xPos, yPos, theta);
-    }
+    public void setPose(double xPos, double yPos, double theta) { m_drivetrainSubsystem.setPose(xPos, yPos, theta); }
 
-    public void setIdleMode(String idleMode) {
-      m_drivetrainSubsystem.setIdleMode(idleMode);
-    }
+    public void setIdleMode(String idleMode) { m_drivetrainSubsystem.setIdleMode(idleMode); }
 
     private void setRotatePower(String state) {
       if (state.equals("left")) {

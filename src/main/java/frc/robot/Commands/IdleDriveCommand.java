@@ -15,9 +15,7 @@ public class IdleDriveCommand extends CommandBase {
     *
     * @param drivetrainSubsystem The swerve drive subsystem.
     */
-    public IdleDriveCommand(DrivetrainSubsystem drivetrainSubsystem) {
-        this(drivetrainSubsystem, Double.POSITIVE_INFINITY);
-    }
+    public IdleDriveCommand(DrivetrainSubsystem drivetrainSubsystem) { this(drivetrainSubsystem, Double.POSITIVE_INFINITY); }
 
     /**
     * Command to idle the drivetrain definitely.

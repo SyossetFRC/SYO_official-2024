@@ -25,9 +25,7 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {
-    m_container = new RobotContainer();
-  }
+  public void robotInit() { m_container = new RobotContainer(); }
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like

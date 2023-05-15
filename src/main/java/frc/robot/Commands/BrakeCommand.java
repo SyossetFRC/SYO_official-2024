@@ -28,7 +28,5 @@ public class BrakeCommand extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
-        m_drivetrainSubsystem.drive(0, 0, 0, true);
-    }
+    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
 }

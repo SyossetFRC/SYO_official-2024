@@ -124,17 +124,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * 
    * @return The current odometric position of the robot.
    */
-  public Translation2d getPosition() {
-    return m_odometry.getPoseMeters().getTranslation();
-  }
+  public Translation2d getPosition() { return m_odometry.getPoseMeters().getTranslation(); }
 
   /** Returns the current odometric angle of the robot. 
    * 
    * @return The current odometric angle of the robot.
    */
-  public Rotation2d getAngle() {
-    return m_odometry.getPoseMeters().getRotation();
-  }
+  public Rotation2d getAngle() { return m_odometry.getPoseMeters().getRotation(); }
 
   /**
    * Sets the odometric position and angle of the robot.

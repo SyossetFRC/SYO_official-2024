@@ -30,6 +30,14 @@ public class PositionDriveCommand extends CommandBase {
     private Translation2d m_initialPosition;
     private Rotation2d m_initialAngle;
 
+    private boolean m_isFinishedX;
+    private boolean m_isFinishedY;
+    private boolean m_isFinishedTheta;
+
+    private double m_outputX;
+    private double m_outputY;
+    private double m_outputTheta;
+
     /**
     * Command to drive the robot autonomously.
     *
@@ -79,6 +87,10 @@ public class PositionDriveCommand extends CommandBase {
         m_pidX.setTolerance(0.01);
         m_pidY.setTolerance(0.01);
         m_pidTheta.setTolerance(Math.toRadians(1));
+
+        m_isFinishedX = false;
+        m_isFinishedY = false;
+        m_isFinishedTheta = false;
     }
     
     @Override
@@ -87,21 +99,35 @@ public class PositionDriveCommand extends CommandBase {
         double errorY = Math.abs(m_drivetrainSubsystem.getPosition().getY() - m_y);
         double errorTheta = Math.abs(m_drivetrainSubsystem.getAngle().getRadians() - m_theta);
 
+        if (!m_isFinishedX) { m_outputX = m_pidX.calculate(Math.min(errorX, m_deccelDistance), 0); }
+        if (m_pidX.atSetpoint()) { 
+            m_outputX = 0; 
+            m_isFinishedX = true; 
+        }
+
+        if (!m_isFinishedY) { m_outputY = m_pidY.calculate(Math.min(errorY, m_deccelDistance), 0); }
+        if (m_pidY.atSetpoint()) { 
+            m_outputY = 0; 
+            m_isFinishedY = true; 
+        }
+
+        if (!m_isFinishedTheta) { m_outputTheta = m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), 0); }
+        if (m_pidTheta.atSetpoint()) { 
+            m_outputTheta = 0; 
+            m_isFinishedTheta = true; 
+        }
+
         m_drivetrainSubsystem.drive(
-                m_pidX.atSetpoint() ? 0 : m_pidX.calculate(Math.min(errorX, m_deccelDistance), 0),
-                m_pidY.atSetpoint() ? 0 : m_pidY.calculate(Math.min(errorY, m_deccelDistance), 0),
-                m_pidTheta.atSetpoint() ? 0 : m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), 0),
+                m_outputX,
+                m_outputY,
+                m_outputTheta,
                 true
         );
     }
 
     @Override
-    public boolean isFinished() {
-        return m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint();
-    }
+    public boolean isFinished() { return (m_outputX == 0) && (m_outputY == 0) && (m_outputTheta == 0); }
 
     @Override
-    public void end(boolean interrupted) {
-        m_drivetrainSubsystem.drive(0, 0, 0, true);
-    }
+    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
 }
