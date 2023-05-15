@@ -29,9 +29,7 @@ public class RobotContainer {
 
     public SequentialCommandGroup autonomousCommands() {
       return new SequentialCommandGroup(
-          new PositionDriveCommand(m_drivetrainSubsystem, 3.5, 0.2, Math.PI / 2, 2.5, Math.PI / 6),
-          new IdleDriveCommand(m_drivetrainSubsystem, 0.2),
-          new PositionDriveCommand(m_drivetrainSubsystem, 4, 0.5, Math.PI / 2, 0.5, Math.PI / 4)
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 1.25, Math.PI / 4)
       );
     }
 
