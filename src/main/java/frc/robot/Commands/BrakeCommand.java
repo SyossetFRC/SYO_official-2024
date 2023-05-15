@@ -25,12 +25,10 @@ public class BrakeCommand extends CommandBase {
                 0.01,
                 true
         );
-        m_drivetrainSubsystem.setIdleMode("brake");
     }
 
     @Override
     public void end(boolean interrupted) {
         m_drivetrainSubsystem.drive(0, 0, 0, true);
-        m_drivetrainSubsystem.setIdleMode("coast");
     }
 }

@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     CommandScheduler.getInstance().cancelAll();
     
-    m_container.setIdleMode("coast");
+    m_container.setIdleMode("brake");
   }
 
   @Override
