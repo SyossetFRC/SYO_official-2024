@@ -7,7 +7,7 @@ import frc.robot.Subsystems.DrivetrainSubsystem;
 public class IdleDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
-    private long m_waitTime;
+    private double m_waitTime;
     private Timer m_timer;
 
     /**
@@ -16,7 +16,7 @@ public class IdleDriveCommand extends CommandBase {
     * @param drivetrainSubsystem The swerve drive subsystem.
     */
     public IdleDriveCommand(DrivetrainSubsystem drivetrainSubsystem) {
-        this(drivetrainSubsystem, (long) Double.POSITIVE_INFINITY);
+        this(drivetrainSubsystem, Double.POSITIVE_INFINITY);
     }
 
     /**
@@ -26,7 +26,7 @@ public class IdleDriveCommand extends CommandBase {
     * @param waitTime The amount time to idle (s).
     */
     public IdleDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
-                                long waitTime) {
+                                double waitTime) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_waitTime = waitTime;
         m_timer = new Timer();

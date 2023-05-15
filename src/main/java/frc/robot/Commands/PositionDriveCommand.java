@@ -77,15 +77,15 @@ public class PositionDriveCommand extends CommandBase {
                 true
         );
 
-        if (Math.abs(m_drivetrainSubsystem.getPosition().getX() - m_x) < 0.1) {
+        if (Math.abs(m_drivetrainSubsystem.getPosition().getX() - m_x) < 0.05) {
             m_translationXSupplier = () -> 0;
             m_isXFinished = true;
         }
-        if (Math.abs(m_drivetrainSubsystem.getPosition().getY() - m_y) < 0.1) {
+        if (Math.abs(m_drivetrainSubsystem.getPosition().getY() - m_y) < 0.05) {
             m_translationYSupplier = () -> 0;
             m_isYFinished = true;
         }
-        if (Math.abs(m_drivetrainSubsystem.getAngle().getRadians() - m_theta) < (Math.PI / 40)) {
+        if (Math.abs(m_drivetrainSubsystem.getAngle().getRadians() - m_theta) < (Math.PI / 60)) {
             m_rotationSupplier = () -> 0;
             m_isThetaFinished = true;
         }

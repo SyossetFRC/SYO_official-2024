@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
+import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
@@ -28,8 +29,9 @@ public class RobotContainer {
 
     public SequentialCommandGroup autonomousCommands() {
       return new SequentialCommandGroup(
-          new PositionDriveCommand(m_drivetrainSubsystem, 3.5, 0.5, Math.PI / 2, 3, Math.PI / 2),
-          new PositionDriveCommand(m_drivetrainSubsystem, 4, 1, Math.PI / 2, 0.75, Math.PI / 4)
+          new PositionDriveCommand(m_drivetrainSubsystem, 3.5, 0.2, Math.PI / 2, 2.5, Math.PI / 6),
+          new IdleDriveCommand(m_drivetrainSubsystem, 0.2),
+          new PositionDriveCommand(m_drivetrainSubsystem, 4, 0.5, Math.PI / 2, 0.5, Math.PI / 4)
       );
     }
 
