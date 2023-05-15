@@ -16,6 +16,9 @@ public class PositionDriveCommand extends CommandBase {
     private final double m_translationalVelocity;
     private final double m_rotationalVelocity;
 
+    private final double m_deccelDistance;
+    private final double m_deccelTheta;
+
     private double m_translationXSupplier;
     private double m_translationYSupplier;
     private double m_rotationSupplier;
@@ -51,6 +54,9 @@ public class PositionDriveCommand extends CommandBase {
         m_translationalVelocity = translationalVelocity;
         m_rotationalVelocity = rotationalVelocity;
 
+        m_deccelDistance = 2.0;
+        m_deccelTheta = Math.toRadians(120);
+
         addRequirements(m_drivetrainSubsystem);
     }
 
@@ -66,13 +72,13 @@ public class PositionDriveCommand extends CommandBase {
         m_translationYSupplier = (distanceY / Math.hypot(distanceX, distanceY)) * m_translationalVelocity;
         m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_theta - m_initialAngle.getRadians());
 
-        m_pidX = new PIDController(-m_translationXSupplier, 0, 0);
-        m_pidY = new PIDController(-m_translationYSupplier, 0, 0);
-        m_pidTheta = new PIDController(-m_rotationSupplier, 0, 0);
+        m_pidX = new PIDController(-m_translationXSupplier / m_deccelDistance, 0, 0);
+        m_pidY = new PIDController(-m_translationYSupplier / m_deccelDistance, 0, 0);
+        m_pidTheta = new PIDController(-m_rotationSupplier / m_deccelTheta, 0, 0);
 
-        m_pidX.setTolerance(0.05);
-        m_pidY.setTolerance(0.05);
-        m_pidTheta.setTolerance(Math.PI / 60);
+        m_pidX.setTolerance(0.01);
+        m_pidY.setTolerance(0.01);
+        m_pidTheta.setTolerance(Math.toRadians(1));
     }
     
     @Override
@@ -82,9 +88,9 @@ public class PositionDriveCommand extends CommandBase {
         double errorTheta = Math.abs(m_drivetrainSubsystem.getAngle().getRadians() - m_theta);
 
         m_drivetrainSubsystem.drive(
-                m_pidX.calculate(Math.min(errorX, 1.0), 0),
-                m_pidY.calculate(Math.min(errorY, 1.0), 0),
-                m_pidTheta.calculate(Math.min(errorTheta, 1.0), 0),
+                m_pidX.atSetpoint() ? 0 : m_pidX.calculate(Math.min(errorX, m_deccelDistance), 0),
+                m_pidY.atSetpoint() ? 0 : m_pidY.calculate(Math.min(errorY, m_deccelDistance), 0),
+                m_pidTheta.atSetpoint() ? 0 : m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), 0),
                 true
         );
     }
