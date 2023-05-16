@@ -21,14 +21,14 @@ public class PositionDriveCommand extends CommandBase {
     private final double m_translationalVelocity;
     private final double m_rotationalVelocity;
 
-    private final double m_deccelDistance;
-    private final double m_deccelTheta;
-
     private final GenericEntry m_positionCommandEntry;
 
     private double m_translationXSupplier;
     private double m_translationYSupplier;
     private double m_rotationSupplier;
+
+    private double m_deccelDistance;
+    private double m_deccelTheta;
 
     private PIDController m_pidX;
     private PIDController m_pidY;
@@ -69,9 +69,6 @@ public class PositionDriveCommand extends CommandBase {
         m_translationalVelocity = translationalVelocity;
         m_rotationalVelocity = rotationalVelocity;
 
-        m_deccelDistance = 2.0;
-        m_deccelTheta = Math.toRadians(120);
-
         addRequirements(m_drivetrainSubsystem);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -90,6 +87,9 @@ public class PositionDriveCommand extends CommandBase {
         m_translationXSupplier = (distanceX / Math.hypot(distanceX, distanceY)) * m_translationalVelocity;
         m_translationYSupplier = (distanceY / Math.hypot(distanceX, distanceY)) * m_translationalVelocity;
         m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_theta - m_initialAngle.getRadians());
+
+        m_deccelDistance = Math.min(Math.hypot(distanceX, distanceY), 2.0);
+        m_deccelTheta = Math.min(Math.abs(m_theta - m_initialAngle.getRadians()), Math.toRadians(120));
 
         m_pidX = new PIDController(-m_translationXSupplier / m_deccelDistance, 0, 0);
         m_pidY = new PIDController(-m_translationYSupplier / m_deccelDistance, 0, 0);
