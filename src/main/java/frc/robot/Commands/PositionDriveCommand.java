@@ -109,8 +109,8 @@ public class PositionDriveCommand extends CommandBase {
             m_isFinishedY = true; 
         }
 
-        if (!m_isFinishedTheta) { m_outputTheta = m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), -Math.toRadians(7)); }
-        if (Math.abs(m_pidTheta.getPositionError()) < Math.toRadians(10)) { 
+        if (!m_isFinishedTheta) { m_outputTheta = m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), -Math.toRadians(6)); }
+        if (Math.abs(m_pidTheta.getPositionError()) < Math.toRadians(8)) { 
             m_outputTheta = 0; 
             m_isFinishedTheta = true; 
         }
