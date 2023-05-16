@@ -288,14 +288,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
       final double speedRadiansPerSecond = state.speedMetersPerSecond / kWheelRadius;
       final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity() / kWheelRadius, speedRadiansPerSecond);
       final double driveFeedForward = m_driveFeedforward.calculate(speedRadiansPerSecond);
-
-      // Eliminates Creep
-      if (Math.abs(speedRadiansPerSecond) > 0.01) {
-        m_driveMotor.setVoltage(driveOutput + driveFeedForward);
-      }
-      else {
-        m_driveMotor.setVoltage(0);
-      }
+      m_driveMotor.setVoltage(Math.abs(speedRadiansPerSecond) > 0.01 ? (driveOutput + driveFeedForward) : 0);
       
     }
 

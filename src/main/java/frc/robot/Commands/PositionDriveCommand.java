@@ -3,6 +3,11 @@ package frc.robot.Commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
@@ -18,6 +23,8 @@ public class PositionDriveCommand extends CommandBase {
 
     private final double m_deccelDistance;
     private final double m_deccelTheta;
+
+    private final GenericEntry m_positionCommandEntry;
 
     private double m_translationXSupplier;
     private double m_translationYSupplier;
@@ -66,6 +73,10 @@ public class PositionDriveCommand extends CommandBase {
         m_deccelTheta = Math.toRadians(120);
 
         addRequirements(m_drivetrainSubsystem);
+
+        ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+        ShuffleboardLayout positionCommandLayout = tab.getLayout("Position Command", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 2);
+        m_positionCommandEntry = positionCommandLayout.add("Is Command Finished?", isFinished()).getEntry();
     }
 
     @Override
@@ -123,6 +134,8 @@ public class PositionDriveCommand extends CommandBase {
                 m_outputTheta,
                 true
         );
+
+        m_positionCommandEntry.setBoolean(isFinished());
     }
 
     @Override
