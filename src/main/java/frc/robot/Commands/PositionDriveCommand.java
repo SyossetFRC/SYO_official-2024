@@ -3,11 +3,6 @@ package frc.robot.Commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
@@ -21,13 +16,12 @@ public class PositionDriveCommand extends CommandBase {
     private final double m_translationalVelocity;
     private final double m_rotationalVelocity;
 
-    private final GenericEntry m_positionCommandEntry;
-
     private double m_translationXSupplier;
     private double m_translationYSupplier;
     private double m_rotationSupplier;
 
-    private double m_deccelDistance;
+    private double m_deccelDistanceX;
+    private double m_deccelDistanceY;
     private double m_deccelTheta;
 
     private PIDController m_pidX;
@@ -70,10 +64,6 @@ public class PositionDriveCommand extends CommandBase {
         m_rotationalVelocity = rotationalVelocity;
 
         addRequirements(m_drivetrainSubsystem);
-
-        ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-        ShuffleboardLayout positionCommandLayout = tab.getLayout("Position Command", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 2);
-        m_positionCommandEntry = positionCommandLayout.add("Is Command Finished?", isFinished()).getEntry();
     }
 
     @Override
@@ -88,16 +78,13 @@ public class PositionDriveCommand extends CommandBase {
         m_translationYSupplier = (distanceY / Math.hypot(distanceX, distanceY)) * m_translationalVelocity;
         m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_theta - m_initialAngle.getRadians());
 
-        m_deccelDistance = Math.min(Math.hypot(distanceX, distanceY), 2.0);
-        m_deccelTheta = Math.min(Math.abs(m_theta - m_initialAngle.getRadians()), Math.toRadians(120));
+        m_deccelDistanceX = 2.0;
+        m_deccelDistanceY = 2.0;
+        m_deccelTheta = Math.toRadians(90);
 
-        m_pidX = new PIDController(-m_translationXSupplier / m_deccelDistance, 0, 0);
-        m_pidY = new PIDController(-m_translationYSupplier / m_deccelDistance, 0, 0);
+        m_pidX = new PIDController(-m_translationXSupplier / m_deccelDistanceX, 0, 0);
+        m_pidY = new PIDController(-m_translationYSupplier / m_deccelDistanceY, 0, 0);
         m_pidTheta = new PIDController(-m_rotationSupplier / m_deccelTheta, 0, 0);
-
-        m_pidX.setTolerance(0.01);
-        m_pidY.setTolerance(0.01);
-        m_pidTheta.setTolerance(Math.toRadians(1));
 
         m_isFinishedX = false;
         m_isFinishedY = false;
@@ -110,20 +97,20 @@ public class PositionDriveCommand extends CommandBase {
         double errorY = Math.abs(m_drivetrainSubsystem.getPosition().getY() - m_y);
         double errorTheta = Math.abs(m_drivetrainSubsystem.getAngle().getRadians() - m_theta);
 
-        if (!m_isFinishedX) { m_outputX = m_pidX.calculate(Math.min(errorX, m_deccelDistance), 0); }
-        if (m_pidX.atSetpoint()) { 
+        if (!m_isFinishedX) { m_outputX = m_pidX.calculate(Math.min(errorX, m_deccelDistanceX), -0.15); }
+        if (Math.abs(m_pidX.getPositionError()) < 0.18) { 
             m_outputX = 0; 
             m_isFinishedX = true; 
         }
 
-        if (!m_isFinishedY) { m_outputY = m_pidY.calculate(Math.min(errorY, m_deccelDistance), 0); }
-        if (m_pidY.atSetpoint()) { 
+        if (!m_isFinishedY) { m_outputY = m_pidY.calculate(Math.min(errorY, m_deccelDistanceY), -0.15); }
+        if (Math.abs(m_pidY.getPositionError()) < 0.18) { 
             m_outputY = 0; 
             m_isFinishedY = true; 
         }
 
-        if (!m_isFinishedTheta) { m_outputTheta = m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), 0); }
-        if (m_pidTheta.atSetpoint()) { 
+        if (!m_isFinishedTheta) { m_outputTheta = m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), -Math.toRadians(7)); }
+        if (Math.abs(m_pidTheta.getPositionError()) < Math.toRadians(10)) { 
             m_outputTheta = 0; 
             m_isFinishedTheta = true; 
         }
@@ -134,8 +121,6 @@ public class PositionDriveCommand extends CommandBase {
                 m_outputTheta,
                 true
         );
-
-        m_positionCommandEntry.setBoolean(isFinished());
     }
 
     @Override
