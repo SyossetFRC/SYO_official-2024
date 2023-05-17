@@ -57,10 +57,10 @@ public class RobotContainer {
 
     private void setRotatePower(String state) {
       if (state.equals("left")) {
-        m_rotatePower = 0.25;
+        m_rotatePower = 0.2;
       }
       else if (state.equals("right")) {
-        m_rotatePower = -0.25;
+        m_rotatePower = -0.2;
       }
       else {
         m_rotatePower = 0;

@@ -46,8 +46,8 @@ public class PositionDriveCommand extends CommandBase {
     * @param x The x coordinate to move to (m).
     * @param y The y coordinate to move to (m).
     * @param theta The angle to rotate to (rad).
-    * @param translationalVelocity The resultant translational velocity (m/s).
-    * @param rotationalVelocity The rotational velocity (rad/s).
+    * @param translationalVelocity The resultant theoretical translational velocity (m/s).
+    * @param rotationalVelocity The theoretical rotational velocity (rad/s).
     */
     public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
                                 double x,
@@ -98,19 +98,19 @@ public class PositionDriveCommand extends CommandBase {
         double errorTheta = Math.abs(m_drivetrainSubsystem.getAngle().getRadians() - m_theta);
 
         if (!m_isFinishedX) { m_outputX = m_pidX.calculate(Math.min(errorX, m_deccelDistanceX), -0.15); }
-        if (Math.abs(m_pidX.getPositionError()) < 0.18) { 
+        if (Math.abs(m_pidX.getPositionError()) < Math.abs(m_pidX.getSetpoint()) + 0.03) { 
             m_outputX = 0; 
             m_isFinishedX = true; 
         }
 
         if (!m_isFinishedY) { m_outputY = m_pidY.calculate(Math.min(errorY, m_deccelDistanceY), -0.15); }
-        if (Math.abs(m_pidY.getPositionError()) < 0.18) { 
+        if (Math.abs(m_pidY.getPositionError()) < Math.abs(m_pidY.getSetpoint()) + 0.03) { 
             m_outputY = 0; 
             m_isFinishedY = true; 
         }
 
         if (!m_isFinishedTheta) { m_outputTheta = m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), -Math.toRadians(6)); }
-        if (Math.abs(m_pidTheta.getPositionError()) < Math.toRadians(8)) { 
+        if (Math.abs(m_pidTheta.getPositionError()) < Math.abs(m_pidTheta.getSetpoint()) + Math.toRadians(2)) { 
             m_outputTheta = 0; 
             m_isFinishedTheta = true; 
         }
