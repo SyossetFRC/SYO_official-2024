@@ -25,7 +25,7 @@ public class RobotContainer {
           m_drivetrainSubsystem,
           () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(1), 0.05) * m_powerLimit * DrivetrainSubsystem.kMaxSpeed,
           () -> -MathUtil.applyDeadband(m_driveController.getRawAxis(0), 0.05) * m_powerLimit * DrivetrainSubsystem.kMaxSpeed,
-          () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 3.0) * m_powerLimit * DrivetrainSubsystem.kMaxAngularSpeed
+          () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit * DrivetrainSubsystem.kMaxAngularSpeed
       ));
 
       configureButtons();
