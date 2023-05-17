@@ -51,11 +51,11 @@ public class RobotContainer {
 
       // Driver D-pad up
       Button m_incrementPowerLimit = new Button(() -> (m_driveController.getPOV() >= 315 || m_driveController.getPOV() <= 45));
-      m_incrementPowerLimit.whenPressed(() -> changePowerLimit(0.1));
+      m_incrementPowerLimit.whenPressed(() -> changePowerLimit(0.2));
 
       // Driver D-pad down
       Button m_decrementPowerLimit = new Button(() -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
-      m_decrementPowerLimit.whenPressed(() -> changePowerLimit(-0.1));
+      m_decrementPowerLimit.whenPressed(() -> changePowerLimit(-0.2));
     }
 
     public void setPose(double xPos, double yPos, double theta) { m_drivetrainSubsystem.setPose(xPos, yPos, theta); }
