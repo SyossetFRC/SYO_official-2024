@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -35,18 +31,10 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
-  }
+  public void robotPeriodic() { CommandScheduler.getInstance().run(); }
 
   @Override
   public void autonomousInit() {
-    // This makes sure that all lingering commands stopsrunning when
-    // autonomous starts running.
     CommandScheduler.getInstance().cancelAll();
 
     m_container.setPose(m_startXPos, m_startYPos, m_startTheta);
@@ -56,19 +44,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
-
-  @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     CommandScheduler.getInstance().cancelAll();
     
     m_container.setIdleMode("brake");
   }
-
-  @Override
-  public void teleopPeriodic() {}
 }

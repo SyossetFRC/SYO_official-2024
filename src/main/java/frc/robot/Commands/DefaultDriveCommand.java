@@ -5,6 +5,7 @@ import frc.robot.Subsystems.DrivetrainSubsystem;
 
 import java.util.function.DoubleSupplier;
 
+/** A teleoperated command that allows joystick input to control the drivetrain. */
 public class DefaultDriveCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 

@@ -3,6 +3,7 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
+/** A command that brakes the drivetrain using swerve module alignment. */
 public class BrakeCommand extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
