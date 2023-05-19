@@ -7,12 +7,15 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.IdleDriveCommand;
+import frc.robot.Commands.LimelightAlignmentDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
+import frc.robot.Subsystems.LimelightSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+    private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
     
     private final Joystick m_driveController = new Joystick(0);
     private double m_powerLimit = 1.0;
@@ -56,6 +59,16 @@ public class RobotContainer {
       // Driver D-pad down
       Button m_decrementPowerLimit = new Button(() -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
       m_decrementPowerLimit.whenPressed(() -> changePowerLimit(-0.2));
+
+      // Driver button B
+      Button m_translationalLimelightTracking = new Button(() -> m_driveController.getRawButton(2));
+      m_translationalLimelightTracking.whileActiveContinuous(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "translational"));
+      m_translationalLimelightTracking.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
+
+      // Driver button Y
+      Button m_rotationalLimelightTracking = new Button(() -> m_driveController.getRawButton(4));
+      m_rotationalLimelightTracking.whileActiveContinuous(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational"));
+      m_rotationalLimelightTracking.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
     }
 
     public void setPose(double xPos, double yPos, double theta) { m_drivetrainSubsystem.setPose(xPos, yPos, theta); }
