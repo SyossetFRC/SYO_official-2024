@@ -17,9 +17,9 @@ public class LimelightAlignmentDriveCommand extends CommandBase {
     private double m_xVelocity;
     private double m_angularVelocity;
     private double m_distanceToRobot;
-    private double m_deadband;
-    private double m_kP;
-    private double m_isFinishedTolerance;
+    private double m_deadband = 0.005;
+    private double m_kP = 0.025;
+    private double m_isFinishedTolerance = 0.05;
     private String m_yControlMode;
 
     /**
@@ -28,14 +28,11 @@ public class LimelightAlignmentDriveCommand extends CommandBase {
      * @param distanceToRobot    The desired distance to maintain from the player
      * @param yControlMode        The type of correctional movement in the y direction: "translational" or "rotational"
      */
-    public LimelightAlignmentDriveCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem, String yControlMode) {
+    public LimelightAlignmentDriveCommand(DrivetrainSubsystem drivetrainSubsystem, LimelightSubsystem limelightSubsystem, String yControlMode, double distanceToRobot) {
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_limelightSubsystem = limelightSubsystem;
 
-        m_distanceToRobot = 0.85;
-        m_isFinishedTolerance = 0.05;
-        m_kP = 0.025;
-        m_deadband = 0.005;
+        m_distanceToRobot = distanceToRobot;
         m_yControlMode = yControlMode;
 
         addRequirements(m_drivetrainSubsystem, m_limelightSubsystem);
