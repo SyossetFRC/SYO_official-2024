@@ -36,6 +36,7 @@ public class RobotContainer {
 
     // Currently used for testing kinematics
     public SequentialCommandGroup autonomousCommands() {
+      m_powerLimit = 1.0;
       return new SequentialCommandGroup(
           new PositionDriveCommand(m_drivetrainSubsystem, 4.0, 1.0, Math.toRadians(90), 3.50, Math.toRadians(120)),
           new PositionDriveCommand(m_drivetrainSubsystem, 3.0, 0.0, Math.toRadians(45), 3.50, Math.toRadians(120))
@@ -53,7 +54,7 @@ public class RobotContainer {
       m_brake.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
 
       // Driver D-pad up
-      Button m_incrementPowerLimit = new Button(() -> (m_driveController.getPOV() >= 315 || m_driveController.getPOV() <= 45));
+      Button m_incrementPowerLimit = new Button(() -> (m_driveController.getPOV() >= 315 || (m_driveController.getPOV() <= 45 && m_driveController.getPOV() >= 0)));
       m_incrementPowerLimit.whenPressed(() -> changePowerLimit(0.2));
 
       // Driver D-pad down
