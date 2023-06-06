@@ -63,12 +63,12 @@ public class RobotContainer {
 
       // Driver button B
       Button m_translationalLimelightTracking = new Button(() -> m_driveController.getRawButton(2));
-      m_translationalLimelightTracking.whileActiveContinuous(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "translational", 0.85));
+      m_translationalLimelightTracking.whileActiveContinuous(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "translational"));
       m_translationalLimelightTracking.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
 
       // Driver button Y
       Button m_rotationalLimelightTracking = new Button(() -> m_driveController.getRawButton(4));
-      m_rotationalLimelightTracking.whileActiveContinuous(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational", 0.85));
+      m_rotationalLimelightTracking.whileActiveContinuous(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational"));
       m_rotationalLimelightTracking.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
     }
 

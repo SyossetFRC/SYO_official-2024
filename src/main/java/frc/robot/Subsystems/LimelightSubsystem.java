@@ -5,13 +5,11 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import java.util.Map;
+import java.util.AbstractMap.SimpleEntry;
 
 /** Represents a Limelight sensor */
 public class LimelightSubsystem extends SubsystemBase {
@@ -29,11 +27,6 @@ public class LimelightSubsystem extends SubsystemBase {
 
     // Shuffleboard tab specifically for the Limelight.
     private ShuffleboardTab limelightTab;
-
-    // Shuffleboard data that can be manipulated.
-    private GenericEntry ledStatusEntry;
-    private GenericEntry cameraStatusEntry;
-    private GenericEntry pipelineIdEntry;
 
     // Variables to store the current state of the Limelight.
     private boolean isCameraModeOn = false;
@@ -53,54 +46,64 @@ public class LimelightSubsystem extends SubsystemBase {
     private double targetAreaDistance;
     private double trigDistance;
     private double distance;
-
+    /* 
+    private GenericEntry pipelineSliderEntry;
+    private GenericEntry LEDsEntry;
+    private GenericEntry cameraEntry;
+    private GenericEntry txEntry;
+    private GenericEntry tyEntry;
+    private GenericEntry tvEntry;
+    private GenericEntry taEntry;
+    private GenericEntry areaDistanceEntry;
+    private GenericEntry trigDistanceEntry;
+    */
     /** The LimelightSubsystem constructor. Initializes the Limelight subsystem and sets up the NetworkTable. */
     public LimelightSubsystem() {
-        networkTable = NetworkTableInstance.getDefault().getTable("limelight");
-
         limelightTab = Shuffleboard.getTab("Limelight");
-        ShuffleboardLayout limelightLayout = limelightTab.getLayout("Limelight Subsystem Specifications", BuiltInLayouts.kList).withSize(2, 3).withPosition(3, 0);
-
-        ledStatusEntry = limelightTab.add("Set LED Status", this.isLedOn).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-        cameraStatusEntry = limelightTab.add("Set Camera Status", this.isCameraModeOn).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-        pipelineIdEntry = limelightTab.add("Set Pipeline", Constants.PIPELINE_ID).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
-
-        limelightTab.addNumber("Y Resolution", () -> Constants.LIMELIGHT_VERTICAL_RESOLUTION);
-        limelightTab.addNumber("X Resolution", () -> Constants.LIMELIGHT_HORIZONTAL_RESOLUTION);
-        limelightTab.addNumber("Limelight Lens Height", () -> Constants.LIMELIGHT_LENS_HEIGHT);
-        limelightTab.addNumber("Limelight Angle", () -> Constants.LIMELIGHT_ANGLE);
-        limelightTab.addNumber("Goal Height", () -> Constants.LIMELIGHT_GOAL_HEIGHT);
-
-        limelightLayout.addNumber("Y Target Angle", () -> getYTargetAngle());
-        limelightLayout.addNumber("X Target Angle", () -> getXTargetAngle());
-        limelightLayout.addNumber("Target Area Distance", () -> getTargetAreaDistance());
-        limelightLayout.addNumber("Trigonometric Distance", () -> getTrigDistance());
-        limelightLayout.addNumber("Preferred Distance", () -> getDistance());
-        limelightLayout.addBoolean("Tag Found", () -> getFoundTag());
-        limelightLayout.addBoolean("LED Status", () -> getLEDStatus());
-        limelightLayout.addBoolean("Camera Status", () -> getCameraModeStatus());
-    }
+        /* 
+        pipelineSliderEntry = limelightTab.add("Pipeline", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 4)).withSize(2, 1).withPosition(0, 0).getEntry();
+        LEDsEntry = limelightTab.add("LEDs", false).withWidget(BuiltInWidgets.kToggleSwitch).withPosition(0,1).withSize(2,1).getEntry();
+        cameraEntry = limelightTab.add("Camera", false).withWidget(BuiltInWidgets.kToggleSwitch).withPosition(0,2).withSize(2,1).getEntry();
+        txEntry = limelightTab.add("tx",-1).withSize(1, 1).withPosition(2, 0).getEntry();
+        tyEntry = limelightTab.add("ty",-1).withSize(1, 1).withPosition(2, 1).getEntry();
+        tvEntry = limelightTab.add("tv",false).withSize(1, 1).withPosition(2, 4).getEntry();
+        taEntry = limelightTab.add("ta",-1).withSize(1, 1).withPosition(2, 3).getEntry();
+        areaDistanceEntry = limelightTab.add("area distance",-1).withSize(1, 1).withPosition(3, 0).getEntry();
+        trigDistanceEntry = limelightTab.add("trig distance",-1).withSize(1, 1).withPosition(3, 1).getEntry();
+        */
+    }   
 
     @Override
     public void periodic() {
+        networkTable = NetworkTableInstance.getDefault().getTable("limelight");  
+
         // NetworkTableEntries to store the values generated by the Limelight.
         pipelineEntry = networkTable.getEntry("pipeline");
         camModeEntry = networkTable.getEntry("camMode");
         ledModeEntry = networkTable.getEntry("ledMode");
-        yEntry = networkTable.getEntry("tx");
+        yEntry = networkTable.getEntry("ty");
         targetAreaEntry = networkTable.getEntry("ta");
-        xEntry = networkTable.getEntry("ty");
+        xEntry = networkTable.getEntry("tx");
         foundTagEntry = networkTable.getEntry("tv");
-
+        //Updating Generic Entries
+        /* 
+        txEntry.setDouble(xEntry.getDouble(0));
+        tyEntry.setBoolean(foundTagBool);
+        tvEntry.setDouble(tvEntry.getDouble(0));
+        taEntry.setDouble(targetAreaEntry.getDouble(0));
+        areaDistanceEntry.setDouble(targetAreaDistance);
+        trigDistanceEntry.setDouble(trigDistance);
+        */
         // Using the entries to generate data and/or change current Limelight
         // specifications.
-        pipelineEntry.setNumber(Constants.PIPELINE_ID);
-        if (isCameraModeOn) {
+        pipelineEntry.setNumber(0);
+        // (int)pipelineSliderEntry.getDouble(0)
+        if (isCameraModeOn == true) {
             camModeEntry.setNumber(1);
         } else {
             camModeEntry.setNumber(0);
         }
-        if (isLedOn) {
+        if (isLedOn == true) {
             ledModeEntry.setNumber(3);
         } else {
             ledModeEntry.setNumber(1);
