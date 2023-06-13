@@ -74,8 +74,7 @@ public class LimelightAlignmentDriveCommand extends CommandBase {
     }
 
     public boolean isFinished() {
-        if (Math.abs(m_limelightSubsystem.getXTargetAngle()) > m_isFinishedTolerance
-                || (Math.abs(m_limelightSubsystem.getDistance() - m_distanceToRobot) > 0.5 / 5)) {
+        if (Math.abs(m_limelightSubsystem.getXTargetAngle()) > m_isFinishedTolerance || Math.abs(m_limelightSubsystem.getDistance() - m_distanceToRobot) > 0.1) {
             return false;
         }
         return true;
