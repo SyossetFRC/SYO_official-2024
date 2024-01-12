@@ -32,7 +32,6 @@ public class RobotContainer {
     }
 
     // Currently used for testing kinematics
-    // Turning requires an 'x' parameter of 0.001
     public SequentialCommandGroup autonomousCommands() {
       m_powerLimit = 1.0;
       return new SequentialCommandGroup(

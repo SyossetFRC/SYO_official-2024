@@ -52,7 +52,13 @@ public class PositionDriveCommand extends CommandBase {
                                 double translationalVelocity,
                                 double rotationalVelocity) {
         m_drivetrainSubsystem = drivetrainSubsystem;
-        m_x = x;
+        
+        if (x == 0 && y == 0) {
+            m_x = 0.001;
+        }
+        else {
+            m_x = x;
+        }
         m_y = y;
         m_theta = theta;
 
@@ -95,8 +101,6 @@ public class PositionDriveCommand extends CommandBase {
             m_recordedTime = System.currentTimeMillis();
             m_isTimeRecorded = true;
         }
-
-        System.out.println(m_recordedTime);
 
         m_outputX = Math.min(m_pidX.calculate(m_drivetrainSubsystem.getPosition().getX(), m_x), m_translationXSupplier);
         m_outputY = Math.min(m_pidY.calculate(m_drivetrainSubsystem.getPosition().getY(), m_y), m_translationYSupplier);

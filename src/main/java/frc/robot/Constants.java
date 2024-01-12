@@ -28,11 +28,4 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 15; 
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 52; 
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = Math.toRadians(-2.8); 
-
-    public static final double PIPELINE_ID = 0;
-    public static final double LIMELIGHT_ANGLE = Math.toRadians(10);
-    public static final double LIMELIGHT_LENS_HEIGHT = 0.0175;
-    public static final double LIMELIGHT_GOAL_HEIGHT = 0.15;
-    public static final double LIMELIGHT_HORIZONTAL_RESOLUTION = 320;
-    public static final double LIMELIGHT_VERTICAL_RESOLUTION = 240;
 }
