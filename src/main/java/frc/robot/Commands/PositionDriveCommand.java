@@ -21,10 +21,6 @@ public class PositionDriveCommand extends CommandBase {
     private double m_translationYSupplier;
     private double m_rotationSupplier;
 
-    private double m_deccelDistanceX;
-    private double m_deccelDistanceY;
-    private double m_deccelTheta;
-
     private PIDController m_pidX;
     private PIDController m_pidY;
     private PIDController m_pidTheta;
@@ -32,13 +28,12 @@ public class PositionDriveCommand extends CommandBase {
     private Translation2d m_initialPosition;
     private Rotation2d m_initialAngle;
 
-    private boolean m_isFinishedX;
-    private boolean m_isFinishedY;
-    private boolean m_isFinishedTheta;
-
     private double m_outputX;
     private double m_outputY;
     private double m_outputTheta;
+
+    private long m_recordedTime;
+    private boolean m_isTimeRecorded;
 
     /**
     * Command to drive the robot autonomously.
@@ -64,6 +59,8 @@ public class PositionDriveCommand extends CommandBase {
         m_translationalVelocity = translationalVelocity;
         m_rotationalVelocity = rotationalVelocity;
 
+        m_isTimeRecorded = false;
+
         addRequirements(m_drivetrainSubsystem);
     }
 
@@ -82,43 +79,28 @@ public class PositionDriveCommand extends CommandBase {
         m_translationYSupplier = (distanceY / Math.hypot(distanceX, distanceY)) * m_translationalVelocity;
         m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_theta - m_initialAngle.getRadians());
 
-        m_deccelDistanceX = 2.0;
-        m_deccelDistanceY = 2.0;
-        m_deccelTheta = Math.toRadians(90);
+        // Creates velocity component PIDs
+        m_pidX = new PIDController(2.0, 0.01, 0.2);
+        m_pidY = new PIDController(2.0, 0.01, 0.2);
+        m_pidTheta = new PIDController(2.5, 0.2, 0.01);
 
-        // Creates velocity component PIDs based on decceleration distances
-        m_pidX = new PIDController(-m_translationXSupplier / m_deccelDistanceX, 0, 0);
-        m_pidY = new PIDController(-m_translationYSupplier / m_deccelDistanceY, 0, 0);
-        m_pidTheta = new PIDController(-m_rotationSupplier / m_deccelTheta, 0, 0);
-
-        m_isFinishedX = false;
-        m_isFinishedY = false;
-        m_isFinishedTheta = false;
+        m_pidX.setTolerance(0.05);
+        m_pidY.setTolerance(0.05);
+        m_pidTheta.setTolerance(0.05);
     }
     
     @Override
     public void execute() {
-        // Calculates position component errors
-        double errorX = Math.abs(m_drivetrainSubsystem.getPosition().getX() - m_x);
-        double errorY = Math.abs(m_drivetrainSubsystem.getPosition().getY() - m_y);
-        double errorTheta = Math.abs(m_drivetrainSubsystem.getAngle().getRadians() - m_theta);
+        if (!m_isTimeRecorded) {
+            m_recordedTime = System.currentTimeMillis();
+            m_isTimeRecorded = true;
+        }
 
-        // Determines ramping motor outputs and conditions for component completion
-        if (!m_isFinishedX) { m_outputX = m_pidX.calculate(Math.min(errorX, m_deccelDistanceX), -0.15); }
-        if (Math.abs(m_pidX.getPositionError()) < Math.abs(m_pidX.getSetpoint()) + 0.03) { 
-            m_outputX = 0; 
-            m_isFinishedX = true; 
-        }
-        if (!m_isFinishedY) { m_outputY = m_pidY.calculate(Math.min(errorY, m_deccelDistanceY), -0.15); }
-        if (Math.abs(m_pidY.getPositionError()) < Math.abs(m_pidY.getSetpoint()) + 0.03) { 
-            m_outputY = 0; 
-            m_isFinishedY = true; 
-        }
-        if (!m_isFinishedTheta) { m_outputTheta = m_pidTheta.calculate(Math.min(errorTheta, m_deccelTheta), -Math.toRadians(6)); }
-        if (Math.abs(m_pidTheta.getPositionError()) < Math.abs(m_pidTheta.getSetpoint()) + Math.toRadians(2)) { 
-            m_outputTheta = 0; 
-            m_isFinishedTheta = true; 
-        }
+        System.out.println(m_recordedTime);
+
+        m_outputX = Math.min(m_pidX.calculate(m_drivetrainSubsystem.getPosition().getX(), m_x), m_translationXSupplier);
+        m_outputY = Math.min(m_pidY.calculate(m_drivetrainSubsystem.getPosition().getY(), m_y), m_translationYSupplier);
+        m_outputTheta = Math.min(m_pidTheta.calculate(m_drivetrainSubsystem.getAngle().getRadians(), m_theta), m_rotationSupplier);
 
         m_drivetrainSubsystem.drive(
                 m_outputX,
@@ -129,7 +111,7 @@ public class PositionDriveCommand extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() { return (m_outputX == 0) && (m_outputY == 0) && (m_outputTheta == 0); }
+    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + 5000); }
 
     @Override
     public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }

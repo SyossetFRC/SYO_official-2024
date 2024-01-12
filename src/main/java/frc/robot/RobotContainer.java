@@ -7,15 +7,12 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.IdleDriveCommand;
-import frc.robot.Commands.LimelightAlignmentDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
-import frc.robot.Subsystems.LimelightSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-    private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
     
     private final Joystick m_driveController = new Joystick(0);
     private double m_powerLimit = 1.0;
@@ -35,11 +32,11 @@ public class RobotContainer {
     }
 
     // Currently used for testing kinematics
+    // Turning requires an 'x' parameter of 0.001
     public SequentialCommandGroup autonomousCommands() {
       m_powerLimit = 1.0;
       return new SequentialCommandGroup(
-          new PositionDriveCommand(m_drivetrainSubsystem, 4.0, 1.0, Math.toRadians(90), 3.50, Math.toRadians(120)),
-          new PositionDriveCommand(m_drivetrainSubsystem, 3.0, 0.0, Math.toRadians(45), 3.50, Math.toRadians(120))
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, Math.toRadians(45), 3.66, 10.35)
       );
     }
 
@@ -60,16 +57,6 @@ public class RobotContainer {
       // Driver D-pad down
       Button m_decrementPowerLimit = new Button(() -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
       m_decrementPowerLimit.whenPressed(() -> changePowerLimit(-0.2));
-
-      // Driver button B
-      Button m_translationalLimelightTracking = new Button(() -> m_driveController.getRawButton(2));
-      m_translationalLimelightTracking.whenPressed(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "translational"));
-      m_translationalLimelightTracking.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
-
-      // Driver button Y
-      Button m_rotationalLimelightTracking = new Button(() -> m_driveController.getRawButton(4));
-      m_rotationalLimelightTracking.whenPressed(new LimelightAlignmentDriveCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational"));
-      m_rotationalLimelightTracking.whenReleased(() -> m_drivetrainSubsystem.getCurrentCommand().cancel());
     }
 
     public void setPose(double xPos, double yPos, double theta) { m_drivetrainSubsystem.setPose(xPos, yPos, theta); }
