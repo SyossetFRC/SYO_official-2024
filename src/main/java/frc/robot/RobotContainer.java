@@ -76,7 +76,7 @@ public class RobotContainer {
   public Command autonomousCommands() {
     m_powerLimit = 1.0;
 
-    autoChooser = AutoBuilder.buildAutoChooser("Default"); // Default path
+    autoChooser = AutoBuilder.buildAutoChooser("DefaultAuton"); // Default path
     SmartDashboard.putData("Auto Chooser", autoChooser); // Elastic path chooser
     return autoChooser.getSelected();
 

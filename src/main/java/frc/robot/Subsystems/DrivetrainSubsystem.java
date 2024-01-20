@@ -92,8 +92,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
       () -> new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot),
       (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond, chassisSpeed.omegaRadiansPerSecond, false),
       new HolonomicPathFollowerConfig(
-        new PIDConstants(1.75, 0.0, 0.0),
-        new PIDConstants(1.75, 0.0, 0.0),
+        new PIDConstants(5.0, 0.0, 0.0), // Translational
+        new PIDConstants(6.33, 0.0, 0.0), // Rotational
         kMaxSpeed,
         kTrackWidth,
         new ReplanningConfig()
