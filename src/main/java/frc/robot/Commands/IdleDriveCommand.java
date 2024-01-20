@@ -1,11 +1,11 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
 /** A command the idles the robot drivetrain */
-public class IdleDriveCommand extends CommandBase {
+public class IdleDriveCommand extends Command {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
     private double m_waitTime;

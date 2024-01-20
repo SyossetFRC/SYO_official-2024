@@ -1,12 +1,12 @@
 package frc.robot.Commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
 import java.util.function.DoubleSupplier;
 
 /** A teleoperated command that allows joystick input to control the drivetrain. */
-public class DefaultDriveCommand extends CommandBase {
+public class DefaultDriveCommand extends Command {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
     private final DoubleSupplier m_translationXSupplier;
