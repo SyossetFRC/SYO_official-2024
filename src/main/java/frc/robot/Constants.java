@@ -28,4 +28,12 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 15; 
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 52; 
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = Math.toRadians(-2.8); 
+
+    public static final int LEFT_INTAKE_MOTOR = 10;
+    public static final int RIGHT_INTAKE_MOTOR = 11;
+    public static final int LEFT_PIVOT_MOTOR = 12;
+    public static final int RIGHT_PIVOT_MOTOR = 13;
+
+
+
 }

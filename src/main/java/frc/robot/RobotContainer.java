@@ -18,15 +18,19 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
+import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
+import frc.robot.Subsystems.IntakeSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
+  private final Joystick m_operatorController = new Joystick(1);
   private double m_powerLimit = 1.0;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -45,6 +49,12 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxSpeed,
         () -> (-MathUtil.applyDeadband(m_driveController.getRawAxis(4), 0.05) / 2.0) * m_powerLimit
             * DrivetrainSubsystem.kMaxAngularSpeed));
+
+    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+        m_intakeSubsystem,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
+        () -> m_operatorController.getRawButton(2)
+        ));
 
     field = new Field2d();
     SmartDashboard.putData("Field", field);
@@ -82,7 +92,8 @@ public class RobotContainer {
 
     // return new PathPlannerAuto("Hello"); // Debugging return statement
 
-    // return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, Math.toRadians(45), 3.66, 10.35);
+    // return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0,
+    // Math.toRadians(45), 3.66, 10.35);
   }
 
   private void configureButtons() {
@@ -98,7 +109,7 @@ public class RobotContainer {
     // Driver button B
     Trigger m_pathfinding = new Trigger(() -> m_driveController.getRawButton(2));
     m_pathfinding.onTrue(getPathToMiddle());
-    
+
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315
         || (m_driveController.getPOV() <= 45 && m_driveController.getPOV() >= 0)));
