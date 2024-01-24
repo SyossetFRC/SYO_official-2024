@@ -33,8 +33,13 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void intake() {
-        m_leftIntakeMotor.set(0.5);
+        m_leftIntakeMotor.set(-0.5);
         m_rightIntakeMotor.set(-0.5);
+    }
+
+    public void outtake() {
+        m_leftIntakeMotor.set(0.5);
+        m_rightIntakeMotor.set(0.5);
     }
 
     public void stop() {
@@ -45,6 +50,6 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_leftPivotMotor.set(m_pivotSpeed);
-        m_rightPivotMotor.set(-m_pivotSpeed);
+        m_rightPivotMotor.set(m_pivotSpeed);
     }
 }

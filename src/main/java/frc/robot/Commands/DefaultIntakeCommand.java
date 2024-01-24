@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.IntakeSubsystem;
 
 public class DefaultIntakeCommand extends Command{
-    private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+    private IntakeSubsystem m_intakeSubsystem;
 
     private DoubleSupplier m_pivotVelocity;
     private BooleanSupplier m_intakeNote;

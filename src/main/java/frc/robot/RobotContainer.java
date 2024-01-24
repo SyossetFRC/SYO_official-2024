@@ -52,7 +52,7 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem,
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * m_powerLimit,
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.01) * m_powerLimit,
         () -> m_operatorController.getRawButton(2)
         ));
 
@@ -119,6 +119,11 @@ public class RobotContainer {
     Trigger m_decrementPowerLimit = new Trigger(
         () -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
+
+    // Trigger m_intakeNote = new Trigger(() -> m_operatorController.getRawButton(2));
+    // m_intakeNote.onTrue(new DefaultIntakeCommand(m_intakeSubsystem));
+    // m_brake.whileFalse(new InstantCommand(() -> m_intakeSubsystem.getCurrentCommand().cancel()));
+
   }
 
   public Command getPathToMiddle() {
