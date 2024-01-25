@@ -101,9 +101,9 @@ public class PositionDriveCommand extends Command {
         m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_theta - m_initialAngle.getRadians());
 
         // Creates velocity component PIDs
-        m_pidX = new PIDController(2.0, 0.01, 0.2);
-        m_pidY = new PIDController(2.0, 0.01, 0.2);
-        m_pidTheta = new PIDController(2.5, 0.2, 0.01);
+        m_pidX = new PIDController(2.0, 0.1, 0.1);
+        m_pidY = new PIDController(2.0, 0.1, 0.1);
+        m_pidTheta = new PIDController(2.5, 0.2, 0.1);
 
         m_pidX.setIZone(1.0);
         m_pidY.setIZone(1.0);

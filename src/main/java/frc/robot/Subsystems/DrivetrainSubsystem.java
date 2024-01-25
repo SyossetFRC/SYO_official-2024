@@ -33,7 +33,7 @@ import frc.robot.Constants;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
-  private static final double kTrackWidth = 0.51; // meters
+  private static final double kTrackWidth = 0.59; // meters
 
   public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // radians per second
@@ -210,7 +210,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private class SwerveModule {
     private static final double kWheelRadius = 0.050165; // meters
-    private static final double kGearRatio = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
+    private static final double kGearRatio = (16.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
 
     private final CANSparkMax m_driveMotor;
     private final CANSparkMax m_turningMotor;
@@ -219,9 +219,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final CANCoder m_turningEncoder;
     private final double m_moduleOffset;
 
-    private final PIDController m_drivePIDController = new PIDController(0.1, 0, 0);
+    private final PIDController m_drivePIDController = new PIDController(0.15, 0, 0);
     private final PIDController m_turningPIDController = new PIDController(3.0, 0, 0.1);
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 0.12233);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 0.10704);
 
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
