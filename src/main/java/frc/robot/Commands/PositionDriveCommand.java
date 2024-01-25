@@ -70,6 +70,21 @@ public class PositionDriveCommand extends Command {
         addRequirements(m_drivetrainSubsystem);
     }
 
+    /**
+    * Command to drive the robot autonomously. Theoretical velocity is at a maximum.
+    *
+    * @param drivetrainSubsystem The swerve drive subsystem.
+    * @param x The x coordinate to move to (m).
+    * @param y The y coordinate to move to (m).
+    * @param theta The angle to rotate to (rad).
+    */
+    public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
+                                double x,
+                                double y,
+                                double theta) {
+        this(drivetrainSubsystem, x, y, theta, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
     @Override
     public void initialize() {
         // Records initial Pose
@@ -90,9 +105,13 @@ public class PositionDriveCommand extends Command {
         m_pidY = new PIDController(2.0, 0.01, 0.2);
         m_pidTheta = new PIDController(2.5, 0.2, 0.01);
 
-        m_pidX.setTolerance(0.05);
-        m_pidY.setTolerance(0.05);
-        m_pidTheta.setTolerance(0.05);
+        m_pidX.setIZone(1.0);
+        m_pidY.setIZone(1.0);
+        m_pidTheta.setIZone(Math.PI / 2);
+
+        m_pidX.setTolerance(0.03);
+        m_pidY.setTolerance(0.03);
+        m_pidTheta.setTolerance(0.03);
     }
     
     @Override

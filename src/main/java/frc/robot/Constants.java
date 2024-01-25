@@ -33,7 +33,4 @@ public final class Constants {
     public static final int RIGHT_INTAKE_MOTOR = 21;
     public static final int LEFT_PIVOT_MOTOR = 22;
     public static final int RIGHT_PIVOT_MOTOR = 23;
-
-
-
 }

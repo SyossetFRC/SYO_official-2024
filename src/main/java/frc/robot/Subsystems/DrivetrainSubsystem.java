@@ -7,10 +7,6 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -27,7 +23,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -85,28 +80,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
     m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
-
-    AutoBuilder.configureHolonomic(
-      () -> new Pose2d(this.getPosition(), this.getAngle()),
-      (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getDegrees()),
-      () -> new ChassisSpeeds(m_xSpeed, m_ySpeed, m_rot),
-      (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond, chassisSpeed.omegaRadiansPerSecond, false),
-      new HolonomicPathFollowerConfig(
-        new PIDConstants(5.0, 0.0, 0.0), // Translational
-        new PIDConstants(6.33, 0.0, 0.0), // Rotational
-        kMaxSpeed,
-        kTrackWidth,
-        new ReplanningConfig()
-      ),
-      () -> {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Blue;
-        }
-        return false;
-      },
-      this
-    );
 
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
@@ -237,7 +210,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private class SwerveModule {
     private static final double kWheelRadius = 0.050165; // meters
-    private static final double kGearRatio = 0.12280701754;
+    private static final double kGearRatio = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
 
     private final CANSparkMax m_driveMotor;
     private final CANSparkMax m_turningMotor;
@@ -248,7 +221,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final PIDController m_drivePIDController = new PIDController(0.1, 0, 0);
     private final PIDController m_turningPIDController = new PIDController(3.0, 0, 0.1);
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.18868, 0.12825);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 0.12233);
 
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
