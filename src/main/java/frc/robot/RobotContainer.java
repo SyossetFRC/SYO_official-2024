@@ -8,15 +8,19 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
+import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
+import frc.robot.Subsystems.IntakeSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
+  private final Joystick m_operatorController = new Joystick(1);
   private double m_powerLimit = 1.0;
 
   /**
@@ -34,12 +38,19 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxAngularSpeed
     ));
 
+    m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
+        m_intakeSubsystem, 
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * IntakeSubsystem.kIntakeMaxRate, 
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed
+    ));
+
     configureButtons();
   }
 
   // Currently used for testing kinematics
   public Command autonomousCommands() {
     m_powerLimit = 1.0;
+    m_intakeSubsystem.reset();
     return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 1.0, Math.toRadians(45));
   }
 

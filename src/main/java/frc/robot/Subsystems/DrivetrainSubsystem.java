@@ -106,7 +106,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   /**
-   * Drives the robot using joystick info.
+   * Drives the robot.
    *
    * @param xSpeed The speed of the robot in the x direction (m/s).
    * @param ySpeed The speed of the robot in the y direction (m/s).
