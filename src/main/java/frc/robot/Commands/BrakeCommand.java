@@ -23,7 +23,7 @@ public class BrakeCommand extends Command {
         m_drivetrainSubsystem.drive(
                 0,
                 0,
-                0.0001,
+                0.001,
                 true
         );
     }

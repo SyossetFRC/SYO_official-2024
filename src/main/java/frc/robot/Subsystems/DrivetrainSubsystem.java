@@ -4,11 +4,10 @@
 
 package frc.robot.Subsystems;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 
@@ -33,7 +32,7 @@ import frc.robot.Constants;
 
 /** Represents a swerve drive style drivetrain. */
 public class DrivetrainSubsystem extends SubsystemBase {
-  private static final double kTrackWidth = 0.59; // meters
+  private static final double kTrackWidth = 0.60; // meters
 
   public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // radians per second
@@ -216,12 +215,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final CANSparkMax m_turningMotor;
 
     private final RelativeEncoder m_driveEncoder;
-    private final CANCoder m_turningEncoder;
+    private final CANcoder m_turningEncoder;
     private final double m_moduleOffset;
 
-    private final PIDController m_drivePIDController = new PIDController(0.15, 0, 0);
+    private final PIDController m_drivePIDController = new PIDController(1.5, 0, 0);
     private final PIDController m_turningPIDController = new PIDController(3.0, 0, 0.1);
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 0.10704);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.12320, 2.13383);
 
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
@@ -239,12 +238,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_turningMotor.setIdleMode(IdleMode.kBrake);
 
       m_driveEncoder = m_driveMotor.getEncoder();
-      m_turningEncoder = new CANCoder(turningEncoderChannel);
+      m_turningEncoder = new CANcoder(turningEncoderChannel);
 
       m_driveEncoder.setPositionConversionFactor(kGearRatio * kWheelRadius * 2 * Math.PI); // meters
       m_driveEncoder.setVelocityConversionFactor(kGearRatio * kWheelRadius * 2 * Math.PI / 60.0); // meters per second
 
-      m_turningEncoder.configFeedbackCoefficient(0.0015339807878818, "rad", SensorTimeBase.PerSecond);
       m_moduleOffset = moduleOffset;
 
       m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
@@ -256,7 +254,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-      return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(m_turningEncoder.getAbsolutePosition() - m_moduleOffset));
+      return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(getTurningEncoderAbsolutePosition() - m_moduleOffset));
     }
 
     /**
@@ -265,7 +263,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current distance of the drive encoder in meters as a SwerveModulePosition.
      */
     public SwerveModulePosition getDrivePosition() {
-      return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_turningEncoder.getAbsolutePosition() - m_moduleOffset));
+      return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(getTurningEncoderAbsolutePosition() - m_moduleOffset));
+    }
+
+    /**
+     * Returns the current absolute angle of the turning encoder.
+     *
+     * @return Angle from -PI to PI (rad).
+     */
+    private double getTurningEncoderAbsolutePosition() {
+      double theta = m_turningEncoder.getAbsolutePosition().getValueAsDouble();
+      if (theta > 0.5) {
+        theta -= 1.0;
+      }
+      return (theta * 2 * Math.PI);
     }
 
     /**
@@ -275,20 +286,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
       // Optimizes the reference state to avoid spinning further than 90 degrees.
-      SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(m_turningEncoder.getAbsolutePosition() - m_moduleOffset));
+      SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(getTurningEncoderAbsolutePosition() - m_moduleOffset));
 
       // Calculates the turning motor output from the turning PID controller.
-      final double turnOutput = m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition() - m_moduleOffset, state.angle.getRadians());
+      final double turnOutput = m_turningPIDController.calculate(getTurningEncoderAbsolutePosition() - m_moduleOffset, state.angle.getRadians());
       m_turningMotor.setVoltage(turnOutput);
 
       // Updates velocity based on turn error.
       state.speedMetersPerSecond *= Math.cos(m_turningPIDController.getPositionError());
 
       // Calculates the drive output from the drive PID controller and feedforward controller.
-      final double speedRadiansPerSecond = state.speedMetersPerSecond / kWheelRadius;
-      final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity() / kWheelRadius, speedRadiansPerSecond);
-      final double driveFeedForward = m_driveFeedforward.calculate(speedRadiansPerSecond);
-      m_driveMotor.setVoltage(Math.abs(speedRadiansPerSecond) > 0.01 ? (driveOutput + driveFeedForward) : 0);
+      final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
+      final double driveFeedForward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
+      m_driveMotor.setVoltage(Math.abs(state.speedMetersPerSecond) > 0.001 ? (driveOutput + driveFeedForward) : 0);
     }
 
     /** Changes the drive motor idle mode.
