@@ -21,7 +21,7 @@ public class BrakeCommand extends Command {
     @Override
     public void initialize() {
         m_drivetrainSubsystem.drive(
-                0,
+                0.001,
                 0,
                 0.001,
                 true

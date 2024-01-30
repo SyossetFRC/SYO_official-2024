@@ -121,9 +121,9 @@ public class PositionDriveCommand extends Command {
             m_isTimeRecorded = true;
         }
 
-        m_outputX = Math.min(m_pidX.calculate(m_drivetrainSubsystem.getPosition().getX(), m_x), m_translationXSupplier);
-        m_outputY = Math.min(m_pidY.calculate(m_drivetrainSubsystem.getPosition().getY(), m_y), m_translationYSupplier);
-        m_outputTheta = Math.min(m_pidTheta.calculate(m_drivetrainSubsystem.getAngle().getRadians(), m_theta), m_rotationSupplier);
+        m_outputX = clip(m_pidX.calculate(m_drivetrainSubsystem.getPosition().getX(), m_x), m_translationXSupplier);
+        m_outputY = clip(m_pidY.calculate(m_drivetrainSubsystem.getPosition().getY(), m_y), m_translationYSupplier);
+        m_outputTheta = clip(m_pidTheta.calculate(m_drivetrainSubsystem.getAngle().getRadians(), m_theta), m_rotationSupplier);
 
         m_drivetrainSubsystem.drive(
                 m_outputX,
@@ -138,4 +138,17 @@ public class PositionDriveCommand extends Command {
 
     @Override
     public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
+
+    /**
+     * Clips a certain value if it exceeds a certain range.
+     * 
+     * @param value Value to clip.
+     * @param range Defines the range [-range, range].
+     * @return Returns the value if not clipped and either -range or range if clipped.
+     */
+    private double clip(double value, double range) {
+        value = Math.min(value, Math.abs(range));
+        value = Math.max(value, -Math.abs(range));
+        return value;
+    }
 }
