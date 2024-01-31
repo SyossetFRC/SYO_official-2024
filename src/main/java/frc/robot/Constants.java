@@ -9,25 +9,25 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 9; 
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2; 
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 50; 
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = Math.toRadians(0); 
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 3;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 4;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 53;
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = Math.toRadians(0); // Input between -180 and 180 degrees.
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3; 
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4; 
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 53; 
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = Math.toRadians(0); 
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 7;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 8;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 52;
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = Math.toRadians(0); // Input between -180 and 180 degrees.
        
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5; 
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6; 
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 51; 
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = Math.toRadians(0); 
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 9;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 2;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 50;
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = Math.toRadians(0); // Input between -180 and 180 degrees.
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7; 
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8; 
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 52; 
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = Math.toRadians(0); 
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 5;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 6;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 51;
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = Math.toRadians(0); // Input between -180 and 180 degrees.
 
     public static final int INTAKE_MOTOR = 0;
     public static final int ROTATE_MOTOR = 0;
