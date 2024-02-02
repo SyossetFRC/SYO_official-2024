@@ -69,7 +69,7 @@ public class RobotContainer {
     // Driver button X
     Trigger m_brake = new Trigger(() -> m_driveController.getRawButton(3));
     m_brake.onTrue(new BrakeCommand(m_drivetrainSubsystem));
-    m_brake.whileFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+    m_brake.onFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315
