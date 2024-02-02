@@ -79,6 +79,7 @@ public class RobotContainer {
 
   public void setPose(double xPos, double yPos, double theta) {
     m_drivetrainSubsystem.setPose(xPos, yPos, theta);
+    m_drivetrainSubsystem.alignTurningEncoders();
   }
 
   public void setIdleMode(String idleMode) {

@@ -82,7 +82,7 @@ public class PositionDriveCommand extends Command {
                                 double x,
                                 double y,
                                 double theta) {
-        this(drivetrainSubsystem, x, y, theta, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+        this(drivetrainSubsystem, x, y, theta, drivetrainSubsystem.kMaxSpeed, drivetrainSubsystem.kMaxAngularSpeed);
     }
 
     @Override
