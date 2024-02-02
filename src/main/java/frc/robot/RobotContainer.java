@@ -53,7 +53,12 @@ public class RobotContainer {
   public Command autonomousCommands() {
     m_powerLimit = 1.0;
     // m_intakeSubsystem.reset();
-    return new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 1.0, Math.toRadians(45));
+    return new SequentialCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5, Math.PI),
+      new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5, Math.PI),
+      new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI)
+    );
   }
 
   private void configureButtons() {

@@ -82,7 +82,7 @@ public class PositionDriveCommand extends Command {
                                 double x,
                                 double y,
                                 double theta) {
-        this(drivetrainSubsystem, x, y, theta, drivetrainSubsystem.kMaxSpeed, drivetrainSubsystem.kMaxAngularSpeed);
+        this(drivetrainSubsystem, x, y, theta, DrivetrainSubsystem.kMaxSpeed, DrivetrainSubsystem.kMaxAngularSpeed);
     }
 
     @Override
@@ -109,9 +109,9 @@ public class PositionDriveCommand extends Command {
         m_pidY.setIZone(1.0);
         m_pidTheta.setIZone(Math.PI / 2);
 
-        m_pidX.setTolerance(0.03);
-        m_pidY.setTolerance(0.03);
-        m_pidTheta.setTolerance(0.03);
+        m_pidX.setTolerance(0.05);
+        m_pidY.setTolerance(0.05);
+        m_pidTheta.setTolerance(0.075);
     }
     
     @Override
@@ -134,7 +134,7 @@ public class PositionDriveCommand extends Command {
     }
 
     @Override
-    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + 5000); }
+    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + 2500); }
 
     @Override
     public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }

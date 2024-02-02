@@ -297,7 +297,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_turningMotor.set(turnOutput);
 
       // Updates velocity based on turn error.
-      state.speedMetersPerSecond *= Math.cos(m_turningMotorEncoder.getPosition() - getState().angle.getRadians());
+      state.speedMetersPerSecond *= Math.cos(getState().angle.getRadians() - state.angle.getRadians());
 
       // Calculates the drive output from the drive PID controller and feedforward controller.
       final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
