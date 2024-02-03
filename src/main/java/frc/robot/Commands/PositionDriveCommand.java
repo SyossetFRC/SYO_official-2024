@@ -32,6 +32,7 @@ public class PositionDriveCommand extends Command {
     private double m_outputY;
     private double m_outputTheta;
 
+    private long m_maxTime;
     private long m_recordedTime;
     private boolean m_isTimeRecorded;
 
@@ -44,13 +45,15 @@ public class PositionDriveCommand extends Command {
     * @param theta The angle to rotate to (rad).
     * @param translationalVelocity The resultant theoretical translational velocity (m/s).
     * @param rotationalVelocity The theoretical rotational velocity (rad/s).
+    * @param maxTime The maximum time allowed to elapse (ms).
     */
     public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
                                 double x,
                                 double y,
                                 double theta,
                                 double translationalVelocity,
-                                double rotationalVelocity) {
+                                double rotationalVelocity,
+                                long maxTime) {
         m_drivetrainSubsystem = drivetrainSubsystem;
         
         if (x == 0 && y == 0) {
@@ -64,6 +67,8 @@ public class PositionDriveCommand extends Command {
 
         m_translationalVelocity = translationalVelocity;
         m_rotationalVelocity = rotationalVelocity;
+
+        m_maxTime = maxTime;
 
         m_isTimeRecorded = false;
 
@@ -82,7 +87,7 @@ public class PositionDriveCommand extends Command {
                                 double x,
                                 double y,
                                 double theta) {
-        this(drivetrainSubsystem, x, y, theta, DrivetrainSubsystem.kMaxSpeed, DrivetrainSubsystem.kMaxAngularSpeed);
+        this(drivetrainSubsystem, x, y, theta, DrivetrainSubsystem.kMaxSpeed, DrivetrainSubsystem.kMaxAngularSpeed, (long) Double.POSITIVE_INFINITY);
     }
 
     @Override
@@ -103,7 +108,7 @@ public class PositionDriveCommand extends Command {
         // Creates velocity component PIDs
         m_pidX = new PIDController(2.0, 0.1, 0.1);
         m_pidY = new PIDController(2.0, 0.1, 0.1);
-        m_pidTheta = new PIDController(2.5, 0.2, 0.1);
+        m_pidTheta = new PIDController(2.5, 0.3, 0.1);
 
         m_pidX.setIZone(1.0);
         m_pidY.setIZone(1.0);
@@ -111,7 +116,7 @@ public class PositionDriveCommand extends Command {
 
         m_pidX.setTolerance(0.05);
         m_pidY.setTolerance(0.05);
-        m_pidTheta.setTolerance(0.075);
+        m_pidTheta.setTolerance(0.05);
     }
     
     @Override
@@ -134,7 +139,7 @@ public class PositionDriveCommand extends Command {
     }
 
     @Override
-    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + 2500); }
+    public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + m_maxTime); }
 
     @Override
     public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
