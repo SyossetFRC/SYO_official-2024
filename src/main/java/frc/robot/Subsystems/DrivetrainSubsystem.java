@@ -263,6 +263,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
       m_moduleOffset = moduleOffset;
 
+      m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+
       alignTurningEncoders();
     }
 

@@ -108,7 +108,7 @@ public class PositionDriveCommand extends Command {
         // Creates velocity component PIDs
         m_pidX = new PIDController(2.0, 0.1, 0.1);
         m_pidY = new PIDController(2.0, 0.1, 0.1);
-        m_pidTheta = new PIDController(2.5, 0.3, 0.1);
+        m_pidTheta = new PIDController(2.5, 0.2, 0.1);
 
         m_pidX.setIZone(1.0);
         m_pidY.setIZone(1.0);
@@ -117,6 +117,8 @@ public class PositionDriveCommand extends Command {
         m_pidX.setTolerance(0.05);
         m_pidY.setTolerance(0.05);
         m_pidTheta.setTolerance(0.05);
+
+        m_pidTheta.enableContinuousInput(-Math.PI, Math.PI);
     }
     
     @Override
