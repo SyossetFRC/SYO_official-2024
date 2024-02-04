@@ -87,10 +87,6 @@ public class RobotContainer {
     m_drivetrainSubsystem.alignTurningEncoders();
   }
 
-  public void setIdleMode(String idleMode) {
-    m_drivetrainSubsystem.setIdleMode(idleMode);
-  }
-
   private void changePowerLimit(double delta) {
     if ((m_powerLimit <= 1.0 - Math.abs(delta) || delta <= 0) && (m_powerLimit >= Math.abs(delta) || delta >= 0)) {
       m_powerLimit += delta;

@@ -142,17 +142,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_odometry.resetPosition(m_navx.getRotation2d(), getModulePositions(), new Pose2d(xPos, yPos, new Rotation2d(theta)));
   }
 
-  /** Changes the drive motor idle modes.
-   * 
-   * @param idleMode The idle mode to set the drive motors to: "brake" -> kBrake and "coast" -> kCoast.
-   */
-  public void setIdleMode(String idleMode) {
-    m_frontLeft.setIdleMode(idleMode);
-    m_frontRight.setIdleMode(idleMode);
-    m_backLeft.setIdleMode(idleMode);
-    m_backRight.setIdleMode(idleMode);
-  }
-
   /** 
    * Sets all relative turning encoders used in PID to all absolute turning encoder position. Do not call periodically.
    */
@@ -305,19 +294,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
       final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
       final double driveFeedForward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
       m_driveMotor.setVoltage(Math.abs(state.speedMetersPerSecond) > 0.001 ? (driveFeedForward + driveOutput) : 0);
-    }
-
-    /** Changes the drive motor idle mode.
-     * 
-     * @param idleMode The idle mode to set the drive motor to: "brake" -> kBrake and "coast" -> kCoast.
-     */
-    public void setIdleMode(String idleMode) {
-      if (idleMode.equals("brake")) {
-        m_driveMotor.setIdleMode(IdleMode.kBrake);
-      }
-      if (idleMode.equals("coast")) {
-        m_driveMotor.setIdleMode(IdleMode.kCoast);
-      }
     }
 
     /**
