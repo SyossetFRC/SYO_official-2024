@@ -32,7 +32,7 @@ public class PositionDriveCommand extends Command {
     private double m_outputY;
     private double m_outputTheta;
 
-    private long m_maxTime;
+    private final long m_maxTime;
     private long m_recordedTime;
     private boolean m_isTimeRecorded;
 

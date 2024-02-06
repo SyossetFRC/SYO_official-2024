@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -16,10 +17,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private static final double kIntakeGearRatio = 0.05;
+    private static final double kIntakeGearRatio = 1;
     public static final double kIntakeMaxRate = 5676.0 * kIntakeGearRatio; // rpm
 
-    private static final double kRotateGearRatio = 0.05;
+    private static final double kRotateGearRatio = (1.0 / 20.0);
     public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
     private final CANSparkMax m_intakeMotor;
@@ -28,8 +29,12 @@ public class IntakeSubsystem extends SubsystemBase {
     private final RelativeEncoder m_intakeEncoder;
     private final RelativeEncoder m_rotateEncoder;
 
-    private final PIDController m_intakePIDController = new PIDController(0.1, 0, 0);
-    private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.05132);
+    private final DigitalInput m_beamBreakSensor;
+    private final DigitalInput m_lowLimitSwitch;
+    private final DigitalInput m_highLimitSwitch;
+
+    private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00211);
+    private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 0.40377);
 
     private final GenericEntry m_intakeRateEntry;
     private final GenericEntry m_rotateAngleEntry;
@@ -45,6 +50,9 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeMotor.setIdleMode(IdleMode.kBrake);
         m_rotateMotor.setIdleMode(IdleMode.kBrake);
 
+        m_intakeMotor.setInverted(false);
+        m_rotateMotor.setInverted(false);
+
         m_intakeEncoder = m_intakeMotor.getEncoder();
         m_intakeEncoder.setPositionConversionFactor(kIntakeGearRatio);
         m_intakeEncoder.setVelocityConversionFactor(kIntakeGearRatio);
@@ -52,6 +60,10 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateEncoder = m_rotateMotor.getEncoder();
         m_rotateEncoder.setPositionConversionFactor(kRotateGearRatio * 2.0 * Math.PI);
         m_rotateEncoder.setVelocityConversionFactor(kRotateGearRatio * 2.0 * Math.PI / 60);
+
+        m_beamBreakSensor = new DigitalInput(Constants.BEAM_BREAK_SENSOR);
+        m_lowLimitSwitch = new DigitalInput(Constants.LOW_LIMIT_SWITCH);
+        m_highLimitSwitch = new DigitalInput(Constants.HIGH_LIMIT_SWITCH);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 0);
@@ -97,8 +109,35 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_intakeMotor.setVoltage(m_intakePIDController.calculate(m_intakeEncoder.getVelocity(), m_intakeRate) + m_intakeFeedforward.calculate(m_intakeRate));
-        m_rotateMotor.set(m_angularSpeed / kRotateMaxAngularSpeed);
+        if (canIntake()) {
+            m_intakeMotor.setVoltage(m_intakeFeedforward.calculate(m_intakeRate));
+        } else {
+            m_intakeMotor.setVoltage(0);
+        }
+        if (canRotate()) {
+            m_rotateMotor.setVoltage(m_rotateFeedforward.calculate(m_angularSpeed));
+        } else {
+            m_rotateMotor.setVoltage(0);
+        }
         updateShuffleboard();
+    }
+
+    /** Returns whether the intake can be activated. */
+    public boolean canIntake() {
+        if (m_intakeRate < 0 && m_beamBreakSensor.get()) {
+            return false;
+        }
+        return true;
+    }
+
+    /** Returns whether the intake can rotate. */
+    public boolean canRotate() {
+        if (m_angularSpeed > 0 && !m_highLimitSwitch.get()) {
+            return false;
+        }
+        if (m_angularSpeed < 0 && !m_lowLimitSwitch.get()) {
+            return false;
+        }
+        return true;
     }
 }

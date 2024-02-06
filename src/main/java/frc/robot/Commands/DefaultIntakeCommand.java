@@ -5,7 +5,7 @@ import frc.robot.Subsystems.IntakeSubsystem;
 
 import java.util.function.DoubleSupplier;
 
-public class DefaultIntakeCommand extends Command{
+public class DefaultIntakeCommand extends Command {
     private final IntakeSubsystem m_intakeSubsystem;
 
     private final DoubleSupplier m_intakeRateSupplier;
