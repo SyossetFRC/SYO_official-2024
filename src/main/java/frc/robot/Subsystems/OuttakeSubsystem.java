@@ -5,10 +5,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -17,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class OuttakeSubsystem extends SubsystemBase {
-    private static final double kOuttakeGearRatio = 1;
+    private static final double kOuttakeGearRatio = (1.0 / 3.0);
     public static final double kOuttakeMaxRate = 5676.0 * kOuttakeGearRatio; // rpm
 
     private final CANSparkMax m_outtakeMotor1;
@@ -25,7 +23,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     private final RelativeEncoder m_outtakeEncoder;
 
-    private final SimpleMotorFeedforward m_outtakeFeedforward = new SimpleMotorFeedforward(0, 0.00211);
+    private final SimpleMotorFeedforward m_outtakeFeedforward = new SimpleMotorFeedforward(0, 0.00634);
 
     private final GenericEntry m_outtakeRateEntry;
 
@@ -39,7 +37,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         m_outtakeMotor2.setIdleMode(IdleMode.kCoast);
 
         m_outtakeMotor1.setInverted(false);
-        m_outtakeMotor2.follow(m_outtakeMotor1, true);
+        m_outtakeMotor2.follow(m_outtakeMotor1, false);
 
         m_outtakeEncoder = m_outtakeMotor1.getEncoder();
         m_outtakeEncoder.setPositionConversionFactor(kOuttakeGearRatio);

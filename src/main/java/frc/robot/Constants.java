@@ -29,12 +29,12 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 51;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -154.7 / 360.0; // Input between -180 and 180 degrees.
 
-    public static final int INTAKE_MOTOR = 0;
-    public static final int ROTATE_MOTOR = 0;
+    public static final int INTAKE_MOTOR = 24;
+    public static final int ROTATE_MOTOR = 41;
     public static final int BEAM_BREAK_SENSOR = 0;
-    public static final int LOW_LIMIT_SWITCH = 0;
-    public static final int HIGH_LIMIT_SWITCH = 0;
+    public static final int LOW_LIMIT_SWITCH = 1;
+    public static final int HIGH_LIMIT_SWITCH = 2;
 
-    public static final int OUTTAKE_MOTOR_1 = 0;
-    public static final int OUTTAKE_MOTOR_2 = 0;
+    public static final int OUTTAKE_MOTOR_1 = 60;
+    public static final int OUTTAKE_MOTOR_2 = 23;
 }

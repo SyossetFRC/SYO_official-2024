@@ -9,18 +9,21 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
+import frc.robot.Commands.DefaultOuttakeCommand;
 import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.OuttakeSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  // private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
-  // private final Joystick m_operatorController = new Joystick(1);
+  private final Joystick m_operatorController = new Joystick(1);
   private double m_powerLimit = 1.0;
 
   /**
@@ -38,13 +41,16 @@ public class RobotContainer {
             * DrivetrainSubsystem.kMaxAngularSpeed
     ));
 
-    /*
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * IntakeSubsystem.kIntakeMaxRate, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05) * IntakeSubsystem.kIntakeMaxRate * 0.25, 
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.25
     ));
-    */
+
+    m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
+        m_outtakeSubsystem, 
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate
+    ));
 
     configureButtons();
   }
@@ -52,7 +58,8 @@ public class RobotContainer {
   // Currently used for testing kinematics
   public Command autonomousCommands() {
     m_powerLimit = 1.0;
-    // m_intakeSubsystem.reset();
+    m_drivetrainSubsystem.alignTurningEncoders();
+    m_intakeSubsystem.reset();
     return new SequentialCommandGroup(
       new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5, Math.PI, 1500),
       new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI, 1500),
@@ -72,13 +79,11 @@ public class RobotContainer {
     m_brake.onFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
 
     // Driver D-pad up
-    Trigger m_incrementPowerLimit = new Trigger(() -> (m_driveController.getPOV() >= 315
-        || (m_driveController.getPOV() <= 45 && m_driveController.getPOV() >= 0)));
+    Trigger m_incrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == 1.0);
     m_incrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(0.2)));
 
     // Driver D-pad down
-    Trigger m_decrementPowerLimit = new Trigger(
-        () -> (m_driveController.getPOV() >= 135 && m_driveController.getPOV() <= 225));
+    Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
   }
 
@@ -91,5 +96,15 @@ public class RobotContainer {
     if ((m_powerLimit <= 1.0 - Math.abs(delta) || delta <= 0) && (m_powerLimit >= Math.abs(delta) || delta >= 0)) {
       m_powerLimit += delta;
     }
+  }
+
+  private double getDPadInput(Joystick joystick) {
+    if (joystick.getPOV() >= 315 || (joystick.getPOV() <= 45 && joystick.getPOV() >= 0)) {
+      return 1.0;
+    }
+    if (joystick.getPOV() >= 135 && joystick.getPOV() <= 225) {
+      return -1.0;
+    }
+    return 0;
   }
 }
