@@ -53,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateMotor.setIdleMode(IdleMode.kBrake);
 
         m_intakeMotor.setInverted(false);
-        m_rotateMotor.setInverted(false);
+        m_rotateMotor.setInverted(true);
 
         m_intakeEncoder = m_intakeMotor.getEncoder();
         m_intakeEncoder.setPositionConversionFactor(kIntakeGearRatio);
@@ -132,20 +132,24 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Returns whether the intake can be activated. */
     public boolean canIntake() {
+        /*
         if (m_intakeRate < 0 && m_beamBreakSensor.get()) {
             return false;
         }
+        */
         return true;
     }
 
     /** Returns whether the intake can rotate. */
     public boolean canRotate() {
+        /*
         if (m_angularSpeed > 0 && !m_highLimitSwitch.get()) {
             return false;
         }
         if (m_angularSpeed < 0 && !m_lowLimitSwitch.get()) {
             return false;
         }
+        */
         return true;
     }
 }

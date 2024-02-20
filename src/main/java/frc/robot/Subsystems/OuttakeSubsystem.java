@@ -1,12 +1,18 @@
 package frc.robot.Subsystems;
 
+import java.lang.reflect.GenericSignatureFormatError;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -20,32 +26,41 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     private final CANSparkMax m_outtakeMotor1;
     private final CANSparkMax m_outtakeMotor2;
+    private final CANSparkMax m_linearActuator;
 
     private final RelativeEncoder m_outtakeEncoder;
+    private final DutyCycleEncoder m_rotateEncoder;
 
     private final SimpleMotorFeedforward m_outtakeFeedforward = new SimpleMotorFeedforward(0, 0.00634);
 
     private final GenericEntry m_outtakeRateEntry;
+    private final GenericEntry m_linearActuatorPositionEntry;
 
     private double m_outtakeRate;
+    private double m_actuatorPower;
 
     public OuttakeSubsystem() {
         m_outtakeMotor1 = new CANSparkMax(Constants.OUTTAKE_MOTOR_1, MotorType.kBrushless);
         m_outtakeMotor2 = new CANSparkMax(Constants.OUTTAKE_MOTOR_2, MotorType.kBrushless);
+        m_linearActuator = new CANSparkMax(Constants.LINEAR_ACTUATOR, MotorType.kBrushed);
 
         m_outtakeMotor1.setIdleMode(IdleMode.kCoast);
         m_outtakeMotor2.setIdleMode(IdleMode.kCoast);
+        m_linearActuator.setIdleMode(IdleMode.kBrake);
 
         m_outtakeMotor1.setInverted(false);
         m_outtakeMotor2.follow(m_outtakeMotor1, false);
+        m_linearActuator.setInverted(true);
 
         m_outtakeEncoder = m_outtakeMotor1.getEncoder();
-        m_outtakeEncoder.setPositionConversionFactor(kOuttakeGearRatio);
-        m_outtakeEncoder.setVelocityConversionFactor(kOuttakeGearRatio);
+        m_outtakeEncoder.setPositionConversionFactor(kOuttakeGearRatio); // rpm
+        m_outtakeEncoder.setVelocityConversionFactor(kOuttakeGearRatio); // rpm
+        m_rotateEncoder = new DutyCycleEncoder(Constants.OUTTAKE_ROTATE_ENCODER);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
-        ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 1).withPosition(2, 0);
+        ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
         m_outtakeRateEntry = outtakeLayout.add("Outtake Rate", m_outtakeEncoder.getVelocity()).getEntry();
+        m_linearActuatorPositionEntry = outtakeLayout.add("Linear Actuator Position", getAngle()).getEntry();
     }
 
     /**
@@ -57,14 +72,34 @@ public class OuttakeSubsystem extends SubsystemBase {
         m_outtakeRate = outtakeRate;
     }
 
+    /**
+     * Engages the actuator to rotate the outtake.
+     * 
+     * @param actuatorPower Linear actuator power [-1.0, 1.0].
+     */
+    public void rotate(double actuatorPower) {
+        m_actuatorPower = actuatorPower;
+    }
+
+    /**
+     * Returns the current angle of the outtake.
+     * 
+     * @return Angle of the outtake (rad).
+     */
+    public double getAngle() {
+        return -2 * Math.PI * m_rotateEncoder.getAbsolutePosition();
+    }
+
     /** Displays the periodically updated outtake rate on the Shuffleboard */
     public void updateShuffleboard() {
         m_outtakeRateEntry.setDouble(m_outtakeEncoder.getVelocity());
+        m_linearActuatorPositionEntry.setDouble(getAngle());
     }
 
     @Override
     public void periodic() {
         m_outtakeMotor1.setVoltage(m_outtakeFeedforward.calculate(m_outtakeRate));
+        m_linearActuator.set(m_actuatorPower);
         updateShuffleboard();
     }
 }

@@ -31,10 +31,12 @@ public final class Constants {
 
     public static final int INTAKE_MOTOR = 24;
     public static final int ROTATE_MOTOR = 41;
-    public static final int BEAM_BREAK_SENSOR = 0;
-    public static final int LOW_LIMIT_SWITCH = 1;
-    public static final int HIGH_LIMIT_SWITCH = 2;
+    public static final int BEAM_BREAK_SENSOR = 1;
+    public static final int LOW_LIMIT_SWITCH = 2;
+    public static final int HIGH_LIMIT_SWITCH = 3;
 
     public static final int OUTTAKE_MOTOR_1 = 60;
     public static final int OUTTAKE_MOTOR_2 = 23;
+    public static final int LINEAR_ACTUATOR = 55;
+    public static final int OUTTAKE_ROTATE_ENCODER = 9;
 }
