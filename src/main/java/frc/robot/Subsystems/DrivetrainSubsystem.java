@@ -83,25 +83,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
     ShuffleboardLayout frontLeftLayout = tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(0, 0);
-    m_frontLeftDriveSpeedEntry = frontLeftLayout.add("Drive Speed", m_frontLeft.getState().speedMetersPerSecond).getEntry();
-    m_frontLeftSteerAngleEntry = frontLeftLayout.add("Steer Angle", m_frontLeft.getState().angle.getDegrees()).getEntry();
+    m_frontLeftDriveSpeedEntry = frontLeftLayout.add("Drive Speed", m_frontLeft.getState().speedMetersPerSecond + " m/s").getEntry();
+    m_frontLeftSteerAngleEntry = frontLeftLayout.add("Steer Angle", m_frontLeft.getState().angle.getDegrees() + " deg").getEntry();
     
     ShuffleboardLayout frontRightLayout = tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
-    m_frontRightDriveSpeedEntry = frontRightLayout.add("Drive Speed", m_frontRight.getState().speedMetersPerSecond).getEntry();
-    m_frontRightSteerAngleEntry = frontRightLayout.add("Steer Angle", m_frontRight.getState().angle.getDegrees()).getEntry();
+    m_frontRightDriveSpeedEntry = frontRightLayout.add("Drive Speed", m_frontRight.getState().speedMetersPerSecond + " m/s").getEntry();
+    m_frontRightSteerAngleEntry = frontRightLayout.add("Steer Angle", m_frontRight.getState().angle.getDegrees() + " deg").getEntry();
 
     ShuffleboardLayout backLeftLayout = tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(4, 0);
-    m_backLeftDriveSpeedEntry = backLeftLayout.add("Drive Speed", m_backLeft.getState().speedMetersPerSecond).getEntry();
-    m_backLeftSteerAngleEntry = backLeftLayout.add("Steer Angle", m_backLeft.getState().angle.getDegrees()).getEntry();
+    m_backLeftDriveSpeedEntry = backLeftLayout.add("Drive Speed", m_backLeft.getState().speedMetersPerSecond + " m/s").getEntry();
+    m_backLeftSteerAngleEntry = backLeftLayout.add("Steer Angle", m_backLeft.getState().angle.getDegrees() + " deg").getEntry();
 
     ShuffleboardLayout backRightLayout = tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(6, 0);
-    m_backRightDriveSpeedEntry = backRightLayout.add("Drive Speed", m_backRight.getState().speedMetersPerSecond).getEntry();
-    m_backRightSteerAngleEntry = backRightLayout.add("Steer Angle", m_backRight.getState().angle.getDegrees()).getEntry();
+    m_backRightDriveSpeedEntry = backRightLayout.add("Drive Speed", m_backRight.getState().speedMetersPerSecond + " m/s").getEntry();
+    m_backRightSteerAngleEntry = backRightLayout.add("Steer Angle", m_backRight.getState().angle.getDegrees() + " deg").getEntry();
 
     ShuffleboardLayout odometryLayout = tab.getLayout("Odometry", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 2);
-    m_odometryXEntry = odometryLayout.add("X Position", getPosition().getX()).getEntry();
-    m_odometryYEntry = odometryLayout.add("Y Position", getPosition().getY()).getEntry();
-    m_odometryThetaEntry = odometryLayout.add("Angle", getAngle().getDegrees()).getEntry();
+    m_odometryXEntry = odometryLayout.add("X Position", getPosition().getX() + " m").getEntry();
+    m_odometryYEntry = odometryLayout.add("Y Position", getPosition().getY()  + " m").getEntry();
+    m_odometryThetaEntry = odometryLayout.add("Angle", getAngle().getDegrees()  + " deg").getEntry();
   }
 
   /**
@@ -167,21 +167,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   /** Displays the periodically updated robot poses on the Shuffleboard */
   public void updateShuffleboard() {
-    m_frontLeftDriveSpeedEntry.setDouble(m_frontLeft.getState().speedMetersPerSecond);
-    m_frontLeftSteerAngleEntry.setDouble(m_frontLeft.getState().angle.getDegrees());
+    m_frontLeftDriveSpeedEntry.setString(m_frontLeft.getState().speedMetersPerSecond + " m/s");
+    m_frontLeftSteerAngleEntry.setString(m_frontLeft.getState().angle.getDegrees() + " deg");
 
-    m_frontRightDriveSpeedEntry.setDouble(m_frontRight.getState().speedMetersPerSecond);
-    m_frontRightSteerAngleEntry.setDouble(m_frontRight.getState().angle.getDegrees());
+    m_frontRightDriveSpeedEntry.setString(m_frontRight.getState().speedMetersPerSecond + " m/s");
+    m_frontRightSteerAngleEntry.setString(m_frontRight.getState().angle.getDegrees() + " deg");
 
-    m_backLeftDriveSpeedEntry.setDouble(m_backLeft.getState().speedMetersPerSecond);
-    m_backLeftSteerAngleEntry.setDouble(m_backLeft.getState().angle.getDegrees());
+    m_backLeftDriveSpeedEntry.setString(m_backLeft.getState().speedMetersPerSecond + " m/s");
+    m_backLeftSteerAngleEntry.setString(m_backLeft.getState().angle.getDegrees() + " deg");
 
-    m_backRightDriveSpeedEntry.setDouble(m_backRight.getState().speedMetersPerSecond);
-    m_backRightSteerAngleEntry.setDouble(m_backRight.getState().angle.getDegrees());
+    m_backRightDriveSpeedEntry.setString(m_backRight.getState().speedMetersPerSecond + " m/s");
+    m_backRightSteerAngleEntry.setString(m_backRight.getState().angle.getDegrees() + " deg");
 
-    m_odometryXEntry.setDouble(getPosition().getX());
-    m_odometryYEntry.setDouble(getPosition().getY());
-    m_odometryThetaEntry.setDouble(getAngle().getDegrees());
+    m_odometryXEntry.setString(getPosition().getX() + " m");
+    m_odometryYEntry.setString(getPosition().getY() + " m");
+    m_odometryThetaEntry.setString(getAngle().getDegrees() + " deg");
   }
 
   @Override
