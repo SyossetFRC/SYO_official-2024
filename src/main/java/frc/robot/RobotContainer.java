@@ -4,8 +4,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Commands.AutonIntakeCommand;
+import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
@@ -43,8 +46,8 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
-        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.25, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15
+        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.15, 
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.1
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
@@ -62,10 +65,15 @@ public class RobotContainer {
     m_drivetrainSubsystem.alignTurningEncoders();
     m_intakeSubsystem.reset();
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.0, 0.5, Math.PI / 2, 2.5, Math.PI, 1500),
-      new PositionDriveCommand(m_drivetrainSubsystem, 2.0, 0, 0, 2.5, Math.PI, 1500),
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.0, -0.5, -Math.PI / 2, 2.5, Math.PI, 1500),
-      new PositionDriveCommand(m_drivetrainSubsystem, 0, 0, 0, 2.5, Math.PI, 1500)
+      new AutonIntakeCommand(m_intakeSubsystem, -200, -2.80, 2500),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
+        new AutonOuttakeCommand(m_outtakeSubsystem, 0, -3.0, 1000)
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, 200, 1000),
+        new AutonOuttakeCommand(m_outtakeSubsystem, 1000, -3.0, 1000)
+      )
     );
   }
 
@@ -73,6 +81,10 @@ public class RobotContainer {
     // Driver button A
     Trigger m_resetPose = new Trigger(() -> m_driveController.getRawButton(1));
     m_resetPose.onTrue(new InstantCommand(() -> setPose(0, 0, 0)));
+
+    // Operator button A
+    Trigger m_resetSubsystems = new Trigger(() -> m_operatorController.getRawButton(1));
+    m_resetSubsystems.onTrue(new InstantCommand(() -> m_intakeSubsystem.reset()));
 
     // Driver button X
     Trigger m_brake = new Trigger(() -> m_driveController.getRawButton(3));

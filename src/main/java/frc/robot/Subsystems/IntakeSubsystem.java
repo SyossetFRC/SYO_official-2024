@@ -142,14 +142,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Returns whether the intake can rotate. */
     public boolean canRotate() {
-        /*
         if (m_angularSpeed > 0 && !m_highLimitSwitch.get()) {
             return false;
         }
         if (m_angularSpeed < 0 && !m_lowLimitSwitch.get()) {
             return false;
         }
-        */
         return true;
     }
 }
