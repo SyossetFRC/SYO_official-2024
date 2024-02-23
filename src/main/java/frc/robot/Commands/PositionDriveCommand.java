@@ -82,12 +82,14 @@ public class PositionDriveCommand extends Command {
     * @param x The x coordinate to move to (m).
     * @param y The y coordinate to move to (m).
     * @param theta The angle to rotate to (rad).
+    * @param maxTime The maximum time allowed to elapse (ms).
     */
     public PositionDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
                                 double x,
                                 double y,
-                                double theta) {
-        this(drivetrainSubsystem, x, y, theta, DrivetrainSubsystem.kMaxSpeed, DrivetrainSubsystem.kMaxAngularSpeed, (long) Double.POSITIVE_INFINITY);
+                                double theta,
+                                long maxTime) {
+        this(drivetrainSubsystem, x, y, theta, DrivetrainSubsystem.kMaxSpeed, DrivetrainSubsystem.kMaxAngularSpeed, maxTime);
     }
 
     @Override

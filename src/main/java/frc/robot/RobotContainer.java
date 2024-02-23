@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
@@ -65,15 +66,8 @@ public class RobotContainer {
     m_drivetrainSubsystem.alignTurningEncoders();
     m_intakeSubsystem.reset();
     return new SequentialCommandGroup(
-      new AutonIntakeCommand(m_intakeSubsystem, -200, -2.80, 2500),
-      new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new AutonOuttakeCommand(m_outtakeSubsystem, 0, -3.0, 1000)
-      ),
-      new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, 200, 1000),
-        new AutonOuttakeCommand(m_outtakeSubsystem, 1000, -3.0, 1000)
-      )
+      intakeSequence(),
+      outtakeSpeakerSequence(0)
     );
   }
 
@@ -119,5 +113,35 @@ public class RobotContainer {
       return -1.0;
     }
     return 0;
+  }
+
+  private Command intakeSequence() {
+    return new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -150, -2.80, 1000),
+        new SequentialCommandGroup(
+          new WaitCommand(0.5),
+          new PositionDriveCommand(m_drivetrainSubsystem, m_drivetrainSubsystem.getPosition().getX() + 0.25, m_drivetrainSubsystem.getPosition().getY(), m_drivetrainSubsystem.getAngle().getRadians(), 500)
+        )
+      ),
+      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 500)
+    );
+  }
+
+  private Command outtakeSpeakerSequence(double bumperToSpeakerEdgeDistance) {
+    double outtakeAngle = -0.0609286 * bumperToSpeakerEdgeDistance - 2.97675;
+    return new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, outtakeAngle, 1000),
+        new SequentialCommandGroup(
+          new WaitCommand(0.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 150, 750)
+        )
+      )
+    );
+  }
+
+  private Command outtakeAmpSequence() {
+    return new SequentialCommandGroup(null);
   }
 }
