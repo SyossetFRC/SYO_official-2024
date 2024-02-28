@@ -14,7 +14,6 @@ import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
-import frc.robot.Commands.IdleDriveCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
@@ -152,7 +151,7 @@ public class RobotContainer {
   }
 
   private Command outtakeSpeakerSequence(double bumperToSpeakerEdgeDistance) {
-    double outtakeAngle = -0.0609286 * bumperToSpeakerEdgeDistance - 2.97675;
+    double outtakeAngle = -0.19989698802 * bumperToSpeakerEdgeDistance - 2.97675;
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, outtakeAngle, 1000),
