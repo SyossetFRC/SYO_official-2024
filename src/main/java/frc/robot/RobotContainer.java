@@ -28,6 +28,7 @@ public class RobotContainer {
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
+  private final Joystick m_buttonBoard = new Joystick(2);
   private double m_powerLimit = 1.0;
 
   /**
@@ -48,7 +49,7 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
         () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.15, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.1
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
@@ -67,6 +68,7 @@ public class RobotContainer {
     m_intakeSubsystem.reset();
     return new SequentialCommandGroup(
       intakeSequence(),
+      new PositionDriveCommand(m_drivetrainSubsystem, -3, 0, 0, 2000),
       outtakeSpeakerSequence(0)
     );
   }
@@ -92,6 +94,27 @@ public class RobotContainer {
     // Driver D-pad down
     Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
     m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
+
+    // Button board column 1, row 2
+    Trigger m_intake = new Trigger(() -> m_buttonBoard.getRawButton(1));
+    m_intake.onTrue(intakeSequence());
+
+    // Button board column 2, row 2
+    Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
+    m_outtakeSpeaker.onTrue(outtakeSpeakerSequence(0));
+
+    // Button board column 1, row 1
+    Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(3));
+    m_cancelSubsystemCommands.onTrue(new InstantCommand(() -> cancelSubsystemCommands()));
+  }
+
+  public void cancelSubsystemCommands() {
+    if (m_intakeSubsystem.getCurrentCommand() != null) {
+      m_intakeSubsystem.getCurrentCommand().cancel();
+    }
+    if (m_outtakeSubsystem.getCurrentCommand() != null) {
+      m_outtakeSubsystem.getCurrentCommand().cancel();
+    }
   }
 
   public void setPose(double xPos, double yPos, double theta) {
@@ -118,13 +141,13 @@ public class RobotContainer {
   private Command intakeSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -150, -2.80, 1000),
+        new AutonIntakeCommand(m_intakeSubsystem, -200, -2.80, 2000),
         new SequentialCommandGroup(
-          new WaitCommand(0.5),
-          new PositionDriveCommand(m_drivetrainSubsystem, m_drivetrainSubsystem.getPosition().getX() + 0.25, m_drivetrainSubsystem.getPosition().getY(), m_drivetrainSubsystem.getAngle().getRadians(), 500)
+          new WaitCommand(1.0),
+          new PositionDriveCommand(m_drivetrainSubsystem, m_drivetrainSubsystem.getPosition().getX() + 0.25, m_drivetrainSubsystem.getPosition().getY(), m_drivetrainSubsystem.getAngle().getRadians(), 1000)
         )
       ),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 500)
+      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000)
     );
   }
 
@@ -134,14 +157,10 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, outtakeAngle, 1000),
         new SequentialCommandGroup(
-          new WaitCommand(0.25),
-          new AutonIntakeCommand(m_intakeSubsystem, 150, 750)
+          new WaitCommand(0.5),
+          new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
         )
       )
     );
-  }
-
-  private Command outtakeAmpSequence() {
-    return new SequentialCommandGroup(null);
   }
 }
