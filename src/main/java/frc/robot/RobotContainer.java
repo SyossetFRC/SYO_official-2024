@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,10 +13,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
+import frc.robot.Commands.DefaultClimberCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
 import frc.robot.Commands.PositionDriveCommand;
+import frc.robot.Subsystems.ClimberSubsystem;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
@@ -24,6 +28,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -57,21 +62,57 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
 
+    m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
+        m_climberSubsystem,
+        () -> getDPadInput(m_buttonBoard) * 0.25
+    ));
+
     configureButtons();
   }
 
-  // Currently used for testing kinematics
-  public Command autonomousCommands() {
+  /**
+   * Command sequence to run in autonomous. The origin is the center of the front subwoofer edge.
+   * 
+   * @param startX Starting X Position (m).
+   * @param startY Starting Y Position (m).
+   * @param startTheta Starting angle (rad).
+   * @param autonomousNotes ArrayList containing notes to be scored in order.
+   * @return Command to run autonomously.
+   */
+  public Command autonomousCommands(double startX, double startY, double startTheta, ArrayList<SpikeMarkNote> autonomousNotes) {
     m_powerLimit = 1.0;
+    setPose(startX, startY, startTheta);
     m_drivetrainSubsystem.alignTurningEncoders();
     m_intakeSubsystem.reset();
-    return new SequentialCommandGroup(
-      intakeSequence(),
-      new PositionDriveCommand(m_drivetrainSubsystem, -3, 0, 0, 2000),
-      outtakeSpeakerSequence(0)
+
+    SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.05, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1),
+          new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
+        )
+      )
     );
+    for (SpikeMarkNote note : autonomousNotes) {
+      switch(note) {
+        case LEFT:
+          autonomousSequence.addCommands(leftNoteSequence());
+          break;
+        case MIDDLE:
+          autonomousSequence.addCommands(middleNoteSequence());
+          break;
+        case RIGHT:
+          autonomousSequence.addCommands(rightNoteSequence());
+          break;
+      }
+    }
+    return autonomousSequence;
   }
 
+  /**
+   * Configures all controller buttons.
+   */
   private void configureButtons() {
     // Driver button A
     Trigger m_resetPose = new Trigger(() -> m_driveController.getRawButton(1));
@@ -96,18 +137,31 @@ public class RobotContainer {
 
     // Button board column 1, row 2
     Trigger m_intake = new Trigger(() -> m_buttonBoard.getRawButton(1));
-    m_intake.onTrue(intakeSequence());
+    m_intake.onTrue(new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, (long) Double.POSITIVE_INFINITY));
+    m_intake.onFalse(new SequentialCommandGroup(
+      new InstantCommand(() -> cancelSubsystemCommands()),
+      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000)
+    ));
 
     // Button board column 2, row 2
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
-    m_outtakeSpeaker.onTrue(outtakeSpeakerSequence(0));
+    m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.05, 1500),
+      new SequentialCommandGroup(
+        new WaitCommand(1),
+        new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
+      )
+    ));
 
     // Button board column 1, row 1
     Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_cancelSubsystemCommands.onTrue(new InstantCommand(() -> cancelSubsystemCommands()));
   }
 
-  public void cancelSubsystemCommands() {
+  /**
+   * Cancels all subsystem commands and presets.
+   */
+  private void cancelSubsystemCommands() {
     if (m_intakeSubsystem.getCurrentCommand() != null) {
       m_intakeSubsystem.getCurrentCommand().cancel();
     }
@@ -116,17 +170,35 @@ public class RobotContainer {
     }
   }
 
-  public void setPose(double xPos, double yPos, double theta) {
+  /**
+   * Sets robot odometric position.
+   * 
+   * @param xPos X Position (m).
+   * @param yPos Y Position (m).
+   * @param theta Angle (rad).
+   */
+  private void setPose(double xPos, double yPos, double theta) {
     m_drivetrainSubsystem.setPose(xPos, yPos, theta);
     m_drivetrainSubsystem.alignTurningEncoders();
   }
 
+  /**
+   * Changes the drive controller power limit [0, 1].
+   * 
+   * @param delta Power Limit Change.
+   */
   private void changePowerLimit(double delta) {
     if ((m_powerLimit <= 1.0 - Math.abs(delta) || delta <= 0) && (m_powerLimit >= Math.abs(delta) || delta >= 0)) {
       m_powerLimit += delta;
     }
   }
 
+  /**
+   * Converts D-Pad input into either +1 or -1 output.
+   * 
+   * @param joystick Joystick to access D-Pad.
+   * @return D-Pad up returns +1 and D-Pad down returns -1.
+   */
   private double getDPadInput(Joystick joystick) {
     if (joystick.getPOV() >= 315 || (joystick.getPOV() <= 45 && joystick.getPOV() >= 0)) {
       return 1.0;
@@ -137,29 +209,97 @@ public class RobotContainer {
     return 0;
   }
 
-  private Command intakeSequence() {
+  /**
+   * Command to intake and shoot the note on the left-most spike mark of either alliance, from the POV of the drivers.
+   * 
+   * @return Command to intake and shoot the note on the left-most spike mark of either alliance, from the POV of the drivers.
+   */
+  private Command leftNoteSequence() {
     return new SequentialCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 1.60, 0, 1.0, Math.PI / 2,4000),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -200, -2.80, 2000),
+        new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
-          new PositionDriveCommand(m_drivetrainSubsystem, m_drivetrainSubsystem.getPosition().getX() + 0.25, m_drivetrainSubsystem.getPosition().getY(), m_drivetrainSubsystem.getAngle().getRadians(), 1000)
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.60, 0, 1000)
         )
       ),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000)
-    );
-  }
-
-  private Command outtakeSpeakerSequence(double bumperToSpeakerEdgeDistance) {
-    double outtakeAngle = -0.19989698802 * bumperToSpeakerEdgeDistance - 2.97675;
-    return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, outtakeAngle, 1000),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 1.60, 0.589, 1000)
+      ),
+      new ParallelCommandGroup(
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.30, 1500),
         new SequentialCommandGroup(
-          new WaitCommand(0.5),
+          new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
         )
       )
     );
   }
+
+  /**
+   * Command to intake and shoot the note on the middle spike mark of either alliance, from the POV of the drivers.
+   * 
+   * @return Command to intake and shoot the note on the middle spike mark of either alliance, from the POV of the drivers.
+   */
+  private Command middleNoteSequence() {
+    return new SequentialCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 0, 0, 1.0, Math.PI / 2,4000),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
+        new SequentialCommandGroup(
+          new WaitCommand(1.0),
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 0, 0, 1000)
+        )
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 0, 0, 1000)
+      ),
+      new ParallelCommandGroup(
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.20, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1),
+          new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
+        )
+      )
+    );
+  }
+
+  /**
+   * Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
+   * 
+   * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
+   */
+  private Command rightNoteSequence() {
+    return new SequentialCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, 0, 1.0, Math.PI / 2, 4000),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
+        new SequentialCommandGroup(
+          new WaitCommand(1.0),
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, -1.60, 0, 1000)
+        )
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, -0.589, 1000)
+      ),
+      new ParallelCommandGroup(
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.30, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1),
+          new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
+        )
+      )
+    );
+  }
+}
+
+/* Autonomous spike mark note options */
+enum SpikeMarkNote {
+  LEFT,
+  MIDDLE,
+  RIGHT
 }

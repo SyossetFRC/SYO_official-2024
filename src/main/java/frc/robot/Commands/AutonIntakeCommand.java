@@ -61,7 +61,7 @@ public class AutonIntakeCommand extends Command{
     }
 
     @Override
-    public boolean isFinished() { return ((m_anglePIDController.atSetpoint() || !m_intakeSubsystem.canRotate()) && !m_intakeSubsystem.canIntake()) || (System.currentTimeMillis() > m_recordedTime + m_maxTime); }
+    public boolean isFinished() { return System.currentTimeMillis() > m_recordedTime + m_maxTime; }
 
     @Override
     public void end(boolean interrupted) {
