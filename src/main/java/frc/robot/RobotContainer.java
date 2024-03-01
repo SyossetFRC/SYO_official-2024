@@ -87,10 +87,10 @@ public class RobotContainer {
 
     SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.05, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -2.55, 2500),
         new SequentialCommandGroup(
-          new WaitCommand(1),
-          new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
+          new WaitCommand(1.0),
+          new AutonIntakeCommand(m_intakeSubsystem, 200, 700)
         )
       )
     );
@@ -216,7 +216,7 @@ public class RobotContainer {
    */
   private Command leftNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 1.60, 0, 1.5, Math.PI / 2,4000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.05, 1.60, 0, 1.5, Math.PI / 2,4000),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
@@ -226,10 +226,10 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 1.60, 0.589, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.05, 1.60, 0.580, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.30, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate*0.7, -3.30, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
@@ -245,7 +245,7 @@ public class RobotContainer {
    */
   private Command middleNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 0, 0, 1.5, Math.PI / 2,4000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.05, 0, 0, 1.5, Math.PI / 2,4000),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
@@ -255,10 +255,10 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 0, 0, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.05, 0, 0, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.20, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate*0.7, -3.17, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
@@ -274,7 +274,7 @@ public class RobotContainer {
    */
   private Command rightNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, 0, 1.5, Math.PI / 2, 4000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.05, -1.60, 0, 1.5, Math.PI / 2, 4000),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
@@ -284,10 +284,10 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, -0.589, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.05, -1.65, -0.580, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.30, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate*0.68, -3.30, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
