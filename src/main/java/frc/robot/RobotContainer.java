@@ -216,7 +216,7 @@ public class RobotContainer {
    */
   private Command leftNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 1.60, 0, 1.0, Math.PI / 2,4000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 1.60, 0, 1.5, Math.PI / 2,4000),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
@@ -245,7 +245,7 @@ public class RobotContainer {
    */
   private Command middleNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 0, 0, 1.0, Math.PI / 2,4000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 0, 0, 1.5, Math.PI / 2,4000),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
@@ -274,7 +274,7 @@ public class RobotContainer {
    */
   private Command rightNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, 0, 1.0, Math.PI / 2, 4000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, 0, 1.5, Math.PI / 2, 4000),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
