@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
 
-public class AutonLimelightOuttakeCommand extends Command {
+public class LimelightOuttakeCommand extends Command {
     private final OuttakeSubsystem m_outtakeSubsystem;
     private final LimelightSubsystem m_limelightSubsystem;
 
@@ -18,14 +18,14 @@ public class AutonLimelightOuttakeCommand extends Command {
     private final PIDController m_anglePIDController;
 
     /**
-     * Command to engage the outtake autonomously with limelight input.
+     * Command to engage the outtake autonomously with limelight input. Aims autonomously.
      * 
      * @param outtakeSubsystem The outtake subsystem.
      * @param limelightSubsystem The limelight subsystem.
      * @param outtakeRateSupplier The desired outtake rate (rpm).
      * @param maxTime The maximum time alloted for this command (ms).
      */
-    public AutonLimelightOuttakeCommand(OuttakeSubsystem outtakeSubsystem, LimelightSubsystem limelightSubsystem, double outtakeRateSupplier, long maxTime) {
+    public LimelightOuttakeCommand(OuttakeSubsystem outtakeSubsystem, LimelightSubsystem limelightSubsystem, double outtakeRateSupplier, long maxTime) {
         this.m_outtakeSubsystem = outtakeSubsystem;
         this.m_limelightSubsystem = limelightSubsystem;
         this.m_outtakeRateSupplier = outtakeRateSupplier;

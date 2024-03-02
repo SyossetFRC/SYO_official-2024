@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
-import frc.robot.Commands.AutonLimelightOuttakeCommand;
+import frc.robot.Commands.LimelightOuttakeCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultClimberCommand;
@@ -85,7 +85,6 @@ public class RobotContainer {
    * @return Command to run autonomously.
    */
   public Command autonomousCommands(double startX, double startY, double startTheta, ArrayList<SpikeMarkNote> autonomousNotes) {
-    m_powerLimit = 1.0;
     setPose(startX, startY, startTheta);
     m_drivetrainSubsystem.alignTurningEncoders();
     m_intakeSubsystem.reset();
@@ -159,7 +158,7 @@ public class RobotContainer {
     Trigger m_outtakeLimelightSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
     m_outtakeLimelightSpeaker.onTrue(new ParallelCommandGroup(
       new ParallelCommandGroup(
-        new AutonLimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
@@ -309,7 +308,7 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.65, -0.580, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, -0.580, 1000)
       ),
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -3.30, 1500),
