@@ -67,5 +67,6 @@ public class AutonIntakeCommand extends Command{
     public void end(boolean interrupted) {
         m_intakeSubsystem.intake(0);
         m_intakeSubsystem.rotate(0);
+        m_isTimeRecorded = false;
     }
 }

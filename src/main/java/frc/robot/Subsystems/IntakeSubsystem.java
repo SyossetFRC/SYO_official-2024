@@ -72,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeRateEntry = intakeLayout.add("Intake Rate", m_intakeEncoder.getVelocity() + " rpm").getEntry();
         m_rotateAngleEntry = intakeLayout.add("Intake Angle", m_rotateEncoder.getPosition() + " rad").getEntry();
         m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity() + " rad/s").getEntry();
-        m_beamBreakSensorEntry = intakeLayout.add("Beam Break Sensor", m_beamBreakSensor.get()).getEntry();
+        m_beamBreakSensorEntry = intakeLayout.add("Beam Break Sensor", !m_beamBreakSensor.get()).getEntry();
         m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
         m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
     }
@@ -133,7 +133,7 @@ public class IntakeSubsystem extends SubsystemBase {
     /** Returns whether the intake can be activated. */
     public boolean canIntake() {
         /*
-        if (m_intakeRate < 0 && m_beamBreakSensor.get()) {
+        if (m_intakeRate < 0 && !m_beamBreakSensor.get()) {
             return false;
         }
         */

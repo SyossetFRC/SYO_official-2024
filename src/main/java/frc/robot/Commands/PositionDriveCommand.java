@@ -146,7 +146,10 @@ public class PositionDriveCommand extends Command {
     public boolean isFinished() { return (m_pidX.atSetpoint() && m_pidY.atSetpoint() && m_pidTheta.atSetpoint()) || (System.currentTimeMillis() > m_recordedTime + m_maxTime); }
 
     @Override
-    public void end(boolean interrupted) { m_drivetrainSubsystem.drive(0, 0, 0, true); }
+    public void end(boolean interrupted) { 
+        m_drivetrainSubsystem.drive(0, 0, 0, true); 
+        m_isTimeRecorded = false;
+    }
 
     /**
      * Clips a certain value if it exceeds a certain range.

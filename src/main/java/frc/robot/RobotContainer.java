@@ -11,16 +11,19 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
+import frc.robot.Commands.AutonLimelightOuttakeCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultClimberCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
+import frc.robot.Commands.LimelightAlignmentCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.ClimberSubsystem;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.LimelightSubsystem;
 import frc.robot.Subsystems.OuttakeSubsystem;
 
 /** Represents the entire robot. */
@@ -29,6 +32,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -58,13 +62,14 @@ public class RobotContainer {
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate,
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.69,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
 
     m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
         m_climberSubsystem,
-        () -> getDPadInput(m_buttonBoard) * 0.25
+        () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(3), 0.05) * 0.25,
+        () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(2), 0.05) * 0.25
     ));
 
     configureButtons();
@@ -87,10 +92,10 @@ public class RobotContainer {
 
     SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.55, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, calculateOdometricShootingAngle(), 1500),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
-          new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
+          new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
         )
       )
     );
@@ -137,21 +142,34 @@ public class RobotContainer {
 
     // Button board column 1, row 2
     Trigger m_intake = new Trigger(() -> m_buttonBoard.getRawButton(1));
-    m_intake.onTrue(new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, Long.MAX_VALUE));
-    m_intake.onFalse(new InstantCommand(() -> m_intakeSubsystem.getCurrentCommand().cancel())).onFalse(new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000));
+    m_intake.whileTrue(new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 150000));
+    m_intake.onFalse(new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000));
 
-    // Button board column 2, row 2
-    Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
+    // Button board column 1, row 1
+    Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.55, 1500),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.92, 1500),
       new SequentialCommandGroup(
         new WaitCommand(1),
         new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
       )
     ));
 
-    // Button board column 1, row 1
-    Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(3));
+    // Button board column 2, row 2
+    Trigger m_outtakeLimelightSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
+    m_outtakeLimelightSpeaker.onTrue(new ParallelCommandGroup(
+      new ParallelCommandGroup(
+        new AutonLimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1),
+          new AutonIntakeCommand(m_intakeSubsystem, 200, 500)
+        )
+      ),
+      new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational", () -> 0, () -> 0, 1500)
+    ));
+
+    // Button board column 2, row 1
+    Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(4));
     m_cancelSubsystemCommands.onTrue(new InstantCommand(() -> cancelSubsystemCommands()));
   }
 
@@ -204,6 +222,16 @@ public class RobotContainer {
       return -1.0;
     }
     return 0;
+  }
+
+  /**
+   * Returns shooting angle based on robot odometry.
+   * 
+   * @return Target shooting angle (rad).
+   */
+  private double calculateOdometricShootingAngle() {
+    double odometricDistance = Math.sqrt(Math.pow(m_drivetrainSubsystem.getPosition().getX(), 2) + Math.pow(m_drivetrainSubsystem.getPosition().getY(), 2));
+    return -0.34255 * Math.pow(odometricDistance, 0.668982) - 2.72071;
   }
 
   /**
