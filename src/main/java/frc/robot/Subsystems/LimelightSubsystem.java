@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimelightSubsystem extends SubsystemBase {
-    private final double kLimelightLensHeight = 8.55;
+    private final double kLimelightLensHeight = 8.35;
     private final double kLimelightAngle = 20.0;
 
     private NetworkTable m_networkTable;
