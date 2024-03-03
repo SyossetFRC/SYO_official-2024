@@ -229,8 +229,8 @@ public class RobotContainer {
    * @return Target shooting angle (rad).
    */
   private double calculateOdometricShootingAngle() {
-    double odometricDistance = Math.sqrt(Math.pow(m_drivetrainSubsystem.getPosition().getX(), 2) + Math.pow(m_drivetrainSubsystem.getPosition().getY(), 2));
-    return -0.34255 * Math.pow(odometricDistance, 0.668982) - 2.72071;
+    double shootingDistance = Math.sqrt(Math.pow(m_drivetrainSubsystem.getPosition().getX() + 0.918, 2) + Math.pow(m_drivetrainSubsystem.getPosition().getY(), 2));
+    return (-0.245634 * shootingDistance) - 2.58302;
   }
 
   /**
