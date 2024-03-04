@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 
-/** An autonomous command that translates and rotates the robot to any absolute position */
 public class PositionDriveCommand extends Command {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 

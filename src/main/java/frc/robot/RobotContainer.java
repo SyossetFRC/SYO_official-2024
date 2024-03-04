@@ -12,13 +12,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
 import frc.robot.Commands.LimelightOuttakeCommand;
+import frc.robot.Commands.LimelightRotateCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultClimberCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
-import frc.robot.Commands.LimelightAlignmentCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.ClimberSubsystem;
 import frc.robot.Subsystems.DrivetrainSubsystem;
@@ -91,7 +91,7 @@ public class RobotContainer {
 
     SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, calculateOdometricShootingAngle(), 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.92, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
           new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
@@ -164,7 +164,7 @@ public class RobotContainer {
           new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
         )
       ),
-      new LimelightAlignmentCommand(m_drivetrainSubsystem, m_limelightSubsystem, "rotational", () -> 0, () -> 0, 1500)
+      new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1500)
     ));
 
     // Button board column 2, row 1
@@ -224,16 +224,6 @@ public class RobotContainer {
   }
 
   /**
-   * Returns shooting angle based on robot odometry.
-   * 
-   * @return Target shooting angle (rad).
-   */
-  private double calculateOdometricShootingAngle() {
-    double shootingDistance = Math.sqrt(Math.pow(m_drivetrainSubsystem.getPosition().getX() + 0.918, 2) + Math.pow(m_drivetrainSubsystem.getPosition().getY(), 2));
-    return (-0.245634 * shootingDistance) - 2.58302;
-  }
-
-  /**
    * Command to intake and shoot the note on the left-most spike mark of either alliance, from the POV of the drivers.
    * 
    * @return Command to intake and shoot the note on the left-most spike mark of either alliance, from the POV of the drivers.
@@ -250,14 +240,17 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 1.60, 0.580, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 1.60, 0.580, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -3.30, 1500),
-        new SequentialCommandGroup(
-          new WaitCommand(1),
-          new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
-        )
+        new ParallelCommandGroup(
+          new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
+          new SequentialCommandGroup(
+            new WaitCommand(1),
+            new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
+          )
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1500)
       )
     );
   }
@@ -279,14 +272,17 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, 0, 0, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 0, 0, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -3.17, 1500),
-        new SequentialCommandGroup(
-          new WaitCommand(1),
-          new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
-        )
+        new ParallelCommandGroup(
+          new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
+          new SequentialCommandGroup(
+            new WaitCommand(1),
+            new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
+          )
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1500)
       )
     );
   }
@@ -308,14 +304,17 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.50, -1.60, -0.580, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, -1.60, -0.580, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -3.30, 1500),
-        new SequentialCommandGroup(
-          new WaitCommand(1),
-          new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
-        )
+        new ParallelCommandGroup(
+          new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
+          new SequentialCommandGroup(
+            new WaitCommand(1),
+            new AutonIntakeCommand(m_intakeSubsystem, 200, 0, 500)
+          )
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1500)
       )
     );
   }

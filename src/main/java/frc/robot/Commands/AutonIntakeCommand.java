@@ -38,17 +38,6 @@ public class AutonIntakeCommand extends Command{
         addRequirements(intakeSubsystem);
     }
 
-    /**
-     * Command to engage the intake autonomously. The intake will not rotate.
-     * 
-     * @param intakeSubsystem The intake subsystem.
-     * @param intakeRateSupplier The desired rate (rpm).
-     * @param maxTime The maximum time alloted for this command (ms).
-     */
-    public AutonIntakeCommand(IntakeSubsystem intakeSubsystem, double intakeRateSupplier, long maxTime) {
-        this(intakeSubsystem, intakeRateSupplier, intakeSubsystem.getAngle(), maxTime);
-    }
-
     @Override
     public void execute() {
         if (!m_isTimeRecorded) {

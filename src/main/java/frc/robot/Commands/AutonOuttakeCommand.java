@@ -37,17 +37,6 @@ public class AutonOuttakeCommand extends Command {
         addRequirements(outtakeSubsystem);
     }
 
-    /**
-     * Command to engage the outtake autonomously. Keeps outtake angle the same.
-     * 
-     * @param outtakeSubsystem The outtake subsystem.
-     * @param outtakeRateSupplier The desired outtake rate (rpm).
-     * @param maxTime The maximum time alloted for this command (ms).
-     */
-    public AutonOuttakeCommand(OuttakeSubsystem outtakeSubsystem, double outtakeRateSupplier, long maxTime) {
-        this(outtakeSubsystem, outtakeRateSupplier, outtakeSubsystem.getAngle(), maxTime);
-    }
-
     @Override
     public void execute() {
         if (!m_isTimeRecorded) {

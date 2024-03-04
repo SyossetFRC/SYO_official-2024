@@ -16,10 +16,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class LimelightSubsystem extends SubsystemBase {
-    private final double kLimelightLensHeight = 8.35;
-    private final double kLimelightAngle = 20.0;
 
     private NetworkTable m_networkTable;
 
@@ -162,7 +161,7 @@ public class LimelightSubsystem extends SubsystemBase {
                                                                                            // google sheets to calculate
                                                                                            // curve
         m_trigDistance = Units.inchesToMeters(51.96 -
-        kLimelightLensHeight) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + kLimelightAngle)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
+        Constants.LIMELIGHT_LENS_HEIGHT) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + Constants.LIMELIGHT_ANGLE)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
 
 
         
@@ -191,12 +190,22 @@ public class LimelightSubsystem extends SubsystemBase {
         }
     }
 
-    public double calculateAngle() {
+    /**
+     * Calculates the optimal outtake angle for shooting based on limelight trigonometric input.
+     * 
+     * @return Optimal outtake absolute angle (rad).
+     */
+    public double calculateOuttakeAngle() {
         return -0.161354293083 * getDistance("Trig") - 2.90716351912;
     }
 
-    public double getXTargetAngle() {
-        return m_tx.getDouble(0);
+    /**
+     * Returns the change in drivetrain angle necessary for shooting based on limelight input.
+     * 
+     * @return Change in drivetrain angle (rad).
+     */
+    public double getDrivetrainAngleChange() {
+        return -Math.toRadians(m_tx.getDouble(0));
     }
 
     public String getTrackingMode() {
@@ -217,10 +226,5 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public Pose2d getTagPose2d(int tagID) {
         return m_tagPose2d[tagID - 1];
-    }
-
-    public double getCalculatedAngle() {
-        // return this.getDistance("Area") * -8.78492 + 57.4318;
-        return this.getDistance("Trig") * -8.78492 + 57.4318;
     }
 }
