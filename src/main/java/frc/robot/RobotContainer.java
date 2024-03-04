@@ -240,7 +240,7 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 1.60, 0.580, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 1.60, 0.600, 1000)
       ),
       new ParallelCommandGroup(
         new ParallelCommandGroup(
@@ -304,7 +304,7 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, -1.60, -0.580, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, -1.60, -0.600, 1000)
       ),
       new ParallelCommandGroup(
         new ParallelCommandGroup(
