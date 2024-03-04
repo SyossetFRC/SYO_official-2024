@@ -7,6 +7,8 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -80,6 +82,7 @@ public class RobotContainer {
     m_camera = CameraServer.startAutomaticCapture();
     m_camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     m_camera.setResolution(320, 240);
+    Shuffleboard.getTab("Match").add(CameraServer.getServer().getSource()).withWidget(BuiltInWidgets.kCameraStream).withSize(7, 5).withPosition(4, 0);
 
     configureButtons();
   }
