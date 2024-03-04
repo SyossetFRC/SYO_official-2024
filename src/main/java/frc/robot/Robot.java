@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
   public void robotInit() { 
     m_container = new RobotContainer(); 
 
-    m_tab = Shuffleboard.getTab("Autonomous");
+    m_tab = Shuffleboard.getTab("Match");
 
     m_startPositionLayout = m_tab.getLayout("Starting Position", BuiltInLayouts.kList).withSize(2, 5).withPosition(0, 0);
     m_startXEntry = m_startPositionLayout.add("Input Starting X Position (m)", 0).getEntry();
@@ -55,11 +55,11 @@ public class Robot extends TimedRobot {
     m_startPositionOutputEntry = m_startPositionLayout.add("Starting Position", "(0, 0, 0)").getEntry();
     m_startPositionLayout.add("Instructions", "The origin is the center of the front subwoofer edge. The +x direction is forward or away from the driver station. From the POV of the driver station, the +y direction is left. Counterclocksize is +theta. Measure starting position from the origin to the center of the robot, in meters and degrees.");
 
-    m_noteChooserLayout = m_tab.getLayout("Notes", BuiltInLayouts.kList).withSize(2, 5).withPosition(2, 0);
+    m_noteChooserLayout = m_tab.getLayout("Autonomous Notes", BuiltInLayouts.kList).withSize(2, 5).withPosition(2, 0);
     m_leftNoteButton = m_noteChooserLayout.add("Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Notes", "{}").getEntry();
+    m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
   }
 

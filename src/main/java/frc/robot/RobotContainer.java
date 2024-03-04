@@ -2,8 +2,12 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -33,6 +37,8 @@ public class RobotContainer {
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
   private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
+
+  private final UsbCamera m_camera;
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -71,6 +77,10 @@ public class RobotContainer {
         () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(3), 0.05) * 0.25,
         () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(2), 0.05) * 0.25
     ));
+
+    m_camera = CameraServer.startAutomaticCapture();
+    m_camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    Shuffleboard.getTab("Match").add(m_camera).withSize(4, 3).withPosition(4, 0);
 
     configureButtons();
   }
