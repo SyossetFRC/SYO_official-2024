@@ -220,6 +220,7 @@ public class LimelightSubsystem extends SubsystemBase {
         return m_tv.getDouble(0) != 0;
     }
 
+    /*
     public double getTagID() {
         return m_tid.getDouble(0.0);
     }
@@ -227,4 +228,5 @@ public class LimelightSubsystem extends SubsystemBase {
     public Pose2d getTagPose2d(int tagID) {
         return m_tagPose2d[tagID - 1];
     }
+    */
 }
