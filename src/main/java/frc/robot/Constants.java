@@ -43,6 +43,6 @@ public final class Constants {
     public static final int CLIMBER_MOTOR_LEFT = 10;
     public static final int CLIMBER_MOTOR_RIGHT = 14;
 
-    public static final double LIMELIGHT_LENS_HEIGHT = 8.35; // inches
-    public static final double LIMELIGHT_ANGLE = 20.0; // degrees
+    public static final double LIMELIGHT_LENS_HEIGHT = 27.00; // inches
+    public static final double LIMELIGHT_ANGLE = 30.0; // degrees
 }

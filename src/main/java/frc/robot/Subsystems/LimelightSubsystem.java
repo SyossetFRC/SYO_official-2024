@@ -196,7 +196,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
-        return -0.161354293083 * getDistance("Trig") - 2.90716351912;
+        return -0.190354293083 * getDistance("Trig") - 1.9509;
     }
 
     /**

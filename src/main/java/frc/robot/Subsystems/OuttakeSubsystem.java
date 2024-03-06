@@ -45,7 +45,7 @@ public class OuttakeSubsystem extends SubsystemBase {
 
         m_outtakeMotor1.setInverted(false);
         m_outtakeMotor2.follow(m_outtakeMotor1, false);
-        m_linearActuator.setInverted(true);
+        m_linearActuator.setInverted(false);
 
         m_outtakeEncoder = m_outtakeMotor1.getEncoder();
         m_outtakeEncoder.setPositionConversionFactor(kOuttakeGearRatio); // rpm
