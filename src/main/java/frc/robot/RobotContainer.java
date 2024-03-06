@@ -182,9 +182,9 @@ public class RobotContainer {
     // Button board column 4, row 1
     Trigger m_outtakeAmp = new Trigger(() -> m_buttonBoard.getRawButton(5));
     m_outtakeAmp.onTrue(new SequentialCommandGroup(
-      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 200),
+      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 225),
       new AutonIntakeCommand(m_intakeSubsystem, IntakeSubsystem.kIntakeMaxRate * 0.70, -0.93, 1000),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 300)
+      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 275)
     ));
 
     // Button board column 2, row 1
