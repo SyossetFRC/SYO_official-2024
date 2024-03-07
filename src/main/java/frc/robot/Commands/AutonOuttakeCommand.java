@@ -32,7 +32,7 @@ public class AutonOuttakeCommand extends Command {
         this.m_maxTime = maxTime;
         this.m_isTimeRecorded = false;
 
-        m_anglePIDController = new PIDController(7.5, 0, 0);
+        m_anglePIDController = new PIDController(10.0, 0, 0);
 
         addRequirements(outtakeSubsystem);
     }

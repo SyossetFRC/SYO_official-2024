@@ -173,7 +173,7 @@ public class RobotContainer {
         new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
-          new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+          new AutonIntakeCommand(m_intakeSubsystem, 500, 0, 500)
         )
       ),
       new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1500)
