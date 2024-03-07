@@ -103,7 +103,7 @@ public class RobotContainer {
 
     SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.03, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.00, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
           new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
@@ -145,11 +145,11 @@ public class RobotContainer {
 
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == 1.0);
-    m_incrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(0.2)));
+    m_incrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(0.1)));
 
     // Driver D-pad down
     Trigger m_decrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == -1.0);
-    m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.2)));
+    m_decrementPowerLimit.onTrue(new InstantCommand(() -> changePowerLimit(-0.1)));
 
     // Button board column 1, row 2
     Trigger m_intake = new Trigger(() -> m_buttonBoard.getRawButton(1));
@@ -159,7 +159,7 @@ public class RobotContainer {
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.03, 1500),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.00, 1500),
       new SequentialCommandGroup(
         new WaitCommand(1),
         new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
@@ -182,8 +182,10 @@ public class RobotContainer {
     // Button board column 4, row 1
     Trigger m_outtakeAmp = new Trigger(() -> m_buttonBoard.getRawButton(5));
     m_outtakeAmp.onTrue(new SequentialCommandGroup(
+      new AutonIntakeCommand(m_intakeSubsystem, -200, 0, 250),
+      new WaitCommand(1.0),
       new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 225),
-      new AutonIntakeCommand(m_intakeSubsystem, IntakeSubsystem.kIntakeMaxRate * 0.69, -0.93, 1000),
+      new AutonIntakeCommand(m_intakeSubsystem, IntakeSubsystem.kIntakeMaxRate * 0.68, -0.93, 500),
       new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 275)
     ));
 

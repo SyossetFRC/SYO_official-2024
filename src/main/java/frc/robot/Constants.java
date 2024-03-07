@@ -31,7 +31,6 @@ public final class Constants {
 
     public static final int INTAKE_MOTOR = 24;
     public static final int ROTATE_MOTOR = 41;
-    public static final int BEAM_BREAK_SENSOR = 1;
     public static final int LOW_LIMIT_SWITCH = 4;
     public static final int HIGH_LIMIT_SWITCH = 6;
 
