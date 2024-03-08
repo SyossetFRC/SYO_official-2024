@@ -103,7 +103,7 @@ public class RobotContainer {
 
     SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.00, 1500),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -1.98, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
           new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
@@ -159,7 +159,7 @@ public class RobotContainer {
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -2.00, 1500),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -1.98, 1500),
       new SequentialCommandGroup(
         new WaitCommand(1),
         new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
@@ -262,7 +262,7 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0.600, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 1000)
       ),
       new ParallelCommandGroup(
         new ParallelCommandGroup(
@@ -326,7 +326,7 @@ public class RobotContainer {
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.50, -0.600, 1000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.00, -0.460, 1000)
       ),
       new ParallelCommandGroup(
         new ParallelCommandGroup(
