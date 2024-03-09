@@ -244,12 +244,34 @@ public class RobotContainer {
     }
     return 0;
   }
+ 
+  // private Command leftOutNoteSequence(){
+  //   return new SequentialCommandGroup(
+  //     new PositionDriveCommand(m_drivetrainSubsystem, 7.79, 0.753, Math.PI/2, 6000),
+  //     new ParallelCommandGroup(
+  //       new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
+  //       new SequentialCommandGroup(
+  //         new WaitCommand(1),
+  //         new PositionDriveCommand(m_drivetrainSubsystem, 8.29, 0.753, 0, 1000)
+  //       )
+  //     ),
+  //     new ParallelCommandGroup(
+  //       new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000),
+  //       new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 1000)
+  //     ),
+  //     new ParallelCommandGroup(
+  //       new ParallelCommandGroup(
+  //         new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
+  //         new SequentialCommandGroup(
+  //           new WaitCommand(1),
+  //           new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+  //         )
+  //       ),
+  //       new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1500)
+  //     )
+  //   );
+  // }
 
-  /**
-   * Command to intake and shoot the note on the left-most spike mark of either alliance, from the POV of the drivers.
-   * 
-   * @return Command to intake and shoot the note on the left-most spike mark of either alliance, from the POV of the drivers.
-   */
   private Command leftNoteSequence() {
     return new SequentialCommandGroup(
       new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0, 1.5, Math.PI / 2,4000),
