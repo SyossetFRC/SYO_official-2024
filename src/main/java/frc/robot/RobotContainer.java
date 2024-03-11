@@ -252,7 +252,7 @@ public class RobotContainer {
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
-          new PositionDriveCommand(m_drivetrainSubsystem, 1.60, 1.50, 0, 1000)
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.80, 1.50, 0, 1000)
         )
       ),
       new ParallelCommandGroup(
@@ -282,7 +282,7 @@ public class RobotContainer {
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
-          new PositionDriveCommand(m_drivetrainSubsystem, 1.60, 0, 0, 1000)
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.80, 0, 0, 1000)
         )
       ),
       new ParallelCommandGroup(
@@ -312,7 +312,7 @@ public class RobotContainer {
         new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 2000),
         new SequentialCommandGroup(
           new WaitCommand(1.0),
-          new PositionDriveCommand(m_drivetrainSubsystem, 1.60, -1.50, 0, 1000)
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.80, -1.50, 0, 1000)
         )
       ),
       new ParallelCommandGroup(
