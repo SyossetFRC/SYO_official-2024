@@ -221,7 +221,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private final PIDController m_drivePIDController = new PIDController(0, 0, 0);
     private final PIDController m_turningPIDController = new PIDController(0.5, 0, 0.01);
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 2.3);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 2.4);
 
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
