@@ -208,7 +208,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private class SwerveModule {
     private static final double kWheelRadius = 0.050165; // meters
-    private static final double kDriveGearRatio = (16.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
+    private static final double kDriveGearRatio = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
     private static final double kSteerGearRatio = 7.0 / 150.0;
 
     private final CANSparkMax m_driveMotor;

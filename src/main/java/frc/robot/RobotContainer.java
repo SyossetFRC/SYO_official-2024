@@ -44,7 +44,7 @@ public class RobotContainer {
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
   private final Joystick m_buttonBoard = new Joystick(2);
-  private double m_powerLimit = 0.8;
+  private double m_powerLimit = 0.9;
 
   /**
    * This class stores all robot related subsystems, commands, and methods that
@@ -64,7 +64,7 @@ public class RobotContainer {
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
         () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.25, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.15
+        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.75
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(

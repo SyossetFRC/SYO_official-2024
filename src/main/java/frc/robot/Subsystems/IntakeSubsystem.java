@@ -19,7 +19,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final double kIntakeGearRatio = (1.0 / 4.0);
     public static final double kIntakeMaxRate = 5676.0 * kIntakeGearRatio; // rpm
 
-    private static final double kRotateGearRatio = (1.0 / 20.0) * (60.0 / 64.0);
+    private static final double kRotateGearRatio = (1.0 / 100.0) * (60.0 / 64.0);
     public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60; // rad/s
 
     private final CANSparkMax m_intakeMotor;
@@ -32,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput m_highLimitSwitch;
 
     private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00845);
-    private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 0.43);
+    private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 2.15);
 
     private final GenericEntry m_intakeRateEntry;
     private final GenericEntry m_rotateAngleEntry;
