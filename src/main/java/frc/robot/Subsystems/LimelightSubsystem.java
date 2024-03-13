@@ -1,5 +1,9 @@
 package frc.robot.Subsystems;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.text.CollationElementIterator;
+import java.util.Collections;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -11,7 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimelightSubsystem extends SubsystemBase {
-    private double[] m_limelightOdometry;
+    private ArrayBlockingQueue<Double> m_limelight_x_position, m_limelight_y_position;
     private NetworkTableEntry m_angleX;
 
     private final GenericEntry m_distanceToNearestSpeakerEntry;
@@ -20,7 +24,11 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public LimelightSubsystem() {
         NetworkTable networkTable = NetworkTableInstance.getDefault().getTable("limelight");
-        m_limelightOdometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        double[] limelightOdometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+
+        m_limelight_x_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, limelightOdometry[0]));
+        m_limelight_y_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, limelightOdometry[1]));
+       
         m_angleX = networkTable.getEntry("tx");
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
@@ -32,14 +40,28 @@ public class LimelightSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        NetworkTable networkTable = NetworkTableInstance.getDefault().getTable("limelight");
+        double[] limelightOdometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        m_limelight_x_position.poll();
+        m_limelight_x_position.add(limelightOdometry[0]);
+        m_limelight_y_position.poll();
+        m_limelight_y_position.add(limelightOdometry[1]);
+
         m_distanceToNearestSpeakerEntry.setString(getDistanceToNearestSpeaker() + " m");
         m_outtakeAngleEntry.setString(calculateOuttakeAngle() + " rad");
         m_drivetrainAngleChangeEntry.setString(getDrivetrainAngleChange() + " rad");
     }
 
     private double getDistanceToNearestSpeaker() {
-        double distance_blue = Math.sqrt(Math.pow(m_limelightOdometry[0] + 0.0381,2) + Math.pow(m_limelightOdometry[1] - 5.5479,2));
-        double distance_red = Math.sqrt(Math.pow(m_limelightOdometry[0] - 16.579 ,2) + Math.pow(m_limelightOdometry[1] - 5.5479,2));
+        double x_pos = 0, y_pos = 0;
+        for (double d : m_limelight_x_position) x_pos += d;
+        for (double d : m_limelight_y_position) y_pos += d;
+        
+        x_pos /= 5.0;
+        y_pos /= 5.0;
+
+        double distance_blue = Math.sqrt(Math.pow(x_pos + 0.0381,2) + Math.pow(y_pos - 5.5479,2));
+        double distance_red = Math.sqrt(Math.pow(x_pos - 16.579 ,2) + Math.pow(y_pos - 5.5479,2));
         if (distance_red < distance_blue)
         {
             return distance_red;
@@ -57,7 +79,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
-        return 0;
+        return .824959 * Math.pow(getDistanceToNearestSpeaker(),-.922543)-2.626262;
     }
 
     /**

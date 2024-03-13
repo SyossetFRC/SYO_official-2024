@@ -159,7 +159,7 @@ public class RobotContainer {
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, -1.98, 1500),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, m_limelightSubsystem.calculateOuttakeAngle(), 1500),
       new SequentialCommandGroup(
         new WaitCommand(1),
         new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
@@ -170,10 +170,10 @@ public class RobotContainer {
     Trigger m_outtakeLimelightSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
     m_outtakeLimelightSpeaker.onTrue(new ParallelCommandGroup(
       new ParallelCommandGroup(
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.69, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.7, 1500),
         new SequentialCommandGroup(
           new WaitCommand(1),
-          new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+          new AutonIntakeCommand(m_intakeSubsystem, 300, 0, 500)
         )
       ),
       new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1500)
