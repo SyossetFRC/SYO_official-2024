@@ -1,7 +1,6 @@
 package frc.robot.Subsystems;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.text.CollationElementIterator;
 import java.util.Collections;
 
 import edu.wpi.first.networktables.GenericEntry;
@@ -54,31 +53,6 @@ public class LimelightSubsystem extends SubsystemBase {
         m_outtakeAngleEntry.setString(calculateOuttakeAngle() + " rad");
         m_drivetrainAngleChangeEntry.setString(getDrivetrainAngleChange() + " rad");
     }
-    private double getDistanceToBlueSpeaker(){
-        double x_pos = 0, y_pos = 0;
-        for (double d : m_limelight_x_position) x_pos += d;
-        for (double d : m_limelight_y_position) y_pos += d;
-        
-        x_pos /= 5.0;
-        y_pos /= 5.0;
-
-        return Math.sqrt(Math.pow(x_pos + 0.0381,2) + Math.pow(y_pos - 5.5479,2));
-    }
-
-
-    private double getDistanceToRedSpeaker(){
-        double x_pos = 0, y_pos = 0;
-        for (double d : m_limelight_x_position) x_pos += d;
-        for (double d : m_limelight_y_position) y_pos += d;
-        
-        x_pos /= 5.0;
-        y_pos /= 5.0;
-
-        return Math.sqrt(Math.pow(x_pos - 16.579 ,2) + Math.pow(y_pos - 5.5479,2));
-    }
-    private double getCurrentYaw(){
-        return Math.toRadians(m_limelightodometry[5]);
-    }
 
     private double getDistanceToNearestSpeaker() {
         double x_pos = 0, y_pos = 0;
@@ -107,7 +81,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
-        return 1.4277 * Math.pow(getDistanceToNearestSpeaker(),-.484748) - 2.06 ;
+        return 1.4277 * Math.pow(getDistanceToNearestSpeaker(),-.484748) - 2.06;
     }
 
     /**
@@ -117,14 +91,5 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public double getDrivetrainAngleChange() {
         return -Math.toRadians(m_angleX.getDouble(0));
-    //     if(getDistanceToBlueSpeaker() < getDistanceToRedSpeaker()){
-
-    //         return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] + .0381)) - getCurrentYaw();
-    //     }
-    //     else if (getDistanceToRedSpeaker() < getDistanceToBlueSpeaker())
-    //     {
-    //         return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] - 16.579)) - getCurrentYaw();
-    //     }
-    //     return 0;
     }
 }

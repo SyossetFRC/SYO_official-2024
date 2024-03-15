@@ -33,7 +33,7 @@ public class LimelightOuttakeCommand extends Command {
         this.m_maxTime = maxTime;
         this.m_isTimeRecorded = false;
 
-        m_anglePIDController = new PIDController(10.0, 0, 0);
+        m_anglePIDController = new PIDController(5.0, 0, 0);
 
         addRequirements(outtakeSubsystem);
     }
@@ -47,8 +47,6 @@ public class LimelightOuttakeCommand extends Command {
 
         m_outtakeSubsystem.outtake(m_outtakeRateSupplier);
         m_outtakeSubsystem.rotate(m_anglePIDController.calculate(m_outtakeSubsystem.getAngle(), m_limelightSubsystem.calculateOuttakeAngle()));
-        // m_outtakeSubsystem.rotate((m_outtakeSubsystem.getAngle() - m_limelightSubsystem.calculateOuttakeAngle()));
-
     }
 
     @Override

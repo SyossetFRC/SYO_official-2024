@@ -32,7 +32,7 @@ public class AutonOuttakeCommand extends Command {
         this.m_maxTime = maxTime;
         this.m_isTimeRecorded = false;
 
-        m_anglePIDController = new PIDController(10.0, 0, 0);
+        m_anglePIDController = new PIDController(5.0, 0, 0);
 
         addRequirements(outtakeSubsystem);
     }
@@ -45,8 +45,7 @@ public class AutonOuttakeCommand extends Command {
         }
 
         m_outtakeSubsystem.outtake(m_outtakeRateSupplier);
-        // m_outtakeSubsystem.rotate(m_anglePIDController.calculate(m_outtakeSubsystem.getAngle(), m_outtakeAngle));
-        m_outtakeSubsystem.rotate((m_outtakeSubsystem.getAngle()- m_outtakeAngle)*5);
+        m_outtakeSubsystem.rotate(m_anglePIDController.calculate(m_outtakeSubsystem.getAngle(), m_outtakeAngle));
 
     }
 

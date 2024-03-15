@@ -1,7 +1,5 @@
 package frc.robot.Commands;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DrivetrainSubsystem;
 import frc.robot.Subsystems.LimelightSubsystem;
@@ -10,15 +8,9 @@ public class LimelightRotateCommand extends Command {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
     private final LimelightSubsystem m_limelightSubsysystem;
 
-    private double m_theta;
-
     private final double m_rotationalVelocity;
 
     private double m_rotationSupplier;
-
-    private PIDController m_pidTheta;
-
-    private Rotation2d m_initialAngle;
 
     private double m_outputTheta;
 
@@ -67,25 +59,7 @@ public class LimelightRotateCommand extends Command {
 
     
     @Override
-    public void initialize() {
-        // Records initial Angle
-        m_initialAngle = m_drivetrainSubsystem.getAngle();
-
-        // Calculates absolute desired theta
-        m_theta = m_initialAngle.getRadians() + m_limelightSubsysystem.getDrivetrainAngleChange();
-
-        // Calculates theoretical angular vector
-        m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_theta - m_initialAngle.getRadians());
-
-        // Creates velocity component PIDs
-        m_pidTheta = new PIDController(2.5, 0.2, 0.1);
-
-        m_pidTheta.setIZone(Math.PI / 2);
-
-        m_pidTheta.setTolerance(0.05);
-
-        m_pidTheta.enableContinuousInput(-Math.PI, Math.PI);
-    }
+    public void initialize() { m_rotationSupplier = Math.copySign(m_rotationalVelocity, m_limelightSubsysystem.getDrivetrainAngleChange()); }
     
     @Override
     public void execute() {
@@ -94,18 +68,18 @@ public class LimelightRotateCommand extends Command {
             m_isTimeRecorded = true;
         }
 
-        m_outputTheta = clip(m_pidTheta.calculate(m_drivetrainSubsystem.getAngle().getRadians(), m_theta), m_rotationSupplier);
+        m_outputTheta = clip(m_limelightSubsysystem.getDrivetrainAngleChange(), m_rotationSupplier);
 
         m_drivetrainSubsystem.drive(
                 0.01,
                 0,
-                m_limelightSubsysystem.getDrivetrainAngleChange(),
+                m_outputTheta,
                 true
         );
     }
 
     @Override
-    public boolean isFinished() { return m_pidTheta.atSetpoint() || (System.currentTimeMillis() > m_recordedTime + m_maxTime); }
+    public boolean isFinished() { return System.currentTimeMillis() > m_recordedTime + m_maxTime; }
 
     @Override
     public void end(boolean interrupted) { 
