@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotContainer.SpikeMarkNote;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -36,6 +37,8 @@ public class Robot extends TimedRobot {
   private GenericEntry m_leftNoteButton;
   private GenericEntry m_middleNoteButton;
   private GenericEntry m_rightNoteButton;
+  private GenericEntry m_midfieldleftNoteButton;
+  private GenericEntry m_midfieldsecondleftNoteButton;
   private GenericEntry m_autonomousNotesOutputEntry;
 
   /**
@@ -59,6 +62,8 @@ public class Robot extends TimedRobot {
     m_leftNoteButton = m_noteChooserLayout.add("Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_midfieldleftNoteButton = m_noteChooserLayout.add("Middle Field Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_midfieldsecondleftNoteButton =m_noteChooserLayout.add("Middle Field Second Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
   }
@@ -100,6 +105,20 @@ public class Robot extends TimedRobot {
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.RIGHT);
     }
+    if (m_midfieldleftNoteButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.MIDLEFT)) {
+        m_autonomousNotes.add(SpikeMarkNote.MIDLEFT);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.MIDLEFT);
+    }
+    if (m_midfieldsecondleftNoteButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.SECONDMIDLEFT)) {
+        m_autonomousNotes.add(SpikeMarkNote.SECONDMIDLEFT);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.SECONDMIDLEFT);
+    }
     m_autonomousNotesOutputEntry.setString(printAutonomousNotes());
   }
 
@@ -128,7 +147,14 @@ public class Robot extends TimedRobot {
         case RIGHT:
           autonomousNotes += " RIGHT ";
           break;
+        case MIDLEFT:
+          autonomousNotes += "MIDFIELD LEFT ";
+          break;
+        case SECONDMIDLEFT:
+          autonomousNotes += "SECOND MIDFIELD LEFT ";
+          break;
       }
+
     }
     autonomousNotes += "}";
     return autonomousNotes;
