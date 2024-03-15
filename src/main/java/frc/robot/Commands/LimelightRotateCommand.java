@@ -63,6 +63,9 @@ public class LimelightRotateCommand extends Command {
         this(drivetrainSubsystem, limelightSubsystem, DrivetrainSubsystem.kMaxAngularSpeed, maxTime);
     }
 
+
+
+    
     @Override
     public void initialize() {
         // Records initial Angle
@@ -96,7 +99,7 @@ public class LimelightRotateCommand extends Command {
         m_drivetrainSubsystem.drive(
                 0.01,
                 0,
-                m_outputTheta,
+                m_limelightSubsysystem.getDrivetrainAngleChange(),
                 true
         );
     }
