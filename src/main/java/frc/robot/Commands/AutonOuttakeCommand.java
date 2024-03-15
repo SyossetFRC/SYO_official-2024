@@ -45,7 +45,9 @@ public class AutonOuttakeCommand extends Command {
         }
 
         m_outtakeSubsystem.outtake(m_outtakeRateSupplier);
-        m_outtakeSubsystem.rotate(m_anglePIDController.calculate(m_outtakeSubsystem.getAngle(), m_outtakeAngle));
+        // m_outtakeSubsystem.rotate(m_anglePIDController.calculate(m_outtakeSubsystem.getAngle(), m_outtakeAngle));
+        m_outtakeSubsystem.rotate((m_outtakeSubsystem.getAngle()- m_outtakeAngle)*5);
+
     }
 
     @Override

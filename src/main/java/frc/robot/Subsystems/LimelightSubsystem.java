@@ -17,17 +17,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class LimelightSubsystem extends SubsystemBase {
     private ArrayBlockingQueue<Double> m_limelight_x_position, m_limelight_y_position;
     private NetworkTableEntry m_angleX;
+    NetworkTable networkTable = NetworkTableInstance.getDefault().getTable("limelight");
+
+    private double[] m_limelightodometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
 
     private final GenericEntry m_distanceToNearestSpeakerEntry;
     private final GenericEntry m_outtakeAngleEntry;
     private final GenericEntry m_drivetrainAngleChangeEntry;
 
     public LimelightSubsystem() {
-        NetworkTable networkTable = NetworkTableInstance.getDefault().getTable("limelight");
-        double[] limelightOdometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        networkTable = NetworkTableInstance.getDefault().getTable("limelight");
+        m_limelightodometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
 
-        m_limelight_x_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, limelightOdometry[0]));
-        m_limelight_y_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, limelightOdometry[1]));
+        m_limelight_x_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, m_limelightodometry[0]));
+        m_limelight_y_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, m_limelightodometry[1]));
        
         m_angleX = networkTable.getEntry("tx");
 
@@ -41,15 +44,40 @@ public class LimelightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         NetworkTable networkTable = NetworkTableInstance.getDefault().getTable("limelight");
-        double[] limelightOdometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        double[] m_limelightodometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
         m_limelight_x_position.poll();
-        m_limelight_x_position.add(limelightOdometry[0]);
+        m_limelight_x_position.add(m_limelightodometry[0]);
         m_limelight_y_position.poll();
-        m_limelight_y_position.add(limelightOdometry[1]);
+        m_limelight_y_position.add(m_limelightodometry[1]);
 
         m_distanceToNearestSpeakerEntry.setString(getDistanceToNearestSpeaker() + " m");
         m_outtakeAngleEntry.setString(calculateOuttakeAngle() + " rad");
         m_drivetrainAngleChangeEntry.setString(getDrivetrainAngleChange() + " rad");
+    }
+    private double getDistanceToBlueSpeaker(){
+        double x_pos = 0, y_pos = 0;
+        for (double d : m_limelight_x_position) x_pos += d;
+        for (double d : m_limelight_y_position) y_pos += d;
+        
+        x_pos /= 5.0;
+        y_pos /= 5.0;
+
+        return Math.sqrt(Math.pow(x_pos + 0.0381,2) + Math.pow(y_pos - 5.5479,2));
+    }
+
+
+    private double getDistanceToRedSpeaker(){
+        double x_pos = 0, y_pos = 0;
+        for (double d : m_limelight_x_position) x_pos += d;
+        for (double d : m_limelight_y_position) y_pos += d;
+        
+        x_pos /= 5.0;
+        y_pos /= 5.0;
+
+        return Math.sqrt(Math.pow(x_pos - 16.579 ,2) + Math.pow(y_pos - 5.5479,2));
+    }
+    private double getCurrentYaw(){
+        return Math.toRadians(m_limelightodometry[5]);
     }
 
     private double getDistanceToNearestSpeaker() {
@@ -79,7 +107,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
-        return .824959 * Math.pow(getDistanceToNearestSpeaker(),-.922543)-2.626262;
+        return 1.4277 * Math.pow(getDistanceToNearestSpeaker(),-.484748) - 2.06 ;
     }
 
     /**
@@ -89,5 +117,14 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public double getDrivetrainAngleChange() {
         return -Math.toRadians(m_angleX.getDouble(0));
+    //     if(getDistanceToBlueSpeaker() < getDistanceToRedSpeaker()){
+
+    //         return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] + .0381)) - getCurrentYaw();
+    //     }
+    //     else if (getDistanceToRedSpeaker() < getDistanceToBlueSpeaker())
+    //     {
+    //         return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] - 16.579)) - getCurrentYaw();
+    //     }
+    //     return 0;
     }
 }
