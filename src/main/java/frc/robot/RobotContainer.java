@@ -63,7 +63,7 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
-        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.25, 
+        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.75, 
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.75
     ));
 
@@ -192,9 +192,9 @@ public class RobotContainer {
     Trigger m_outtakeAmp = new Trigger(() -> m_buttonBoard.getRawButton(5));
     m_outtakeAmp.onTrue(new SequentialCommandGroup(
       new AutonIntakeCommand(m_intakeSubsystem, -200, 0, 250),
-      new WaitCommand(1.0),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 225),
-      new AutonIntakeCommand(m_intakeSubsystem, IntakeSubsystem.kIntakeMaxRate * 0.68, -0.93, 500),
+      new WaitCommand(1),
+      new AutonIntakeCommand(m_intakeSubsystem, 0, -1.2, 500),
+      new AutonIntakeCommand(m_intakeSubsystem, IntakeSubsystem.kIntakeMaxRate * 0.66, -1.2, 500),
       new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 275)
     ));
 
@@ -350,38 +350,39 @@ public class RobotContainer {
   private Command BlueMidLeftNoteSequence() {
     return new SequentialCommandGroup(
 
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 3, Math.PI / 2, 800),
-        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 3, Math.PI / 2, 400),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 3.5, Math.PI / 2, 800),
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 3.5, Math.PI / 2, 400),
         
 
       new ParallelCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 6.03 , 1.8048, 0, 3, Math.PI / 2, 2000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 6.03 + .7 , 1.8048, 0, 3.5, Math.PI / 2, 2000),
       new SequentialCommandGroup(
       new WaitCommand(.5),
       
       
-      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 1000))
+      new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1500))
       ),
 
-      new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1500),
-        new SequentialCommandGroup(
-          new WaitCommand(0.75),
-          new PositionDriveCommand(m_drivetrainSubsystem, 6.03 + .7, 1.7248, 0, 750)
-        )
-      ),
+      // new ParallelCommandGroup(
+      //   new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1500),
+      //   new SequentialCommandGroup(
+      //     new WaitCommand(0.75),
+      //     new PositionDriveCommand(m_drivetrainSubsystem, 6.03 + .7, 1.7248, 0, 750)
+      //   )
+      // ),
 
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 3000),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem,0, 3000),
+
         new SequentialCommandGroup(
 
-        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 3, Math.PI / 2, 800),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 3, Math.PI / 2, 400),
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 3.5, Math.PI / 2, 800),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 3.5, Math.PI / 2, 400),
         
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem,0, 1000),
 
 
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 2000)
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 1800)
 
         )
       ),
@@ -398,34 +399,36 @@ public class RobotContainer {
 private Command BlueMidsecondLeftNoteSequence() {
     return new SequentialCommandGroup(
       
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 3, Math.PI / 2, 800),
-        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 3, Math.PI / 2, 400),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 3.5, Math.PI / 2, 800),
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 3.5, Math.PI / 2, 400),
         
 
       new ParallelCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 6.03, .1726, 0, 4, Math.PI / 2, 2000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 6.03 + .7, .1726, 0, 3.5, Math.PI / 2, 2000),
       new SequentialCommandGroup(
       new WaitCommand(.5),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 1000))
+
+      new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1500))
       ),
 
-      new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1500),
-        new SequentialCommandGroup(
-          new WaitCommand(0.75),
-          new PositionDriveCommand(m_drivetrainSubsystem, 6.03 + .7, .1526, 0, 750)
-        )
-      ),
+      // new ParallelCommandGroup(
+      //   new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1500),
+      //   new SequentialCommandGroup(
+      //     new WaitCommand(0.75),
+      //     new PositionDriveCommand(m_drivetrainSubsystem, 6.03 + .7, .1526, 0, 750)
+      //   )
+      // ),
 
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 3000),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem,0, 3000),
+
         new SequentialCommandGroup(
 
-        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 4, Math.PI / 2, 800),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 4, Math.PI / 2, 400),
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.445, 2.2, 0, 3.5, Math.PI / 2, 800),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.30, 2.2, 0, 3.5, Math.PI / 2, 400),
         
         
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem,0, 1000),
 
         new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 2000)
 
