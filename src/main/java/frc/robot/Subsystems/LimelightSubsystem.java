@@ -26,7 +26,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public LimelightSubsystem() {
         networkTable = NetworkTableInstance.getDefault().getTable("limelight");
-        m_limelightodometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        m_limelightodometry = networkTable.getEntry("botpose").getDoubleArray(new double[6]);
 
         m_limelight_x_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, m_limelightodometry[0]));
         m_limelight_y_position = new ArrayBlockingQueue<>(5, true, Collections.nCopies(5, m_limelightodometry[1]));
@@ -81,7 +81,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
-        return 1.4277 * Math.pow(getDistanceToNearestSpeaker(),-.484748) - 2.06;
+        return 8.29016 * Math.pow(getDistanceToNearestSpeaker(),-.0751256) - 9.01518;
     }
 
     /**
@@ -91,5 +91,27 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public double getDrivetrainAngleChange() {
         return -Math.toRadians(m_angleX.getDouble(0));
+
+        // double x_pos = 0, y_pos = 0;
+        // for (double d : m_limelight_x_position) x_pos += d;
+        // for (double d : m_limelight_y_position) y_pos += d;
+        // double currentyaw = Math.toRadians(m_limelightodometry[5]);
+        // x_pos /= 5.0;
+        // y_pos /= 5.0;
+
+        // double distance_blue = (Math.pow(x_pos + 0.0381,2) + Math.pow(y_pos - 5.5479,2));
+        // double distance_red = (Math.pow(x_pos - 16.579 ,2) + Math.pow(y_pos - 5.5479,2));
+        // if(distance_red  < distance_red){
+            
+        //     return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] + .0381)) - currentyaw;
+        // }
+        // else if (distance_red < distance_blue)
+        // {
+        //     return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] - 16.579)) - currentyaw;
+        // }
+        // return 0;
+
+
     }
+
 }
