@@ -82,17 +82,13 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public double calculateOuttakeAngle() {
         if (getDistanceToNearestSpeaker() > 3.4)
-        {   //slightly modified regression for long distances (REALLY GOOD)!
-            return 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8739;
+        {   
+            // Slightly modified regression for long distances (REALLY GOOD)!
+            return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8739;
         }
-        
-        return 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639;
+        return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8639;
+        // Original line: 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639
     }
-        
-        // original line below
-        // return 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639;
-
-    
 
     /**
      * Returns the change in drivetrain angle necessary for shooting based on limelight input.
@@ -101,27 +97,5 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public double getDrivetrainAngleChange() {
         return -Math.toRadians(m_angleX.getDouble(0));
-
-        // double x_pos = 0, y_pos = 0;
-        // for (double d : m_limelight_x_position) x_pos += d;
-        // for (double d : m_limelight_y_position) y_pos += d;
-        // double currentyaw = Math.toRadians(m_limelightodometry[5]);
-        // x_pos /= 5.0;
-        // y_pos /= 5.0;
-
-        // double distance_blue = (Math.pow(x_pos + 0.0381,2) + Math.pow(y_pos - 5.5479,2));
-        // double distance_red = (Math.pow(x_pos - 16.579 ,2) + Math.pow(y_pos - 5.5479,2));
-        // if(distance_red  < distance_red){
-            
-        //     return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] + .0381)) - currentyaw;
-        // }
-        // else if (distance_red < distance_blue)
-        // {
-        //     return Math.atan((m_limelightodometry[1] - 5.5479)/(m_limelightodometry[0] - 16.579)) - currentyaw;
-        // }
-        // return 0;
-
-
     }
-
 }

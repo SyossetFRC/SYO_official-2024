@@ -75,7 +75,6 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity() + " rad/s").getEntry();
         m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
         m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
-        
     }
 
     /**

@@ -1,6 +1,5 @@
 package frc.robot.Commands;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.OuttakeSubsystem;
 
@@ -13,8 +12,6 @@ public class AutonOuttakeCommand extends Command {
     private final long m_maxTime;
     private long m_recordedTime;
     private boolean m_isTimeRecorded;
-
-    private final PIDController m_anglePIDController;
 
     /**
      * Command to engage the outtake using joystick input.
@@ -32,8 +29,6 @@ public class AutonOuttakeCommand extends Command {
         this.m_maxTime = maxTime;
         this.m_isTimeRecorded = false;
 
-        m_anglePIDController = new PIDController(5.0, 0, 0);
-
         addRequirements(outtakeSubsystem);
     }
 
@@ -45,10 +40,7 @@ public class AutonOuttakeCommand extends Command {
         }
 
         m_outtakeSubsystem.outtake(m_outtakeRateSupplier);
-        // m_outtakeSubsystem.rotate(m_anglePIDController.calculate(m_outtakeSubsystem.getAngle(), m_outtakeAngle));
-        m_outtakeSubsystem.rotate((m_outtakeAngle- m_outtakeSubsystem.getAngle())*10);
-            
-
+        m_outtakeSubsystem.rotate((m_outtakeAngle - m_outtakeSubsystem.getAngle()) * 10);
     }
 
     @Override

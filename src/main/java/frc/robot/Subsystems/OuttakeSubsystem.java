@@ -62,7 +62,7 @@ public class OuttakeSubsystem extends SubsystemBase {
         m_rotateEncoder = new DutyCycleEncoder(Constants.OUTTAKE_ROTATE_ENCODER);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
-        ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
+        ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 3).withPosition(2, 0);
         m_outtakeRateEntry = outtakeLayout.add("Outtake Flywheel 1", m_outtakeEncoder.getVelocity() + " rpm").getEntry();
         m_outtakeRateEntry2 = outtakeLayout.add("Outtake Flywheel 2", m_outtakeEncoder2.getVelocity() + " rpm").getEntry();
         m_linearActuatorPositionEntry = outtakeLayout.add("Outtake Angle", getAngle() + " rad").getEntry();

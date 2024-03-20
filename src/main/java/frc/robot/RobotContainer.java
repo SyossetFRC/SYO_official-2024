@@ -110,8 +110,6 @@ public class RobotContainer {
         )
       ),
       new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.5, 500)
-      
-
     );
     for (SpikeMarkNote note : autonomousNotes) {
       switch(note) {
@@ -124,22 +122,17 @@ public class RobotContainer {
         case RIGHT:
           autonomousSequence.addCommands(rightNoteSequence());
           break;
-          //This is where you add the new sequence
         case REDAMP:
           autonomousSequence.addCommands(RedMidFieldAmpAuton());
-
           break;
         case BLUEAMP:
           autonomousSequence.addCommands(BlueMidfieldAmpAuton());
-
           break;
         case REDSPEAKER:
           autonomousSequence.addCommands(RedMidfieldSpeakerAuton());
-
           break;
         case BLUESPEAKER:
           autonomousSequence.addCommands(BlueMidfieldSpeakerAuton());
-
           break;
       }
     }
@@ -266,13 +259,12 @@ public class RobotContainer {
   private Command leftNoteSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0, 3, Math.PI / 2,1000),
-      new SequentialCommandGroup(
-        new WaitCommand(.5),
-        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
-      )
-      
+        new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0, 3, Math.PI / 2,1000),
+        new SequentialCommandGroup(
+          new WaitCommand(.5),
+          new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
+        )
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
@@ -304,9 +296,9 @@ public class RobotContainer {
   private Command middleNoteSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 3, Math.PI / 2,1000),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 1000)),
-
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 3, Math.PI / 2,1000),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 1000)
+      ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
         new SequentialCommandGroup(
@@ -337,12 +329,12 @@ public class RobotContainer {
   private Command rightNoteSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.50, 0, 3, Math.PI / 2, 1000),
-      new SequentialCommandGroup(
-        new WaitCommand(.5),
-        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
-      )
+        new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.50, 0, 3, Math.PI / 2, 1000),
+        new SequentialCommandGroup(
+          new WaitCommand(.5),
+          new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
+        )
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
@@ -365,8 +357,10 @@ public class RobotContainer {
       )
     );
   }
+
   /**
    * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * NON-TESTED
    * 
    * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
    */
@@ -376,12 +370,11 @@ public class RobotContainer {
         new PositionDriveCommand(m_drivetrainSubsystem, 1.5, 3.2, 0, 3.5, Math.PI / 2, 800),
         new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
       ),
-      
       new ParallelCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 1.05048, 0, 3.5, Math.PI / 2, 1750),
-      new SequentialCommandGroup(
-        new WaitCommand(.5),
-        new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250)
+        new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 1.05048, 0, 3.5, Math.PI / 2, 1750),
+        new SequentialCommandGroup(
+          new WaitCommand(.5),
+          new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250)
         )
       ),
       new ParallelCommandGroup(
@@ -397,19 +390,15 @@ public class RobotContainer {
         ),
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       ),
-
-
       new ParallelCommandGroup(
         new PositionDriveCommand(m_drivetrainSubsystem, 7.7, .1626, 0, 3.5, Math.PI / 2, 1500),
         new SequentialCommandGroup(
           new WaitCommand(.25),
           new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250))
       ),
-
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
         new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
-        
         new PositionDriveCommand(m_drivetrainSubsystem, 2.5, 1.3, .23, 4, Math.PI / 2, 1750)
       ),
       new ParallelCommandGroup(
@@ -421,10 +410,11 @@ public class RobotContainer {
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       )
     );
-}
+  }
 
 /**
    * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * NON-TESTED
    * 
    * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
    */ 
@@ -434,7 +424,6 @@ public class RobotContainer {
         new PositionDriveCommand(m_drivetrainSubsystem, 1.5, -3.2, 0, 3.5, Math.PI / 2, 800),
         new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
       ),
-      
       new ParallelCommandGroup(
       new PositionDriveCommand(m_drivetrainSubsystem, 7.7, -1.05048, 0, 3.5, Math.PI / 2, 1750),
       new SequentialCommandGroup(
@@ -455,19 +444,15 @@ public class RobotContainer {
         ),
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       ),
-
-
       new ParallelCommandGroup(
         new PositionDriveCommand(m_drivetrainSubsystem, 7.7, -.1626 + .5, 0, 3.5, Math.PI / 2, 1500),
         new SequentialCommandGroup(
           new WaitCommand(.25),
           new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250))
       ),
-
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
         new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
-        
         new PositionDriveCommand(m_drivetrainSubsystem, 2.5, -1.3, .23, 4, Math.PI / 2, 1750)
       ),
       new ParallelCommandGroup(
@@ -479,11 +464,11 @@ public class RobotContainer {
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       )
     );
-}
-
+  }
 
 /**
    * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * NON-FUNCTIONAL
    * 
    * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
    */
@@ -493,10 +478,8 @@ public class RobotContainer {
         new PositionDriveCommand(m_drivetrainSubsystem, 1.5, -3.2, 0, 3.5, Math.PI / 2, 800),
         new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
       ),
-      
       new ParallelCommandGroup(
       new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
-      
        /*
          * FIGURE OUT Y COORDINATES FOR INTAKING NOTE
          */
@@ -522,11 +505,8 @@ public class RobotContainer {
         ),
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       ),
-
-
       new ParallelCommandGroup(
         new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
-        
         /*
          * FIGURE OUT COORDINATES FOR INTAKING NOTE
          */
@@ -535,7 +515,6 @@ public class RobotContainer {
           new WaitCommand(.25),
           new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250))
       ),
-
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
         new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
@@ -553,12 +532,11 @@ public class RobotContainer {
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       )
     );
-}
+  }
 
-
-
-/**
+  /**
    * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * NON-FUNCTIONAL
    * 
    * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
    */
@@ -568,10 +546,8 @@ public class RobotContainer {
         new PositionDriveCommand(m_drivetrainSubsystem, 1.5, 3.2, 0, 3.5, Math.PI / 2, 800),
         new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
       ),
-      
       new ParallelCommandGroup(
       new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
-      
       /*
          * FIGURE OUT COORDINATES FOR INTAKING NOTE
          */
@@ -597,8 +573,6 @@ public class RobotContainer {
         ),
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       ),
-
-
       new ParallelCommandGroup(
         new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
         /*
@@ -609,7 +583,6 @@ public class RobotContainer {
           new WaitCommand(.25),
           new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1750))
       ),
-
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
         new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
@@ -627,17 +600,16 @@ public class RobotContainer {
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       )
     );
+  }
+
+  /* Autonomous spike mark note options */
+  enum SpikeMarkNote {
+    LEFT,
+    MIDDLE,
+    RIGHT,
+    REDAMP,
+    BLUEAMP,
+    REDSPEAKER,
+    BLUESPEAKER
+  }
 }
-
-
-
-/* Autonomous spike mark note options */
-enum SpikeMarkNote {
-  LEFT,
-  MIDDLE,
-  RIGHT,
-  REDAMP,
-  BLUEAMP,
-  REDSPEAKER,
-  BLUESPEAKER
-}}
