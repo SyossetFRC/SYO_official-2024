@@ -39,6 +39,8 @@ public final class Constants {
     public static final int LINEAR_ACTUATOR = 19;
     public static final int OUTTAKE_ROTATE_ENCODER = 5;
 
+    public static final int BEAM_BREAK_SENSOR = 8;
+
     public static final int CLIMBER_MOTOR_LEFT = 10;
     public static final int CLIMBER_MOTOR_RIGHT = 14;
 }

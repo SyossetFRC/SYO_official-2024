@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotContainer.SpikeMarkNote;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -36,6 +37,10 @@ public class Robot extends TimedRobot {
   private GenericEntry m_leftNoteButton;
   private GenericEntry m_middleNoteButton;
   private GenericEntry m_rightNoteButton;
+  private GenericEntry m_redmidfieldampButton;
+  private GenericEntry m_bluemidfieldampButton;
+  private GenericEntry m_redmidfieldspeakerButton;
+  private GenericEntry m_bluemidfieldspeakerButton;
   private GenericEntry m_autonomousNotesOutputEntry;
 
   /**
@@ -59,6 +64,12 @@ public class Robot extends TimedRobot {
     m_leftNoteButton = m_noteChooserLayout.add("Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redmidfieldampButton = m_noteChooserLayout.add("Red Midfield Amp", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_bluemidfieldampButton = m_noteChooserLayout.add("Blue Midfield Amp", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redmidfieldspeakerButton = m_noteChooserLayout.add("Red Midfield Speaker", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_bluemidfieldspeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    
+    
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
   }
@@ -100,6 +111,34 @@ public class Robot extends TimedRobot {
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.RIGHT);
     }
+    if (m_redmidfieldampButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.REDAMP)) {
+        m_autonomousNotes.add(SpikeMarkNote.REDAMP);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.REDAMP);
+    }
+    if (m_bluemidfieldampButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.BLUEAMP)) {
+        m_autonomousNotes.add(SpikeMarkNote.BLUEAMP);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.BLUEAMP);
+    }
+    if (m_redmidfieldspeakerButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.REDSPEAKER)) {
+        m_autonomousNotes.add(SpikeMarkNote.REDSPEAKER);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.REDSPEAKER);
+    }
+    if (m_bluemidfieldspeakerButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.BLUESPEAKER)) {
+        m_autonomousNotes.add(SpikeMarkNote.BLUESPEAKER);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.BLUESPEAKER);
+    }
     m_autonomousNotesOutputEntry.setString(printAutonomousNotes());
   }
 
@@ -128,7 +167,20 @@ public class Robot extends TimedRobot {
         case RIGHT:
           autonomousNotes += " RIGHT ";
           break;
+        case REDAMP:
+          autonomousNotes += " RED AMP ";
+          break;
+        case BLUEAMP:
+          autonomousNotes += " BLUE AMP ";
+          break;
+        case REDSPEAKER:
+          autonomousNotes += " RED SPEAKER ";
+          break;
+        case BLUESPEAKER:
+          autonomousNotes += " BLUE SPEAKER ";
+          break;
       }
+
     }
     autonomousNotes += "}";
     return autonomousNotes;

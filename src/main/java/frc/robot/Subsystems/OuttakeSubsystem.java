@@ -24,11 +24,15 @@ public class OuttakeSubsystem extends SubsystemBase {
     private final CANSparkMax m_linearActuator;
 
     private final RelativeEncoder m_outtakeEncoder;
+    private final RelativeEncoder m_outtakeEncoder2;
+
     private final DutyCycleEncoder m_rotateEncoder;
 
     private final SimpleMotorFeedforward m_outtakeFeedforward = new SimpleMotorFeedforward(0, 0.00634);
 
     private final GenericEntry m_outtakeRateEntry;
+    private final GenericEntry m_outtakeRateEntry2;
+
     private final GenericEntry m_linearActuatorPositionEntry;
 
     private double m_outtakeRate;
@@ -48,13 +52,19 @@ public class OuttakeSubsystem extends SubsystemBase {
         m_linearActuator.setInverted(false);
 
         m_outtakeEncoder = m_outtakeMotor1.getEncoder();
+        m_outtakeEncoder2 = m_outtakeMotor2.getEncoder();
+
         m_outtakeEncoder.setPositionConversionFactor(kOuttakeGearRatio); // rpm
         m_outtakeEncoder.setVelocityConversionFactor(kOuttakeGearRatio); // rpm
+        m_outtakeEncoder2.setPositionConversionFactor(kOuttakeGearRatio); // rpm
+        m_outtakeEncoder2.setVelocityConversionFactor(kOuttakeGearRatio); // rpm
+
         m_rotateEncoder = new DutyCycleEncoder(Constants.OUTTAKE_ROTATE_ENCODER);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout outtakeLayout = tab.getLayout("Outtake", BuiltInLayouts.kList).withSize(2, 2).withPosition(2, 0);
-        m_outtakeRateEntry = outtakeLayout.add("Outtake Rate", m_outtakeEncoder.getVelocity() + " rpm").getEntry();
+        m_outtakeRateEntry = outtakeLayout.add("Outtake Flywheel 1", m_outtakeEncoder.getVelocity() + " rpm").getEntry();
+        m_outtakeRateEntry2 = outtakeLayout.add("Outtake Flywheel 2", m_outtakeEncoder2.getVelocity() + " rpm").getEntry();
         m_linearActuatorPositionEntry = outtakeLayout.add("Outtake Angle", getAngle() + " rad").getEntry();
     }
 
@@ -88,6 +98,7 @@ public class OuttakeSubsystem extends SubsystemBase {
     /** Displays the periodically updated outtake rate on the Shuffleboard */
     public void updateShuffleboard() {
         m_outtakeRateEntry.setString(m_outtakeEncoder.getVelocity() + " rpm");
+        m_outtakeRateEntry2.setString(m_outtakeEncoder2.getVelocity() + " rpm");
         m_linearActuatorPositionEntry.setString(getAngle() + " rad");
     }
 

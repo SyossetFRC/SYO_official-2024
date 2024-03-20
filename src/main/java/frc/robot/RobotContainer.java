@@ -44,7 +44,7 @@ public class RobotContainer {
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
   private final Joystick m_buttonBoard = new Joystick(2);
-  private double m_powerLimit = 0.8;
+  private double m_powerLimit = 0.7;
 
   /**
    * This class stores all robot related subsystems, commands, and methods that
@@ -63,13 +63,13 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
-        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.25, 
+        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.2, 
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.75
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.53,
+        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.8,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
 
@@ -103,12 +103,15 @@ public class RobotContainer {
 
     SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, -1.97, 1000),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, -1.1, 1000),
         new SequentialCommandGroup(
           new WaitCommand(0.5),
-          new AutonIntakeCommand(m_intakeSubsystem, 500, 0, 500)
+          new AutonIntakeCommand(m_intakeSubsystem, 1000, 0, 500)
         )
-      )
+      ),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.5, 500)
+      
+
     );
     for (SpikeMarkNote note : autonomousNotes) {
       switch(note) {
@@ -120,6 +123,23 @@ public class RobotContainer {
           break;
         case RIGHT:
           autonomousSequence.addCommands(rightNoteSequence());
+          break;
+          //This is where you add the new sequence
+        case REDAMP:
+          autonomousSequence.addCommands(RedMidFieldAmpAuton());
+
+          break;
+        case BLUEAMP:
+          autonomousSequence.addCommands(BlueMidfieldAmpAuton());
+
+          break;
+        case REDSPEAKER:
+          autonomousSequence.addCommands(RedMidfieldSpeakerAuton());
+
+          break;
+        case BLUESPEAKER:
+          autonomousSequence.addCommands(BlueMidfieldSpeakerAuton());
+
           break;
       }
     }
@@ -153,38 +173,38 @@ public class RobotContainer {
 
     // Button board column 1, row 2
     Trigger m_intake = new Trigger(() -> m_buttonBoard.getRawButton(1));
-    m_intake.whileTrue(new AutonIntakeCommand(m_intakeSubsystem, -400, -2.80, 150000));
-    m_intake.onFalse(new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 1000));
+    m_intake.whileTrue(new AutonIntakeCommand(m_intakeSubsystem, -400, -3.30, 150000));
+    m_intake.onFalse(new AutonIntakeCommand(m_intakeSubsystem, 0, .5, 1000));
 
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, -1.97, 1000),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, -1.1, 1000),
       new SequentialCommandGroup(
         new WaitCommand(0.5),
-        new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+        new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
       )
     ));
 
     // Button board column 2, row 2
     Trigger m_outtakeLimelightSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(2));
     m_outtakeLimelightSpeaker.onTrue(new ParallelCommandGroup(
-      new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, 1000),
+      new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1250),
       new SequentialCommandGroup(
-        new WaitCommand(0.5),
-        new AutonIntakeCommand(m_intakeSubsystem, 500, 0, 500)
+        new WaitCommand(0.75),
+        new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
       ),
-      new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1250)
     ));
 
     // Button board column 4, row 1
     Trigger m_outtakeAmp = new Trigger(() -> m_buttonBoard.getRawButton(5));
     m_outtakeAmp.onTrue(new SequentialCommandGroup(
       new AutonIntakeCommand(m_intakeSubsystem, -200, 0, 250),
-      new WaitCommand(1.0),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.80, 225),
-      new AutonIntakeCommand(m_intakeSubsystem, IntakeSubsystem.kIntakeMaxRate * 0.68, -0.93, 500),
-      new AutonIntakeCommand(m_intakeSubsystem, 0, 0, 275)
+      new WaitCommand(.25),
+      new AutonIntakeCommand(m_intakeSubsystem, 0, -1.32, 400),
+      new AutonIntakeCommand(m_intakeSubsystem, IntakeSubsystem.kIntakeMaxRate * 0.66, -1.32, 500),
+      new AutonIntakeCommand(m_intakeSubsystem, 0, .5, 275)
     ));
 
     // Button board column 2, row 1
@@ -245,25 +265,33 @@ public class RobotContainer {
 
   private Command leftNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0, 3, Math.PI / 2,1500),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -2.80, 1500),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0, 3, Math.PI / 2,1000),
+      new SequentialCommandGroup(
+        new WaitCommand(.5),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
+      )
+      
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
         new SequentialCommandGroup(
-          new WaitCommand(.75),
-          new PositionDriveCommand(m_drivetrainSubsystem, 1.80, 1.50, 0, 750)
+          new WaitCommand(.25),
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.85, 1.50, 0, 750)
         )
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -100, 0, 500),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 500)
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 750),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 750)
       ),
       new ParallelCommandGroup(
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, 1000),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1250),
         new SequentialCommandGroup(
-          new WaitCommand(.5),
-          new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+          new WaitCommand(1),
+          new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
         ),
-        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1250)
       )
     );
   }
@@ -275,23 +303,26 @@ public class RobotContainer {
    */
   private Command middleNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 3, Math.PI / 2,1500),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -2.80, 1500),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 3, Math.PI / 2,1000),
+      new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 1000)),
+
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
         new SequentialCommandGroup(
-          new WaitCommand(0.75),
+          new WaitCommand(0.25),
           new PositionDriveCommand(m_drivetrainSubsystem, 1.80, 0, 0, 750)
         )
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -100, 0, 750),
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 750),
         new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 750)
       ),
       new ParallelCommandGroup(
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, 1000),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1000),
         new SequentialCommandGroup(
-          new WaitCommand(.5),
-          new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+          new WaitCommand(.75),
+          new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
         ),
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       )
@@ -305,33 +336,308 @@ public class RobotContainer {
    */
   private Command rightNoteSequence() {
     return new SequentialCommandGroup(
-      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.50, 0, 3, Math.PI / 2, 1500),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -2.80, 1500),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
+      new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.50, 0, 3, Math.PI / 2, 1000),
+      new SequentialCommandGroup(
+        new WaitCommand(.5),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
+      )
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
         new SequentialCommandGroup(
-          new WaitCommand(0.75),
+          new WaitCommand(0.25),
           new PositionDriveCommand(m_drivetrainSubsystem, 1.80, -1.50, 0, 750)
         )
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -100, 0, 750),
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 750),
         new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.00, -0.460, 750)
       ),
       new ParallelCommandGroup(
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, 1000),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1250),
         new SequentialCommandGroup(
-          new WaitCommand(.5),
+          new WaitCommand(1),
           new AutonIntakeCommand(m_intakeSubsystem, 400, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1250)
+      )
+    );
+  }
+  /**
+   * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * 
+   * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
+   */
+  private Command BlueMidfieldAmpAuton() {
+    return new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.5, 3.2, 0, 3.5, Math.PI / 2, 800),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
+      ),
+      
+      new ParallelCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 1.05048, 0, 3.5, Math.PI / 2, 1750),
+      new SequentialCommandGroup(
+        new WaitCommand(.5),
+        new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250)
+        )
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, 1.3, .23, 4, Math.PI / 2, 1750)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      ),
+
+
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 7.7, .1626, 0, 3.5, Math.PI / 2, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(.25),
+          new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250))
+      ),
+
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, 1.3, .23, 4, Math.PI / 2, 1750)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
         ),
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       )
     );
-  }
 }
+
+/**
+   * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * 
+   * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
+   */ 
+  private Command RedMidFieldAmpAuton() {
+    return new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.5, -3.2, 0, 3.5, Math.PI / 2, 800),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
+      ),
+      
+      new ParallelCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 7.7, -1.05048, 0, 3.5, Math.PI / 2, 1750),
+      new SequentialCommandGroup(
+        new WaitCommand(.5),
+        new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250)
+        )
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, -1.3, .23, 4, Math.PI / 2, 1750)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      ),
+
+
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 7.7, -.1626 + .5, 0, 3.5, Math.PI / 2, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(.25),
+          new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250))
+      ),
+
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, -1.3, .23, 4, Math.PI / 2, 1750)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      )
+    );
+}
+
+
+/**
+   * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * 
+   * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
+   */
+  private Command BlueMidfieldSpeakerAuton() {
+    return new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.5, -3.2, 0, 3.5, Math.PI / 2, 800),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
+      ),
+      
+      new ParallelCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
+      
+       /*
+         * FIGURE OUT Y COORDINATES FOR INTAKING NOTE
+         */
+        - 1.45048, 0, 3.5, Math.PI / 2, 1750),
+      new SequentialCommandGroup(
+        new WaitCommand(.5),
+        new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250)
+        )
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        /*
+         * FIGURE OUT COORDINATES FOR COMING BACK
+         */
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, -1.3, .23, 4, Math.PI / 2, 1750)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      ),
+
+
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
+        
+        /*
+         * FIGURE OUT COORDINATES FOR INTAKING NOTE
+         */
+        -.1626, 0, 3.5, Math.PI / 2, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(.25),
+          new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1250))
+      ),
+
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        /*
+         * FIGURE OUT COORDINATES FOR COMING BACK
+         */
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, -1.3, .23, 4, Math.PI / 2, 1750)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      )
+    );
+}
+
+
+
+/**
+   * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
+   * 
+   * @return Command to intake and shoot the note on the right-most spike mark of either alliance, from the POV of the drivers.
+   */
+  private Command RedMidfieldSpeakerAuton() {
+    return new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.5, 3.2, 0, 3.5, Math.PI / 2, 800),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 800)
+      ),
+      
+      new ParallelCommandGroup(
+      new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
+      
+      /*
+         * FIGURE OUT COORDINATES FOR INTAKING NOTE
+         */
+        1.45048, 0, 3.5, Math.PI / 2, 2000),
+      new SequentialCommandGroup(
+        new WaitCommand(.5),
+        new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1500)
+        )
+      ),
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        /*
+         * FIGURE OUT COORDINATES FOR COMING BACK
+         */
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, 1.3, .23, 4, Math.PI / 2, 2500)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      ),
+
+
+      new ParallelCommandGroup(
+        new PositionDriveCommand(m_drivetrainSubsystem, 7.7, 
+        /*
+         * FIGURE OUT COORDINATES FOR INTAKING NOTE
+         */
+        .1626, 0, 3.5, Math.PI / 2, 2000),
+        new SequentialCommandGroup(
+          new WaitCommand(.25),
+          new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1750))
+      ),
+
+      new ParallelCommandGroup(
+        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 1500),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, 0, 1500),
+        /*
+         * FIGURE OUT COORDINATES FOR COMING BACK
+         */
+        new PositionDriveCommand(m_drivetrainSubsystem, 2.5, 1.3, .23, 4, Math.PI / 2, 2500)
+      ),
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1500),
+        new SequentialCommandGroup(
+          new WaitCommand(1.25),
+          new AutonIntakeCommand(m_intakeSubsystem, 800, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
+      )
+    );
+}
+
+
 
 /* Autonomous spike mark note options */
 enum SpikeMarkNote {
   LEFT,
   MIDDLE,
-  RIGHT
-}
+  RIGHT,
+  REDAMP,
+  BLUEAMP,
+  REDSPEAKER,
+  BLUESPEAKER
+}}
