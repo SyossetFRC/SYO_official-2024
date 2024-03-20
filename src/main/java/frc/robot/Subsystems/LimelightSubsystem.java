@@ -81,8 +81,18 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
+        if (getDistanceToNearestSpeaker() > 3.4)
+        {   //slightly modified regression for long distances (REALLY GOOD)!
+            return 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8739;
+        }
+        
         return 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639;
     }
+        
+        // original line below
+        // return 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639;
+
+    
 
     /**
      * Returns the change in drivetrain angle necessary for shooting based on limelight input.
