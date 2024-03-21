@@ -84,9 +84,9 @@ public class LimelightSubsystem extends SubsystemBase {
         if (getDistanceToNearestSpeaker() > 3.4)
         {   
             // Slightly modified regression for long distances (REALLY GOOD)!
-            return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8739;
+            return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8339;
         }
-        return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8639;
+        return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8539;
         // Original line: 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639
     }
 

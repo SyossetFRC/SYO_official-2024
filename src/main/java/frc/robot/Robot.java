@@ -64,10 +64,10 @@ public class Robot extends TimedRobot {
     m_leftNoteButton = m_noteChooserLayout.add("Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_redmidfieldampButton = m_noteChooserLayout.add("Red Midfield Amp (NON-TESTED)", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_bluemidfieldampButton = m_noteChooserLayout.add("Blue Midfield Amp (NON-TESTED)", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_redmidfieldspeakerButton = m_noteChooserLayout.add("Red Midfield Speaker (NON-FUNCTIONAL)", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_bluemidfieldspeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker (NON-FUNCTIONAL)", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redmidfieldampButton = m_noteChooserLayout.add("Red Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_bluemidfieldampButton = m_noteChooserLayout.add("Blue Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redmidfieldspeakerButton = m_noteChooserLayout.add("Red Midfield Speaker [DON'T USE]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_bluemidfieldspeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker [DON'T USE]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
   }
