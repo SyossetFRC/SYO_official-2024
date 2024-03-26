@@ -172,7 +172,7 @@ public class RobotContainer {
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.53, -1.1, 1000),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, -1.05, 1000),
       new SequentialCommandGroup(
         new WaitCommand(0.5),
         new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
@@ -260,21 +260,18 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0, 3, Math.PI / 2,1000),
-        new SequentialCommandGroup(
-          new WaitCommand(.5),
-          new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
-        )
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.50, 0, 2.5, Math.PI / 2,1000),   
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
+        new AutonIntakeCommand(m_intakeSubsystem, -600, -3.3, 1100),
         new SequentialCommandGroup(
           new WaitCommand(.25),
-          new PositionDriveCommand(m_drivetrainSubsystem, 1.85, 1.50, 0, 750)
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.9, 1.50, 0, 750)
         )
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 750),
+        new AutonIntakeCommand(m_intakeSubsystem, -200, 1, 750),
         new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.00, 0.460, 750)
       ),
       new ParallelCommandGroup(
@@ -296,18 +293,18 @@ public class RobotContainer {
   private Command middleNoteSequence() {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 3, Math.PI / 2,1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 2.5, Math.PI / 2,1000),
         new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 1000)
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
+        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1100),
         new SequentialCommandGroup(
           new WaitCommand(0.25),
-          new PositionDriveCommand(m_drivetrainSubsystem, 1.80, 0, 0, 750)
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.90, 0, 0, 750)
         )
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 750),
+        new AutonIntakeCommand(m_intakeSubsystem, -200, 1, 750),
         new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 0, 0, 750)
       ),
       new ParallelCommandGroup(
@@ -330,21 +327,19 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, 0, -1.4, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.50, 0, 3, Math.PI / 2, 1000),
-        new SequentialCommandGroup(
-          new WaitCommand(.5),
-          new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 500)
-        )
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.50, 0, 2.5, Math.PI / 2, 1000),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, -2.8, 1000)
+        
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1000),
+        new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1100),
         new SequentialCommandGroup(
           new WaitCommand(0.25),
-          new PositionDriveCommand(m_drivetrainSubsystem, 1.80, -1.50, 0, 750)
+          new PositionDriveCommand(m_drivetrainSubsystem, 1.90, -1.50, 0, 750)
         )
       ),
       new ParallelCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, -100, 1, 750),
+        new AutonIntakeCommand(m_intakeSubsystem, -200, 1, 750),
         new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.00, -0.460, 750)
       ),
       new ParallelCommandGroup(
@@ -432,7 +427,7 @@ public class RobotContainer {
 
       
       new ParallelCommandGroup(
-        new PositionDriveCommand(m_drivetrainSubsystem, 6.2134 + .5, -.1254 - .209, 0, 4, Math.PI / 2, 2000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 6.2134 + .5, -.1254 + .209, 0, 4, Math.PI / 2, 2000),
         new SequentialCommandGroup(
           new WaitCommand(.25),
           new AutonIntakeCommand(m_intakeSubsystem, -800, -3.3, 1750))

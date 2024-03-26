@@ -23,6 +23,7 @@ public class LimelightSubsystem extends SubsystemBase {
     private final GenericEntry m_distanceToNearestSpeakerEntry;
     private final GenericEntry m_outtakeAngleEntry;
     private final GenericEntry m_drivetrainAngleChangeEntry;
+    private final GenericEntry m_robotPose; 
 
     public LimelightSubsystem() {
         networkTable = NetworkTableInstance.getDefault().getTable("limelight");
@@ -34,10 +35,11 @@ public class LimelightSubsystem extends SubsystemBase {
         m_angleX = networkTable.getEntry("tx");
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
-        ShuffleboardLayout limelightLayout = tab.getLayout("Limelight", BuiltInLayouts.kList).withSize(2, 3).withPosition(6, 0);
+        ShuffleboardLayout limelightLayout = tab.getLayout("Limelight", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0);
         m_distanceToNearestSpeakerEntry = limelightLayout.add("Distance to Nearest Speaker", getDistanceToNearestSpeaker() + " m").getEntry();
         m_outtakeAngleEntry = limelightLayout.add("Desired Outtake Angle", calculateOuttakeAngle() + " rad").getEntry();
         m_drivetrainAngleChangeEntry = limelightLayout.add("Desired Drivetrain Angle Change", getDrivetrainAngleChange() + " rad").getEntry();
+        m_robotPose = limelightLayout.add("Limelight Robot Pose", "(" + m_limelightodometry[0] + ", " + m_limelightodometry[1] + ")").getEntry(); 
     }
 
     @Override
@@ -52,6 +54,7 @@ public class LimelightSubsystem extends SubsystemBase {
         m_distanceToNearestSpeakerEntry.setString(getDistanceToNearestSpeaker() + " m");
         m_outtakeAngleEntry.setString(calculateOuttakeAngle() + " rad");
         m_drivetrainAngleChangeEntry.setString(getDrivetrainAngleChange() + " rad");
+        m_robotPose.setString("(" + m_limelightodometry[0] + ", " + m_limelightodometry[1] + ")");
     }
 
     private double getDistanceToNearestSpeaker() {
@@ -72,7 +75,7 @@ public class LimelightSubsystem extends SubsystemBase {
         {
             return distance_blue;
         }
-        return 1.33;
+        return 1.7;
     }
 
     /**
@@ -81,12 +84,16 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
-        if (getDistanceToNearestSpeaker() > 3.4)
-        {   
-            // Slightly modified regression for long distances (REALLY GOOD)!
-            return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8339;
-        }
-        return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8539;
+        // if (getDistanceToNearestSpeaker() > 3.4)
+        // {   
+        //     // Slightly modified regression for long distances (REALLY GOOD)!
+        //     return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8339;
+        // }
+        // return -13.0029 * Math.pow(getDistanceToNearestSpeaker(), .0388739) - 12.1429; //experimental new line
+        
+        return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.85;
+        
+        
         // Original line: 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639
     }
 
