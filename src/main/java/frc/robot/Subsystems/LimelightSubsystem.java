@@ -160,7 +160,7 @@ public class LimelightSubsystem extends SubsystemBase {
                                                                                            // on graphed ta values, used
                                                                                            // google sheets to calculate
                                                                                            // curve
-        m_trigDistance = Units.inchesToMeters(51.96 -
+        m_trigDistance = Units.inchesToMeters(Constants.APRILTAG_HEIGHT -
         Constants.LIMELIGHT_LENS_HEIGHT) / Math.tan(Math.toRadians(m_ty.getDouble(0.0) + Constants.LIMELIGHT_ANGLE)); // Calculates distance using trigonometry. Reference a triangle and the notion that tan(theta) = opposite/adjacent. Opposite height of target - height of camera, adjacent = distance from camera to target, theta = angle of camera to target. Rearrange to get d = (h2-h1) / tan(a1+a2)
 
 
