@@ -19,6 +19,9 @@ public class OuttakeSubsystem extends SubsystemBase {
     private static final double kOuttakeGearRatio = (1.0 / 3.0);
     public static final double kOuttakeMaxRate = 5676.0 * kOuttakeGearRatio; // rpm
 
+    public static final double kSpeakerShootAngle = -3.11;
+    public static final double kDefaultAngle = -3.30;
+
     private final CANSparkMax m_outtakeMotor1;
     private final CANSparkMax m_outtakeMotor2;
     private final CANSparkMax m_linearActuator;

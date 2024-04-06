@@ -2,9 +2,7 @@ package frc.robot.Subsystems;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.Collections;
-import frc.robot.Subsystems.LimelightHelpers;
 import frc.robot.Subsystems.LimelightHelpers.PoseEstimate;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -46,11 +44,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
         PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        
-
-
         
         m_limelight_x_position.poll();
         m_limelight_x_position.add(mt2.pose.getX());
