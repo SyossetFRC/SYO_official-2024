@@ -2,7 +2,9 @@ package frc.robot.Subsystems;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.Collections;
-
+import frc.robot.Subsystems.LimelightHelpers;
+import frc.robot.Subsystems.LimelightHelpers.PoseEstimate;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -44,12 +46,16 @@ public class LimelightSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        NetworkTable networkTable = NetworkTableInstance.getDefault().getTable("limelight");
-        double[] m_limelightodometry = networkTable.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+
+        PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        
+
+
+        
         m_limelight_x_position.poll();
-        m_limelight_x_position.add(m_limelightodometry[0]);
+        m_limelight_x_position.add(mt2.pose.getX());
         m_limelight_y_position.poll();
-        m_limelight_y_position.add(m_limelightodometry[1]);
+        m_limelight_y_position.add(mt2.pose.getY());
 
         m_distanceToNearestSpeakerEntry.setString(getDistanceToNearestSpeaker() + " m");
         m_outtakeAngleEntry.setString(calculateOuttakeAngle() + " rad");
@@ -58,6 +64,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
 
     private double getDistanceToNearestSpeaker() {
+
         double x_pos = 0, y_pos = 0;
         for (double d : m_limelight_x_position) x_pos += d;
         for (double d : m_limelight_y_position) y_pos += d;
@@ -75,7 +82,7 @@ public class LimelightSubsystem extends SubsystemBase {
         {
             return distance_blue;
         }
-        return 1.7;
+        return 1.3;
     }
 
     /**
@@ -84,17 +91,9 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return Optimal outtake absolute angle (rad).
      */
     public double calculateOuttakeAngle() {
-        // if (getDistanceToNearestSpeaker() > 3.4)
-        // {   
-        //     // Slightly modified regression for long distances (REALLY GOOD)!
-        //     return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.8339;
-        // }
-        // return -13.0029 * Math.pow(getDistanceToNearestSpeaker(), .0388739) - 12.1429; //experimental new line
         
-        return 1.12053 * Math.pow(getDistanceToNearestSpeaker(), -0.877924) - 1.85;
-        
-        
-        // Original line: 1.12053 * Math.pow(getDistanceToNearestSpeaker(),-.877924) - 1.8639
+        return 1.27341 * Math.pow(.546087, getDistanceToNearestSpeaker()) - 3.67942;
+    
     }
 
     /**
