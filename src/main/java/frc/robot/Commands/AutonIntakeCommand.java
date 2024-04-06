@@ -32,7 +32,7 @@ public class AutonIntakeCommand extends Command{
         this.m_maxTime = maxTime;
         this.m_isTimeRecorded = false;
 
-        m_anglePIDController = new PIDController(2.5, 0.1, 0.1);
+        m_anglePIDController = new PIDController(3.0, 0.1, 0.1);
         m_anglePIDController.setTolerance(0.10);
 
         addRequirements(intakeSubsystem);

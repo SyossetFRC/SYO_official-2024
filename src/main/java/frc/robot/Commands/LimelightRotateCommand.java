@@ -73,7 +73,7 @@ public class LimelightRotateCommand extends Command {
         m_drivetrainSubsystem.drive(
                 0.01,
                 0,
-                m_outputTheta,
+                m_outputTheta*2,
                 true
         );
     }
