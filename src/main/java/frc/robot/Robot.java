@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
   private GenericEntry m_bluemidfieldspeakerButton;
   private GenericEntry m_autonomousNotesOutputEntry;
 
+  private GenericEntry m_redampwreckerbutton;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
     m_bluemidfieldampButton = m_noteChooserLayout.add("Blue Midfield Ampside [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_redmidfieldspeakerButton = m_noteChooserLayout.add("Red Midfield Speaker [NON-FUNCTIONAL]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_bluemidfieldspeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker [NON-FUNCTIONAL]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redampwreckerbutton = m_noteChooserLayout.add("Red AMPSIDE WRECKER", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
   }
@@ -137,6 +139,13 @@ public class Robot extends TimedRobot {
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.BLUESPEAKER);
     }
+    if (m_redampwreckerbutton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.REDAMPWRECKER)) {
+        m_autonomousNotes.add(SpikeMarkNote.REDAMPWRECKER);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.REDAMPWRECKER);
+    }
     m_autonomousNotesOutputEntry.setString(printAutonomousNotes());
   }
 
@@ -176,6 +185,9 @@ public class Robot extends TimedRobot {
           break;
         case BLUESPEAKER:
           autonomousNotes += " BLUE SPEAKER ";
+          break;
+        case REDAMPWRECKER:
+          autonomousNotes += " RED AMPSIDE WRECKER";
           break;
       }
 
