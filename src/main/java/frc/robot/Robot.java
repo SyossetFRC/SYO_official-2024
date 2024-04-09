@@ -37,12 +37,14 @@ public class Robot extends TimedRobot {
   private GenericEntry m_leftNoteButton;
   private GenericEntry m_middleNoteButton;
   private GenericEntry m_rightNoteButton;
-  private GenericEntry m_redmidfieldampButton;
-  private GenericEntry m_bluemidfieldampButton;
-  private GenericEntry m_redmidfieldspeakerButton;
-  private GenericEntry m_bluemidfieldspeakerButton;
+  private GenericEntry m_redMidfieldAmpButton;
+  private GenericEntry m_blueMidfieldAmpButton;
+  private GenericEntry m_redMidfieldSpeakerButton;
+  private GenericEntry m_blueMidfieldSpeakerButton;
+  private GenericEntry m_redAmpWreckerButton;
+  private GenericEntry m_blueAmpWreckerButton;
   private GenericEntry m_autonomousNotesOutputEntry;
-
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -64,10 +66,12 @@ public class Robot extends TimedRobot {
     m_leftNoteButton = m_noteChooserLayout.add("Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_redmidfieldampButton = m_noteChooserLayout.add("Red Midfield Ampside [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_bluemidfieldampButton = m_noteChooserLayout.add("Blue Midfield Ampside [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_redmidfieldspeakerButton = m_noteChooserLayout.add("Red Midfield Speaker [NON-FUNCTIONAL]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_bluemidfieldspeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker [NON-FUNCTIONAL]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redMidfieldAmpButton = m_noteChooserLayout.add("Red Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_blueMidfieldAmpButton = m_noteChooserLayout.add("Blue Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redMidfieldSpeakerButton = m_noteChooserLayout.add("Red Midfield Speaker [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_blueMidfieldSpeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_redAmpWreckerButton = m_noteChooserLayout.add("Red Wrecker", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    m_blueAmpWreckerButton = m_noteChooserLayout.add("Blue Wrecker", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
   }
@@ -109,33 +113,47 @@ public class Robot extends TimedRobot {
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.RIGHT);
     }
-    if (m_redmidfieldampButton.getBoolean(false)) {
+    if (m_redMidfieldAmpButton.getBoolean(false)) {
       if (!m_autonomousNotes.contains(SpikeMarkNote.REDAMP)) {
         m_autonomousNotes.add(SpikeMarkNote.REDAMP);
       }
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.REDAMP);
     }
-    if (m_bluemidfieldampButton.getBoolean(false)) {
+    if (m_blueMidfieldAmpButton.getBoolean(false)) {
       if (!m_autonomousNotes.contains(SpikeMarkNote.BLUEAMP)) {
         m_autonomousNotes.add(SpikeMarkNote.BLUEAMP);
       }
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.BLUEAMP);
     }
-    if (m_redmidfieldspeakerButton.getBoolean(false)) {
+    if (m_redMidfieldSpeakerButton.getBoolean(false)) {
       if (!m_autonomousNotes.contains(SpikeMarkNote.REDSPEAKER)) {
         m_autonomousNotes.add(SpikeMarkNote.REDSPEAKER);
       }
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.REDSPEAKER);
     }
-    if (m_bluemidfieldspeakerButton.getBoolean(false)) {
+    if (m_blueMidfieldSpeakerButton.getBoolean(false)) {
       if (!m_autonomousNotes.contains(SpikeMarkNote.BLUESPEAKER)) {
         m_autonomousNotes.add(SpikeMarkNote.BLUESPEAKER);
       }
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.BLUESPEAKER);
+    }
+    if (m_redAmpWreckerButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.REDWRECKER)) {
+        m_autonomousNotes.add(SpikeMarkNote.REDWRECKER);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.REDWRECKER);
+    }
+    if (m_blueAmpWreckerButton.getBoolean(false)) {
+      if (!m_autonomousNotes.contains(SpikeMarkNote.BLUEWRECKER)) {
+        m_autonomousNotes.add(SpikeMarkNote.BLUEWRECKER);
+      }
+    } else {
+      m_autonomousNotes.remove(SpikeMarkNote.BLUEWRECKER);
     }
     m_autonomousNotesOutputEntry.setString(printAutonomousNotes());
   }
@@ -157,28 +175,33 @@ public class Robot extends TimedRobot {
     for (SpikeMarkNote note : m_autonomousNotes) {
       switch(note) {
         case LEFT:
-          autonomousNotes += " LEFT ";
+          autonomousNotes += " [LEFT] ";
           break;
         case MIDDLE:
-          autonomousNotes += " MIDDLE ";
+          autonomousNotes += " [MIDDLE] ";
           break;
         case RIGHT:
-          autonomousNotes += " RIGHT ";
+          autonomousNotes += " [RIGHT] ";
           break;
         case REDAMP:
-          autonomousNotes += " RED AMP ";
+          autonomousNotes += " [RED AMP] ";
           break;
         case BLUEAMP:
-          autonomousNotes += " BLUE AMP ";
+          autonomousNotes += " [BLUE AMP] ";
           break;
         case REDSPEAKER:
-          autonomousNotes += " RED SPEAKER ";
+          autonomousNotes += " [RED SPEAKER] ";
           break;
         case BLUESPEAKER:
-          autonomousNotes += " BLUE SPEAKER ";
+          autonomousNotes += " [BLUE SPEAKER] ";
+          break;
+        case REDWRECKER:
+          autonomousNotes += " [RED WRECKER] ";
+          break;
+        case BLUEWRECKER:
+          autonomousNotes += " [BLUE WRECKER] ";
           break;
       }
-
     }
     autonomousNotes += "}";
     return autonomousNotes;
