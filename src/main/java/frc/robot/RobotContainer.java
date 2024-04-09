@@ -2,6 +2,10 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
@@ -9,6 +13,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -16,14 +22,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutonIntakeCommand;
-import frc.robot.Commands.LimelightOuttakeCommand;
-import frc.robot.Commands.LimelightRotateCommand;
 import frc.robot.Commands.AutonOuttakeCommand;
 import frc.robot.Commands.BrakeCommand;
 import frc.robot.Commands.DefaultClimberCommand;
 import frc.robot.Commands.DefaultDriveCommand;
 import frc.robot.Commands.DefaultIntakeCommand;
 import frc.robot.Commands.DefaultOuttakeCommand;
+import frc.robot.Commands.LimelightOuttakeCommand;
+import frc.robot.Commands.LimelightRotateCommand;
 import frc.robot.Commands.PositionDriveCommand;
 import frc.robot.Subsystems.ClimberSubsystem;
 import frc.robot.Subsystems.DrivetrainSubsystem;
@@ -33,6 +39,9 @@ import frc.robot.Subsystems.OuttakeSubsystem;
 
 /** Represents the entire robot. */
 public class RobotContainer {
+  
+  private final SendableChooser<Command> autoChooser;
+
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final OuttakeSubsystem m_outtakeSubsystem = new OuttakeSubsystem();
@@ -84,7 +93,40 @@ public class RobotContainer {
     m_camera.setResolution(320, 240);
     Shuffleboard.getTab("Match").add(CameraServer.getServer().getSource()).withWidget(BuiltInWidgets.kCameraStream).withSize(7, 5).withPosition(4, 0);
 
+
+    //pathplanner commands
+    NamedCommands.registerCommand("Speaker Shoot", new ParallelCommandGroup(
+    new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle, 1000),
+    new SequentialCommandGroup(
+      new WaitCommand(0.5),
+      new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
+    )
+  ));
+    NamedCommands.registerCommand("Limelight Shoot", new SequentialCommandGroup(new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1250),
+        new SequentialCommandGroup(
+          new WaitCommand(0.75),
+          new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
+        ),
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1250)
+      )),
+      new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 700)
+    ));
+
+    NamedCommands.registerCommand("Intake down/in", new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1500));
+    NamedCommands.registerCommand("Intake almost down", new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 1000));
+    NamedCommands.registerCommand("Intake Up", new AutonIntakeCommand(m_intakeSubsystem, 0, .1, 1000));
+
+
     configureButtons();
+    // Build an auto chooser. This will use Commands.none() as the default option.
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    // Another option that allows you to specify the default auto by its name
+    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -97,48 +139,9 @@ public class RobotContainer {
    * @return Command to run autonomously.
    */
   public Command autonomousCommands(double startX, double startY, double startTheta, ArrayList<SpikeMarkNote> autonomousNotes) {
-    setPose(startX, startY, startTheta);
-    m_drivetrainSubsystem.alignTurningEncoders();
-    m_intakeSubsystem.reset();
-
-    SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
-      new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle, 1000),
-        new SequentialCommandGroup(
-          new WaitCommand(0.5),
-          new AutonIntakeCommand(m_intakeSubsystem, 1000, 0, 500)
-        )
-      )
-    );
-    for (SpikeMarkNote note : autonomousNotes) {
-      switch(note) {
-        case LEFT:
-          autonomousSequence.addCommands(leftNoteSequence());
-          break;
-        case MIDDLE:
-          autonomousSequence.addCommands(middleNoteSequence());
-          break;
-        case RIGHT:
-          autonomousSequence.addCommands(rightNoteSequence());
-          break;
-        case REDAMP:
-          autonomousSequence.addCommands(RedMidFieldAmpAuton());
-          break;
-        case BLUEAMP:
-          autonomousSequence.addCommands(BlueMidfieldAmpAuton());
-          break;
-        case REDSPEAKER:
-          autonomousSequence.addCommands(RedMidfieldSpeakerAuton());
-          break;
-        case BLUESPEAKER:
-          autonomousSequence.addCommands(BlueMidfieldSpeakerAuton());
-          break;
-        case REDAMPWRECKER:
-          autonomousSequence.addCommands(MidfieldRecker());
-          break;
-      }
-    }
-    return autonomousSequence;
+    
+    return new PathPlannerAuto("Example Auto");
+    
   }
 
   /**
