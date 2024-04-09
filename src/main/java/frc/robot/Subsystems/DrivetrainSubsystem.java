@@ -6,10 +6,15 @@ package frc.robot.Subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -22,6 +27,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -102,12 +108,38 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_odometryXEntry = odometryLayout.add("X Position", getPosition().getX() + " m").getEntry();
     m_odometryYEntry = odometryLayout.add("Y Position", getPosition().getY()  + " m").getEntry();
     m_odometryThetaEntry = odometryLayout.add("Angle", getAngle().getDegrees()  + " deg").getEntry();
-  }
+
+    AutoBuilder.configureHolonomic(
+        () -> new Pose2d(getPosition(), getAngle()),
+        (pose) -> setPose(pose.getX(), pose.getY(), pose.getRotation().getRadians()),
+        () -> m_kinematics.toChassisSpeeds(new SwerveModuleState[] {
+            m_frontLeft.getState(),
+            m_frontRight.getState(),
+            m_backLeft.getState(),
+            m_backRight.getState(),
+        }),
+        (chassisSpeed) -> drive(chassisSpeed.vxMetersPerSecond, chassisSpeed.vyMetersPerSecond,
+            chassisSpeed.omegaRadiansPerSecond, false),
+        new HolonomicPathFollowerConfig(
+            new PIDConstants(0,0,0), // Trans
+            new PIDConstants(0.5, 0, 0.01), // Rot
+            5,
+            kTrackWidth,
+            new ReplanningConfig(false, true)),
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this);
+      }
 
   /**
    * Drives the robot.
    *
-   * @param xSpeed The speed of the robot in the x direction (m/s).
+   * @param xSpeed Th e speed of the robot in the x direction (m/s).
    * @param ySpeed The speed of the robot in the y direction (m/s).
    * @param rot The angular rate of the robot (rad/s).
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
