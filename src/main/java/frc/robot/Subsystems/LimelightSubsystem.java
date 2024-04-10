@@ -86,7 +86,7 @@ public class LimelightSubsystem extends SubsystemBase {
      */
     public double calculateOuttakeAngle() {
         
-        return 1.27341 * Math.pow(.546087, getDistanceToNearestSpeaker()) - 3.67942;
+        return 1.274 * Math.pow(.546087, getDistanceToNearestSpeaker()) - 3.709;
     
     }
 

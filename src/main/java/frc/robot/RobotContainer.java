@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.databind.deser.BuilderBasedDeserializer;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -13,8 +14,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -40,7 +39,7 @@ import frc.robot.Subsystems.OuttakeSubsystem;
 /** Represents the entire robot. */
 public class RobotContainer {
   
-  private final SendableChooser<Command> autoChooser;
+  // private final SendableChooser<Command> autoChooser;
 
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
@@ -96,7 +95,7 @@ public class RobotContainer {
 
     //pathplanner commands
     NamedCommands.registerCommand("Speaker Shoot", new ParallelCommandGroup(
-    new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle, 1000),
+    new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle  -.05, 1000),
     new SequentialCommandGroup(
       new WaitCommand(0.5),
       new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
@@ -104,31 +103,28 @@ public class RobotContainer {
   ));
     NamedCommands.registerCommand("Limelight Shoot", new SequentialCommandGroup(new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1250),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1000),
         new SequentialCommandGroup(
-          new WaitCommand(0.75),
+          new WaitCommand(0.5),
           new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
         ),
-        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1250)
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
       )),
-      new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 700)
+      new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 500)
     ));
 
-    NamedCommands.registerCommand("Intake down/in", new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1500));
+    NamedCommands.registerCommand("Intake down/in", new AutonIntakeCommand(m_intakeSubsystem, -400, -3.05, 2250));
+    NamedCommands.registerCommand("Short Intake down/in", new AutonIntakeCommand(m_intakeSubsystem, -400, -3.05, 1000));
+
     NamedCommands.registerCommand("Intake almost down", new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 1000));
     NamedCommands.registerCommand("Intake Up", new AutonIntakeCommand(m_intakeSubsystem, 0, .1, 1000));
-
-
     configureButtons();
-    // Build an auto chooser. This will use Commands.none() as the default option.
-    autoChooser = AutoBuilder.buildAutoChooser();
+    
 
-    // Another option that allows you to specify the default auto by its name
-    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
-
-    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
+
+  // double startX, double startY, double startTheta, ArrayList<SpikeMarkNote> autonomousNotes  
   /**
    * Command sequence to run in autonomous. The origin is the center of the front subwoofer edge.
    * 
@@ -139,7 +135,9 @@ public class RobotContainer {
    * @return Command to run autonomously.
    */
   public Command autonomousCommands(double startX, double startY, double startTheta, ArrayList<SpikeMarkNote> autonomousNotes) {
-    return new PathPlannerAuto("Example Auto");
+      setPose(startX, startY, startTheta);
+      m_intakeSubsystem.reset();
+      return AutoBuilder.buildAuto("Loneplusthree");
   }
 
   /**
@@ -170,7 +168,11 @@ public class RobotContainer {
     // Button board column 1, row 2
     Trigger m_intake = new Trigger(() -> m_buttonBoard.getRawButton(1));
     m_intake.whileTrue(new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 150000));
-    m_intake.onFalse(new AutonIntakeCommand(m_intakeSubsystem, 0, .1, 1000));
+    m_intake.onFalse(
+      new SequentialCommandGroup(new AutonIntakeCommand(m_intakeSubsystem, 0, -1, 500),
+    new WaitCommand(.1),
+    new AutonIntakeCommand(m_intakeSubsystem, 0, .1, 0)
+    ));
 
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));

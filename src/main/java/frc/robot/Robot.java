@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
 
     m_startX = m_startXEntry.getDouble(0);
     m_startY = m_startYEntry.getDouble(0);
-    m_startTheta = Math.toRadians(m_startThetaEntry.getDouble(0));
+    m_startTheta = (m_startThetaEntry.getDouble(0));
     m_startPositionOutputEntry.setString("(" + m_startX + ", " + m_startY + ", " + m_startTheta + ")");
 
     if (m_leftNoteButton.getBoolean(false)) {
