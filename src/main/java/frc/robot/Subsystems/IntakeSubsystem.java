@@ -7,6 +7,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -30,11 +32,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final DigitalInput m_lowLimitSwitch;
     private final DigitalInput m_highLimitSwitch;
-
-    public static DigitalInput m_noteLimitSwitch;
+    private final DigitalInput m_noteLimitSwitch;
 
     private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00845);
     private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 2.15);
+
+    private final AddressableLED m_Led;
+    private final AddressableLEDBuffer m_LedBuffer;
 
     private final GenericEntry m_intakeRateEntry;
     private final GenericEntry m_rotateAngleEntry;
@@ -67,6 +71,12 @@ public class IntakeSubsystem extends SubsystemBase {
         m_lowLimitSwitch = new DigitalInput(Constants.LOW_LIMIT_SWITCH);
         m_highLimitSwitch = new DigitalInput(Constants.HIGH_LIMIT_SWITCH);
         m_noteLimitSwitch = new DigitalInput(Constants.NOTE_LIMIT_SWITCH);
+
+        m_Led = new AddressableLED(1);
+        m_LedBuffer = new AddressableLEDBuffer(144);
+        m_Led.setLength(m_LedBuffer.getLength());
+        m_Led.setData(m_LedBuffer);
+        m_Led.start();
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
@@ -114,7 +124,23 @@ public class IntakeSubsystem extends SubsystemBase {
         m_lowLimitSwitchEntry.setBoolean(!m_lowLimitSwitch.get());
         m_highLimitSwitchEntry.setBoolean(!m_highLimitSwitch.get());
         m_noteLimitSwitchEntry.setBoolean(!m_noteLimitSwitch.get());
-        
+    }
+
+    /** Updates the LED colors depending on whether the note is intaked. Red is false and green is true. */
+    public void updateLEDs() {
+        if (m_noteLimitSwitch.get()){
+            for (var i = 0; i < m_LedBuffer.getLength(); i++)
+            {
+              m_LedBuffer.setRGB(i, 255, 0, 0);
+            }
+        }
+        else {
+            for (var i = 0; i < m_LedBuffer.getLength(); i++)
+            {
+                m_LedBuffer.setRGB(i, 0, 255, 0);
+            }
+        }
+        m_Led.setData(m_LedBuffer);
     }
 
     @Override
@@ -129,6 +155,7 @@ public class IntakeSubsystem extends SubsystemBase {
         } else {
             m_rotateMotor.setVoltage(0);
         }
+        updateLEDs();
         updateShuffleboard();
     }
 

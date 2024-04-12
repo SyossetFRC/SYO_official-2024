@@ -3,8 +3,6 @@ package frc.robot;
 import java.util.ArrayList;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -13,7 +11,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer.SpikeMarkNote;
-import frc.robot.Subsystems.IntakeSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -33,9 +30,6 @@ public class Robot extends TimedRobot {
   private ShuffleboardLayout m_startPositionLayout;
   private ShuffleboardLayout m_noteChooserLayout;
   
-  private AddressableLED m_Led;
-  private AddressableLEDBuffer m_LedBuffer;
-
   private GenericEntry m_startXEntry;
   private GenericEntry m_startYEntry;
   private GenericEntry m_startThetaEntry;
@@ -43,10 +37,10 @@ public class Robot extends TimedRobot {
   private GenericEntry m_leftNoteButton;
   private GenericEntry m_middleNoteButton;
   private GenericEntry m_rightNoteButton;
-  private GenericEntry m_redMidfieldAmpButton;
-  private GenericEntry m_blueMidfieldAmpButton;
-  private GenericEntry m_redMidfieldSpeakerButton;
-  private GenericEntry m_blueMidfieldSpeakerButton;
+  // private GenericEntry m_redMidfieldAmpButton;
+  // private GenericEntry m_blueMidfieldAmpButton;
+  // private GenericEntry m_redMidfieldSpeakerButton;
+  // private GenericEntry m_blueMidfieldSpeakerButton;
   private GenericEntry m_redAmpWreckerButton;
   private GenericEntry m_blueAmpWreckerButton;
   private GenericEntry m_autonomousNotesOutputEntry;
@@ -68,25 +62,18 @@ public class Robot extends TimedRobot {
     m_startPositionOutputEntry = m_startPositionLayout.add("Starting Position", "(0, 0, 0)").getEntry();
     m_startPositionLayout.add("Instructions", "The origin is the center of the front subwoofer edge. The +x direction is forward or away from the driver station. From the POV of the driver station, the +y direction is left. Counterclocksize is +theta. Measure starting position from the origin to the center of the robot, in meters and degrees.");
 
-    m_noteChooserLayout = m_tab.getLayout("Autonomous Notes", BuiltInLayouts.kList).withSize(2, 11).withPosition(2, 0);
+    m_noteChooserLayout = m_tab.getLayout("Autonomous Notes", BuiltInLayouts.kList).withSize(2, 7).withPosition(2, 0);
     m_leftNoteButton = m_noteChooserLayout.add("Left Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_middleNoteButton = m_noteChooserLayout.add("Middle Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_rightNoteButton = m_noteChooserLayout.add("Right Note", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_redMidfieldAmpButton = m_noteChooserLayout.add("Red Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_blueMidfieldAmpButton = m_noteChooserLayout.add("Blue Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_redMidfieldSpeakerButton = m_noteChooserLayout.add("Red Midfield Speaker [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    m_blueMidfieldSpeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    // m_redMidfieldAmpButton = m_noteChooserLayout.add("Red Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    // m_blueMidfieldAmpButton = m_noteChooserLayout.add("Blue Midfield Ampside", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    // m_redMidfieldSpeakerButton = m_noteChooserLayout.add("Red Midfield Speaker [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    // m_blueMidfieldSpeakerButton = m_noteChooserLayout.add("Blue Midfield Speaker [NON-TESTED]", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_redAmpWreckerButton = m_noteChooserLayout.add("Red Wrecker", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_blueAmpWreckerButton = m_noteChooserLayout.add("Blue Wrecker", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
-    
-    m_Led = new AddressableLED(1);
-    m_LedBuffer = new AddressableLEDBuffer(144);
-    m_Led.setLength(m_LedBuffer.getLength());
-    m_Led.setData(m_LedBuffer);
-    m_Led.start();
-
   }
 
   /**
@@ -126,34 +113,34 @@ public class Robot extends TimedRobot {
     } else {
       m_autonomousNotes.remove(SpikeMarkNote.RIGHT);
     }
-    if (m_redMidfieldAmpButton.getBoolean(false)) {
-      if (!m_autonomousNotes.contains(SpikeMarkNote.REDAMP)) {
-        m_autonomousNotes.add(SpikeMarkNote.REDAMP);
-      }
-    } else {
-      m_autonomousNotes.remove(SpikeMarkNote.REDAMP);
-    }
-    if (m_blueMidfieldAmpButton.getBoolean(false)) {
-      if (!m_autonomousNotes.contains(SpikeMarkNote.BLUEAMP)) {
-        m_autonomousNotes.add(SpikeMarkNote.BLUEAMP);
-      }
-    } else {
-      m_autonomousNotes.remove(SpikeMarkNote.BLUEAMP);
-    }
-    if (m_redMidfieldSpeakerButton.getBoolean(false)) {
-      if (!m_autonomousNotes.contains(SpikeMarkNote.REDSPEAKER)) {
-        m_autonomousNotes.add(SpikeMarkNote.REDSPEAKER);
-      }
-    } else {
-      m_autonomousNotes.remove(SpikeMarkNote.REDSPEAKER);
-    }
-    if (m_blueMidfieldSpeakerButton.getBoolean(false)) {
-      if (!m_autonomousNotes.contains(SpikeMarkNote.BLUESPEAKER)) {
-        m_autonomousNotes.add(SpikeMarkNote.BLUESPEAKER);
-      }
-    } else {
-      m_autonomousNotes.remove(SpikeMarkNote.BLUESPEAKER);
-    }
+    // if (m_redMidfieldAmpButton.getBoolean(false)) {
+    //   if (!m_autonomousNotes.contains(SpikeMarkNote.REDAMP)) {
+    //     m_autonomousNotes.add(SpikeMarkNote.REDAMP);
+    //   }
+    // } else {
+    //   m_autonomousNotes.remove(SpikeMarkNote.REDAMP);
+    // }
+    // if (m_blueMidfieldAmpButton.getBoolean(false)) {
+    //   if (!m_autonomousNotes.contains(SpikeMarkNote.BLUEAMP)) {
+    //     m_autonomousNotes.add(SpikeMarkNote.BLUEAMP);
+    //   }
+    // } else {
+    //   m_autonomousNotes.remove(SpikeMarkNote.BLUEAMP);
+    // }
+    // if (m_redMidfieldSpeakerButton.getBoolean(false)) {
+    //   if (!m_autonomousNotes.contains(SpikeMarkNote.REDSPEAKER)) {
+    //     m_autonomousNotes.add(SpikeMarkNote.REDSPEAKER);
+    //   }
+    // } else {
+    //   m_autonomousNotes.remove(SpikeMarkNote.REDSPEAKER);
+    // }
+    // if (m_blueMidfieldSpeakerButton.getBoolean(false)) {
+    //   if (!m_autonomousNotes.contains(SpikeMarkNote.BLUESPEAKER)) {
+    //     m_autonomousNotes.add(SpikeMarkNote.BLUESPEAKER);
+    //   }
+    // } else {
+    //   m_autonomousNotes.remove(SpikeMarkNote.BLUESPEAKER);
+    // }
     if (m_redAmpWreckerButton.getBoolean(false)) {
       if (!m_autonomousNotes.contains(SpikeMarkNote.REDWRECKER)) {
         m_autonomousNotes.add(SpikeMarkNote.REDWRECKER);
@@ -169,20 +156,6 @@ public class Robot extends TimedRobot {
       m_autonomousNotes.remove(SpikeMarkNote.BLUEWRECKER);
     }
     m_autonomousNotesOutputEntry.setString(printAutonomousNotes());
-
-    if(IntakeSubsystem.m_noteLimitSwitch.get()){
-      for(var i = 0; i < m_LedBuffer.getLength();i++)
-      {
-        m_LedBuffer.setRGB(i, 255, 0, 0);
-      }
-    }
-    else{
-      for(var i = 0; i < m_LedBuffer.getLength();i++)
-      {
-      m_LedBuffer.setRGB(i, 0, 255, 0);
-      }
-    }
-    m_Led.setData(m_LedBuffer);
   }
 
   @Override
@@ -210,23 +183,23 @@ public class Robot extends TimedRobot {
         case RIGHT:
           autonomousNotes += " [RIGHT] ";
           break;
-        case REDAMP:
-          autonomousNotes += " [RED AMP] ";
-          break;
-        case BLUEAMP:
-          autonomousNotes += " [BLUE AMP] ";
-          break;
-        case REDSPEAKER:
-          autonomousNotes += " [RED SPEAKER] ";
-          break;
-        case BLUESPEAKER:
-          autonomousNotes += " [BLUE SPEAKER] ";
-          break;
+        // case REDAMP:
+        //   autonomousNotes += " **RED AMP** ";
+        //   break;
+        // case BLUEAMP:
+        //   autonomousNotes += " **BLUE AMP** ";
+        //   break;
+        // case REDSPEAKER:
+        //   autonomousNotes += " **RED SPEAKER** ";
+        //   break;
+        // case BLUESPEAKER:
+        //   autonomousNotes += " **BLUE SPEAKER** ";
+        //   break;
         case REDWRECKER:
-          autonomousNotes += " [RED WRECKER] ";
+          autonomousNotes += " **RED WRECKER** ";
           break;
         case BLUEWRECKER:
-          autonomousNotes += " [BLUE WRECKER] ";
+          autonomousNotes += " **BLUE WRECKER** ";
           break;
       }
     }
