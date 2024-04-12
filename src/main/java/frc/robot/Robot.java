@@ -3,6 +3,8 @@ package frc.robot;
 import java.util.ArrayList;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -11,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer.SpikeMarkNote;
+import frc.robot.Subsystems.IntakeSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -29,6 +32,9 @@ public class Robot extends TimedRobot {
   private ShuffleboardTab m_tab;
   private ShuffleboardLayout m_startPositionLayout;
   private ShuffleboardLayout m_noteChooserLayout;
+  
+  private AddressableLED m_Led;
+  private AddressableLEDBuffer m_LedBuffer;
 
   private GenericEntry m_startXEntry;
   private GenericEntry m_startYEntry;
@@ -74,6 +80,13 @@ public class Robot extends TimedRobot {
     m_blueAmpWreckerButton = m_noteChooserLayout.add("Blue Wrecker", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     m_autonomousNotesOutputEntry = m_noteChooserLayout.add("Autonomous Notes", "{}").getEntry();
     m_noteChooserLayout.add("Instructions", "Select the buttons in the order that the robot will intake/outtake them. Deselect to remove.");
+    
+    m_Led = new AddressableLED(1);
+    m_LedBuffer = new AddressableLEDBuffer(144);
+    m_Led.setLength(m_LedBuffer.getLength());
+    m_Led.setData(m_LedBuffer);
+    m_Led.start();
+
   }
 
   /**
@@ -156,6 +169,20 @@ public class Robot extends TimedRobot {
       m_autonomousNotes.remove(SpikeMarkNote.BLUEWRECKER);
     }
     m_autonomousNotesOutputEntry.setString(printAutonomousNotes());
+
+    if(IntakeSubsystem.m_noteLimitSwitch.get()){
+      for(var i = 0; i < m_LedBuffer.getLength();i++)
+      {
+        m_LedBuffer.setRGB(i, 255, 0, 0);
+      }
+    }
+    else{
+      for(var i = 0; i < m_LedBuffer.getLength();i++)
+      {
+      m_LedBuffer.setRGB(i, 0, 255, 0);
+      }
+    }
+    m_Led.setData(m_LedBuffer);
   }
 
   @Override

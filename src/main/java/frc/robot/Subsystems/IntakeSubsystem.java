@@ -31,6 +31,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput m_lowLimitSwitch;
     private final DigitalInput m_highLimitSwitch;
 
+    public static DigitalInput m_noteLimitSwitch;
+
     private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00845);
     private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 2.15);
 
@@ -39,6 +41,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final GenericEntry m_rotateAngularSpeedEntry;
     private final GenericEntry m_lowLimitSwitchEntry;
     private final GenericEntry m_highLimitSwitchEntry;
+    private final GenericEntry m_noteLimitSwitchEntry;
 
     private double m_intakeRate;
     private double m_angularSpeed;
@@ -63,6 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         m_lowLimitSwitch = new DigitalInput(Constants.LOW_LIMIT_SWITCH);
         m_highLimitSwitch = new DigitalInput(Constants.HIGH_LIMIT_SWITCH);
+        m_noteLimitSwitch = new DigitalInput(Constants.NOTE_LIMIT_SWITCH);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
@@ -71,6 +75,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity() + " rad/s").getEntry();
         m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
         m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
+        m_noteLimitSwitchEntry = intakeLayout.add("Note Limit Switch", !m_noteLimitSwitch.get()).getEntry();
     }
 
     /**
@@ -108,6 +113,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateAngularSpeedEntry.setString(m_rotateEncoder.getVelocity() + " rad/s");
         m_lowLimitSwitchEntry.setBoolean(!m_lowLimitSwitch.get());
         m_highLimitSwitchEntry.setBoolean(!m_highLimitSwitch.get());
+        m_noteLimitSwitchEntry.setBoolean(!m_noteLimitSwitch.get());
         
     }
 

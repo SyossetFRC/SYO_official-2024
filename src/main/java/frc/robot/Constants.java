@@ -33,6 +33,7 @@ public final class Constants {
     public static final int ROTATE_MOTOR = 41;
     public static final int LOW_LIMIT_SWITCH = 4;
     public static final int HIGH_LIMIT_SWITCH = 6;
+    public static final int NOTE_LIMIT_SWITCH = 0;
 
     public static final int OUTTAKE_MOTOR_1 = 60;
     public static final int OUTTAKE_MOTOR_2 = 23;
