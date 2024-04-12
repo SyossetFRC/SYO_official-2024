@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 15.800333976745604,
-      "y": 6.675816059112549
+      "x": 15.721389770507812,
+      "y": 6.742051124572754
     },
-    "rotation": 121.55138540086436
+    "rotation": 106.2601828997361
   },
   "command": {
     "type": "sequential",
@@ -32,12 +32,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake almost down"
-                      }
-                    },
-                    {
                       "type": "wait",
                       "data": {
                         "waitTime": 1.5
@@ -46,7 +40,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake down/in"
+                        "name": "Intake almost down"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Short Intake down/in"
                       }
                     }
                   ]
@@ -68,7 +68,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": " Intake Up"
+                  "name": "Intake Up"
                 }
               }
             ]
@@ -91,9 +91,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Intake down/in"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake almost down"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Short Intake down/in"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -112,7 +125,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": " Intake Up"
+                  "name": "Intake Up"
                 }
               }
             ]

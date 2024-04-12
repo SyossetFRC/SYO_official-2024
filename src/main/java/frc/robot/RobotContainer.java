@@ -94,29 +94,29 @@ public class RobotContainer {
 
 
     //pathplanner commands
-    NamedCommands.registerCommand("Speaker Shoot", new ParallelCommandGroup(
-    new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle  -.05, 1000),
+    NamedCommands.registerCommand("Speaker Shoot", new SequentialCommandGroup(new ParallelCommandGroup(
+    new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle  -.15, 1000),
     new SequentialCommandGroup(
       new WaitCommand(0.5),
       new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
     )
-  ));
+  ),
+  new AutonOuttakeCommand(m_outtakeSubsystem, 0, -5, 600)));
+
     NamedCommands.registerCommand("Limelight Shoot", new SequentialCommandGroup(new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1000),
+        new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 800),
         new SequentialCommandGroup(
           new WaitCommand(0.5),
-          new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
+          new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 300)
         ),
-        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1000)
-      )),
-      new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 500)
-    ));
+        new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 750)
+      ))));
 
     NamedCommands.registerCommand("Intake down/in", new AutonIntakeCommand(m_intakeSubsystem, -400, -3.05, 2250));
     NamedCommands.registerCommand("Short Intake down/in", new AutonIntakeCommand(m_intakeSubsystem, -400, -3.05, 1000));
 
-    NamedCommands.registerCommand("Intake almost down", new AutonIntakeCommand(m_intakeSubsystem, 0, -2.5, 1000));
+    NamedCommands.registerCommand("Intake almost down", new AutonIntakeCommand(m_intakeSubsystem, 0, -2.7, 1000));
     NamedCommands.registerCommand("Intake Up", new AutonIntakeCommand(m_intakeSubsystem, 0, .1, 1000));
     configureButtons();
     
@@ -137,7 +137,7 @@ public class RobotContainer {
   public Command autonomousCommands(double startX, double startY, double startTheta, ArrayList<SpikeMarkNote> autonomousNotes) {
       setPose(startX, startY, startTheta);
       m_intakeSubsystem.reset();
-      return AutoBuilder.buildAuto("Loneplusthree");
+      return AutoBuilder.buildAuto("RedMidAmpside");
   }
 
   /**
@@ -171,7 +171,7 @@ public class RobotContainer {
     m_intake.onFalse(
       new SequentialCommandGroup(new AutonIntakeCommand(m_intakeSubsystem, 0, -1, 500),
     new WaitCommand(.1),
-    new AutonIntakeCommand(m_intakeSubsystem, 0, .1, 0)
+    new AutonIntakeCommand(m_intakeSubsystem, 0, .1, 1000)
     ));
 
     // Button board column 1, row 1

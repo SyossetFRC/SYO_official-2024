@@ -7,6 +7,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -22,7 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final double kRotateGearRatio = (1.0 / 100.0) * (60.0 / 64.0);
     public static final double kRotateMaxAngularSpeed = 5676.0 * kRotateGearRatio * 2.0 * Math.PI / 60 *1/3; // rad/s
 
-    
+
     private final CANSparkMax m_intakeMotor;
     private final CANSparkMax m_rotateMotor;
 
@@ -31,6 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final DigitalInput m_lowLimitSwitch;
     private final DigitalInput m_highLimitSwitch;
+    private final DigitalInput m_noteLimitSwitch;
 
     private final SimpleMotorFeedforward m_intakeFeedforward = new SimpleMotorFeedforward(0, 0.00845);
     private final SimpleMotorFeedforward m_rotateFeedforward = new SimpleMotorFeedforward(0, 2.15);
@@ -40,9 +43,13 @@ public class IntakeSubsystem extends SubsystemBase {
     private final GenericEntry m_rotateAngularSpeedEntry;
     private final GenericEntry m_lowLimitSwitchEntry;
     private final GenericEntry m_highLimitSwitchEntry;
+    private final GenericEntry m_noteLimitSwitchEntry;
 
     private double m_intakeRate;
     private double m_angularSpeed;
+
+    private AddressableLED m_Led;
+    private AddressableLEDBuffer m_LedBuffer;
 
     public IntakeSubsystem() {
         m_intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR, MotorType.kBrushless);
@@ -54,6 +61,13 @@ public class IntakeSubsystem extends SubsystemBase {
         m_intakeMotor.setInverted(false);
         m_rotateMotor.setInverted(true);
 
+        m_Led = new AddressableLED(0);
+        m_LedBuffer = new AddressableLEDBuffer(0);
+        m_Led.setLength(m_LedBuffer.getLength());
+        m_Led.setData(m_LedBuffer);
+        m_Led.start();
+        
+
         m_intakeEncoder = m_intakeMotor.getEncoder();
         m_intakeEncoder.setPositionConversionFactor(kIntakeGearRatio); // rot
         m_intakeEncoder.setVelocityConversionFactor(kIntakeGearRatio); // rpm
@@ -64,6 +78,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
         m_lowLimitSwitch = new DigitalInput(Constants.LOW_LIMIT_SWITCH);
         m_highLimitSwitch = new DigitalInput(Constants.HIGH_LIMIT_SWITCH);
+        m_noteLimitSwitch = new DigitalInput(Constants.NOTE_LIMIT_SWITCH);
+
+        
 
         ShuffleboardTab tab = Shuffleboard.getTab("Subsystems");
         ShuffleboardLayout intakeLayout = tab.getLayout("Intake", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
@@ -72,6 +89,8 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateAngularSpeedEntry = intakeLayout.add("Intake Angular Speed", m_rotateEncoder.getVelocity() + " rad/s").getEntry();
         m_lowLimitSwitchEntry = intakeLayout.add("Low Limit Switch", !m_lowLimitSwitch.get()).getEntry();
         m_highLimitSwitchEntry = intakeLayout.add("High Limit Switch", !m_highLimitSwitch.get()).getEntry();
+        m_noteLimitSwitchEntry = intakeLayout.add("Note Limit Switch", !m_noteLimitSwitch.get()).getEntry();
+        
     }
 
     /**
@@ -109,6 +128,7 @@ public class IntakeSubsystem extends SubsystemBase {
         m_rotateAngularSpeedEntry.setString(m_rotateEncoder.getVelocity() + " rad/s");
         m_lowLimitSwitchEntry.setBoolean(!m_lowLimitSwitch.get());
         m_highLimitSwitchEntry.setBoolean(!m_highLimitSwitch.get());
+        m_noteLimitSwitchEntry.setBoolean(!m_noteLimitSwitch.get());
         
     }
 
@@ -116,14 +136,26 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         if (canIntake()) {
             m_intakeMotor.setVoltage(m_intakeFeedforward.calculate(m_intakeRate));
+
+            //led stuff
+            for(var i = 0; i < m_LedBuffer.getLength(); i++)
+            {
+                m_LedBuffer.setHSV(i, 129, 255, 255);
+            }
         } else {
             m_intakeMotor.setVoltage(0);
+            //led stuff
+            for(var i = 0; i < m_LedBuffer.getLength(); i++)
+            {
+                m_LedBuffer.setHSV(i, 0, 255, 255);
+            }
         }
         if (canRotate()) {
             m_rotateMotor.setVoltage(m_rotateFeedforward.calculate(m_angularSpeed));
         } else {
             m_rotateMotor.setVoltage(0);
         }
+        m_Led.setData(m_LedBuffer);
         updateShuffleboard();
     }
 

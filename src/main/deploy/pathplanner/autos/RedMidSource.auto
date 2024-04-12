@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 15.80666446685791,
-      "y": 4.427470684051514
+      "x": 15.800333976745604,
+      "y": 4.462856769561768
     },
     "rotation": -119.35775807193936
   },
@@ -34,7 +34,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.0
+                        "waitTime": 1.5
                       }
                     },
                     {
@@ -46,7 +46,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake down/in"
+                        "name": "Short Intake down/in"
                       }
                     }
                   ]
@@ -97,13 +97,19 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.0
+                        "waitTime": 0.7
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Intake down/in"
+                        "name": "Intake almost down"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Short Intake down/in"
                       }
                     }
                   ]
