@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.ArrayList;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.math.MathUtil;
@@ -40,6 +41,7 @@ public class RobotContainer {
   private final LimelightSubsystem m_limelightSubsystem = new LimelightSubsystem();
 
   private final UsbCamera m_camera;
+  private final HttpCamera m_limelight;
 
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
@@ -81,8 +83,12 @@ public class RobotContainer {
 
     m_camera = CameraServer.startAutomaticCapture();
     m_camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    m_camera.setResolution(320, 240);
-    Shuffleboard.getTab("Match").add(CameraServer.getServer().getSource()).withWidget(BuiltInWidgets.kCameraStream).withSize(7, 5).withPosition(4, 0);
+    m_camera.setResolution(80, 60);
+    Shuffleboard.getTab("Match").add(m_camera).withWidget(BuiltInWidgets.kCameraStream).withSize(4, 3).withPosition(4, 3);
+
+    m_limelight = new HttpCamera("Limelight", "http://limelight.local:5800/stream.mjpeg");
+    m_limelight.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    Shuffleboard.getTab("Match").add(m_limelight).withWidget(BuiltInWidgets.kCameraStream).withSize(4, 3).withPosition(4, 0);
 
     configureButtons();
   }
