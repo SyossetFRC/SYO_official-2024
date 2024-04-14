@@ -190,6 +190,16 @@ public class RobotContainer {
       new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 750)
     ));
 
+    // Button board column 4, row 1
+    Trigger m_pass = new Trigger(() -> m_buttonBoard.getRawButton(5));
+    m_pass.onTrue(new ParallelCommandGroup(
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.5, 1000),
+      new SequentialCommandGroup(
+        new WaitCommand(0.5),
+        new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
+      )
+    ));
+
     // Button board column 2, row 1
     Trigger m_cancelSubsystemCommands = new Trigger(() -> m_buttonBoard.getRawButton(4));
     m_cancelSubsystemCommands.onTrue(new InstantCommand(() -> cancelSubsystemCommands()));
