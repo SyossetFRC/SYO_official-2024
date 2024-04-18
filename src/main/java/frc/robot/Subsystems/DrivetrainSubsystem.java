@@ -42,6 +42,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private static final Translation2d m_backLeftLocation = new Translation2d(-kTrackWidth / 2.0, kTrackWidth / 2.0);
   private static final Translation2d m_backRightLocation = new Translation2d(-kTrackWidth / 2.0, -kTrackWidth / 2.0);
 
+  private final int m_currentLimit = 60;
+
   private final SwerveModule m_frontLeft;
   private final SwerveModule m_frontRight;
   private final SwerveModule m_backLeft;
@@ -251,6 +253,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
       m_turningMotorEncoder.setVelocityConversionFactor(kSteerGearRatio * 2 * Math.PI / 60.0); // radians per second
 
       m_moduleOffset = moduleOffset;
+      
+
+      m_driveMotor.setSmartCurrentLimit(m_currentLimit);
+      m_turningMotor.setSmartCurrentLimit(m_currentLimit);
 
       m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 

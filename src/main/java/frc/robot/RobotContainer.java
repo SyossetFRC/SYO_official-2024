@@ -147,7 +147,7 @@ public class RobotContainer {
     m_resetPose.onTrue(new InstantCommand(() -> setPose(0, 0, 0)));
 
     // Operator button A & Button board column 3, row 1
-    Trigger m_resetSubsystems = new Trigger(() -> (m_operatorController.getRawButton(1) || m_buttonBoard.getRawButton(6)));
+    Trigger m_resetSubsystems = new Trigger(() -> (m_operatorController.getRawButton(1) || m_buttonBoard.getRawButton(5)));
     m_resetSubsystems.onTrue(new InstantCommand(() -> m_intakeSubsystem.reset()));
 
     // Driver button X
@@ -165,19 +165,17 @@ public class RobotContainer {
 
     // Button board column 1, row 2
     Trigger m_intake = new Trigger(() -> m_buttonBoard.getRawButton(1));
-    m_intake.whileTrue(new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 150000));
-    m_intake.onFalse(new SequentialCommandGroup(
-        new AutonIntakeCommand(m_intakeSubsystem, 0, -1, 450),
-        new WaitCommand(0.1),
-        new AutonIntakeCommand(m_intakeSubsystem, 0, 0.1, 450)
-    ));
+    m_intake.whileTrue(new AutonIntakeCommand(m_intakeSubsystem, -500, -3.35, 150000));
+    m_intake.onFalse(
+        new AutonIntakeCommand(m_intakeSubsystem, 0, .15, 1050)
+    );
 
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
       new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle, 1000),
       new SequentialCommandGroup(
-        new WaitCommand(0.5),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, 0.15, 500),
         new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
       )
     ));
@@ -188,7 +186,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new LimelightOuttakeCommand(m_outtakeSubsystem, m_limelightSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.8, 1250),
         new SequentialCommandGroup(
-          new WaitCommand(0.75),
+          new AutonIntakeCommand(m_intakeSubsystem, 0, 0.15, 750),
           new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
         ),
         new LimelightRotateCommand(m_drivetrainSubsystem, m_limelightSubsystem, 1250)
@@ -197,9 +195,9 @@ public class RobotContainer {
     ));
 
     // Button board column 4, row 1
-    Trigger m_pass = new Trigger(() -> m_buttonBoard.getRawButton(5));
+    Trigger m_pass = new Trigger(() -> m_buttonBoard.getRawButton(6));
     m_pass.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate, -3.35, 1000),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * .68, -3.4, 1000),
       new SequentialCommandGroup(
         new WaitCommand(0.5),
         new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
@@ -271,14 +269,14 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.45, 0, 2.5, Math.PI / 2,1000),   
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.4, 0, 2.5, Math.PI / 2,1000),   
         new AutonIntakeCommand(m_intakeSubsystem, 0, -3.3, 1000)
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1100),
         new SequentialCommandGroup(
           new WaitCommand(.35),
-          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.45, 0, 750)
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.4, 0, 750)
         )
       ),
       new ParallelCommandGroup(
@@ -339,7 +337,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.45, 0, 2.5, Math.PI / 2, 1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.4, 0, 2.5, Math.PI / 2, 1000),
         new AutonIntakeCommand(m_intakeSubsystem, 0, -3.3, 1000)
         
       ),
@@ -347,7 +345,7 @@ public class RobotContainer {
         new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1100),
         new SequentialCommandGroup(
           new WaitCommand(0.35),
-          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, -1.45, 0, 750)
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, -1.4, 0, 750)
         )
       ),
       new ParallelCommandGroup(
