@@ -77,8 +77,8 @@ public class RobotContainer {
 
     m_climberSubsystem.setDefaultCommand(new DefaultClimberCommand(
         m_climberSubsystem,
-        () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(3), 0.05) * 0.50,
-        () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(2), 0.05) * 0.50
+        () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(3), 0.05) * 0.7,
+        () -> getDPadInput(m_buttonBoard) * MathUtil.applyDeadband(m_buttonBoard.getRawAxis(2), 0.05) * 0.7
     ));
 
     m_camera = CameraServer.startAutomaticCapture();
@@ -109,7 +109,7 @@ public class RobotContainer {
 
     SequentialCommandGroup autonomousSequence = new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle, 1000),
+        new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.7, OuttakeSubsystem.kSpeakerShootAngle, 1000),
         new SequentialCommandGroup(
           new WaitCommand(0.5),
           new AutonIntakeCommand(m_intakeSubsystem, 1000, 0, 500)
@@ -173,7 +173,7 @@ public class RobotContainer {
     // Button board column 1, row 1
     Trigger m_outtakeSpeaker = new Trigger(() -> m_buttonBoard.getRawButton(3));
     m_outtakeSpeaker.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.5, OuttakeSubsystem.kSpeakerShootAngle, 1000),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * 0.7, OuttakeSubsystem.kSpeakerShootAngle, 1000),
       new SequentialCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, 0, 0.15, 500),
         new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
@@ -197,9 +197,9 @@ public class RobotContainer {
     // Button board column 3, row 1
     Trigger m_pass = new Trigger(() -> m_buttonBoard.getRawButton(6));
     m_pass.onTrue(new ParallelCommandGroup(
-      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * .68, -3.4, 1000),
+      new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * .65, -3.4, 1000),
       new SequentialCommandGroup(
-        new WaitCommand(0.5),
+        new AutonIntakeCommand(m_intakeSubsystem, 0, 0.15, 500),
         new AutonIntakeCommand(m_intakeSubsystem, 700, 0, 500)
       )
     ));
@@ -269,14 +269,14 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.4, 0, 2.5, Math.PI / 2,1000),   
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, 1.42, 0, 2.5, Math.PI / 2,1000),   
         new AutonIntakeCommand(m_intakeSubsystem, 0, -3.3, 1000)
       ),
       new ParallelCommandGroup(
         new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1100),
         new SequentialCommandGroup(
           new WaitCommand(.35),
-          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.4, 0, 750)
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, 1.42, 0, 750)
         )
       ),
       new ParallelCommandGroup(
@@ -337,7 +337,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
         new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 1000),
-        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.4, 0, 2.5, Math.PI / 2, 1000),
+        new PositionDriveCommand(m_drivetrainSubsystem, 1.10, -1.42, 0, 2.5, Math.PI / 2, 1000),
         new AutonIntakeCommand(m_intakeSubsystem, 0, -3.3, 1000)
         
       ),
@@ -345,7 +345,7 @@ public class RobotContainer {
         new AutonIntakeCommand(m_intakeSubsystem, -500, -3.3, 1100),
         new SequentialCommandGroup(
           new WaitCommand(0.35),
-          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, -1.4, 0, 750)
+          new PositionDriveCommand(m_drivetrainSubsystem, 2.00, -1.42, 0, 750)
         )
       ),
       new ParallelCommandGroup(
