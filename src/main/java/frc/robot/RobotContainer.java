@@ -146,7 +146,7 @@ public class RobotContainer {
     Trigger m_resetPose = new Trigger(() -> m_driveController.getRawButton(1));
     m_resetPose.onTrue(new InstantCommand(() -> setPose(0, 0, 0)));
 
-    // Operator button A & Button board column 3, row 1
+    // Operator button A & Button board column 4, row 1
     Trigger m_resetSubsystems = new Trigger(() -> (m_operatorController.getRawButton(1) || m_buttonBoard.getRawButton(5)));
     m_resetSubsystems.onTrue(new InstantCommand(() -> m_intakeSubsystem.reset()));
 
@@ -194,7 +194,7 @@ public class RobotContainer {
       new AutonOuttakeCommand(m_outtakeSubsystem, 0, OuttakeSubsystem.kDefaultAngle, 750)
     ));
 
-    // Button board column 4, row 1
+    // Button board column 3, row 1
     Trigger m_pass = new Trigger(() -> m_buttonBoard.getRawButton(6));
     m_pass.onTrue(new ParallelCommandGroup(
       new AutonOuttakeCommand(m_outtakeSubsystem, OuttakeSubsystem.kOuttakeMaxRate * .68, -3.4, 1000),
