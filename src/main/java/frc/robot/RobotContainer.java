@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.util.ArrayList;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
@@ -65,13 +66,13 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
-        () -> getDPadInput(m_operatorController) * IntakeSubsystem.kIntakeMaxRate * 0.2, 
-        () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(5), 0.05) * IntakeSubsystem.kRotateMaxAngularSpeed * 0.75
+        () -> DPADrightleft(m_driveController) * IntakeSubsystem.kIntakeMaxRate * 0.2, 
+        () -> -getDPadInput(m_driveController) * IntakeSubsystem.kRotateMaxAngularSpeed
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
         m_outtakeSubsystem, 
-        () -> MathUtil.applyDeadband(m_operatorController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.8,
+        () -> MathUtil.applyDeadband(m_driveController.getRawAxis(3), 0.05) * OuttakeSubsystem.kOuttakeMaxRate * 0.8,
         () -> -MathUtil.applyDeadband(m_operatorController.getRawAxis(1), 0.05)
     ));
 
@@ -143,7 +144,7 @@ public class RobotContainer {
    */
   private void configureButtons() {
     // Driver button A
-    Trigger m_resetPose = new Trigger(() -> m_driveController.getRawButton(1));
+    Trigger m_resetPose = new Trigger(() -> m_driveController.getRawButton(3));
     m_resetPose.onTrue(new InstantCommand(() -> setPose(0, 0, 0)));
 
     // Operator button A & Button board column 3, row 1
@@ -151,9 +152,14 @@ public class RobotContainer {
     m_resetSubsystems.onTrue(new InstantCommand(() -> m_intakeSubsystem.reset()));
 
     // Driver button X
-    Trigger m_brake = new Trigger(() -> m_driveController.getRawButton(3));
-    m_brake.onTrue(new BrakeCommand(m_drivetrainSubsystem));
-    m_brake.onFalse(new InstantCommand(() -> m_drivetrainSubsystem.getCurrentCommand().cancel()));
+    Trigger aimUp = new Trigger(() -> m_driveController.getRawButton(5 /*FIX THE NUMBER*/ ));
+    aimUp.whileTrue(new DefaultOuttakeCommand(m_outtakeSubsystem,  () -> 0.0, () -> -.5));
+    
+    
+    Trigger aimDown = new Trigger(() -> m_driveController.getRawButton(1 /*FIX THE NUMBER*/ ));
+    aimDown.whileTrue(new DefaultOuttakeCommand(m_outtakeSubsystem, () -> 0, () -> .5));
+    
+
 
     // Driver D-pad up
     Trigger m_incrementPowerLimit = new Trigger(() -> getDPadInput(m_driveController) == 1.0);
@@ -258,6 +264,16 @@ public class RobotContainer {
     }
     if (joystick.getPOV() >= 135 && joystick.getPOV() <= 225) {
       return -1.0;
+    }
+    return 0;
+  }
+
+  private double DPADrightleft(Joystick joystick) {
+    if (joystick.getPOV() ==90 ) {
+      return .4;
+    }
+    if (joystick.getPOV() == 270) {
+      return -.4;
     }
     return 0;
   }
@@ -398,6 +414,8 @@ public class RobotContainer {
       new PositionDriveCommand(m_drivetrainSubsystem, 7.2, -4.5, 10, 5, Math.PI, 3000)
     );
   }
+
+  
 
 //   /**
 //    * Command to intake and shoot the note on the Blue Ampside Midfield Note, the one closest to the wall and the one adjacent.
