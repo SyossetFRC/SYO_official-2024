@@ -66,8 +66,8 @@ public class RobotContainer {
 
     m_intakeSubsystem.setDefaultCommand(new DefaultIntakeCommand(
         m_intakeSubsystem, 
-        () -> DPADrightleft(m_driveController) * IntakeSubsystem.kIntakeMaxRate * 0.2, 
-        () -> -getDPadInput(m_driveController) * IntakeSubsystem.kRotateMaxAngularSpeed
+        () -> -DPADrightleft(m_driveController) * IntakeSubsystem.kIntakeMaxRate * 0.2, 
+        () -> getDPadInput(m_driveController) * IntakeSubsystem.kRotateMaxAngularSpeed * .3
     ));
 
     m_outtakeSubsystem.setDefaultCommand(new DefaultOuttakeCommand(
@@ -152,13 +152,18 @@ public class RobotContainer {
     m_resetSubsystems.onTrue(new InstantCommand(() -> m_intakeSubsystem.reset()));
 
     // Driver button X
-    Trigger aimUp = new Trigger(() -> m_driveController.getRawButton(5 /*FIX THE NUMBER*/ ));
-    aimUp.whileTrue(new DefaultOuttakeCommand(m_outtakeSubsystem,  () -> 0.0, () -> -.5));
+    Trigger aimUp = new Trigger(() -> m_driveController.getRawButton(4 ));
+    aimUp.whileTrue(new DefaultOuttakeCommand(m_outtakeSubsystem,  () -> 0.0, () -> .5));
     
     
-    Trigger aimDown = new Trigger(() -> m_driveController.getRawButton(1 /*FIX THE NUMBER*/ ));
-    aimDown.whileTrue(new DefaultOuttakeCommand(m_outtakeSubsystem, () -> 0, () -> .5));
+    Trigger aimDown = new Trigger(() -> m_driveController.getRawButton(1));
+    aimDown.whileTrue(new DefaultOuttakeCommand(m_outtakeSubsystem, () -> 0.0, () -> -.5));
     
+    Trigger climbup = new Trigger(() -> m_driveController.getRawButton(6));
+    climbup.whileTrue(new DefaultClimberCommand(m_climberSubsystem, () -> .5, () -> .5));
+    
+    Trigger climbdown = new Trigger(() -> m_driveController.getRawButton(5 ));
+    climbdown.whileTrue(new DefaultClimberCommand(m_climberSubsystem, () -> -.5, () -> -.5));
 
 
     // Driver D-pad up
@@ -259,10 +264,10 @@ public class RobotContainer {
    * @return D-Pad up returns +1 and D-Pad down returns -1.
    */
   private double getDPadInput(Joystick joystick) {
-    if (joystick.getPOV() >= 315 || (joystick.getPOV() <= 45 && joystick.getPOV() >= 0)) {
+    if (joystick.getPOV() == 0) {
       return 1.0;
     }
-    if (joystick.getPOV() >= 135 && joystick.getPOV() <= 225) {
+    if (joystick.getPOV() == 180) {
       return -1.0;
     }
     return 0;
