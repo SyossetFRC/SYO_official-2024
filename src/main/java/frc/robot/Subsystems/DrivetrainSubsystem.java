@@ -5,6 +5,22 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+
+import java.util.Queue;
+import java.util.function.Supplier;
+
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+
+import com.ctre.phoenix6.controls.*;
+import edu.wpi.first.math.util.Units;
+
+
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.hardware.Pigeon2;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -22,6 +38,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -42,6 +59,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private static final Translation2d m_backLeftLocation = new Translation2d(-kTrackWidth / 2.0, kTrackWidth / 2.0);
   private static final Translation2d m_backRightLocation = new Translation2d(-kTrackWidth / 2.0, -kTrackWidth / 2.0);
 
+  private final Pigeon2 pigeon;
+  private final Rotation2d yaw;
+  
   private final int m_currentLimit = 60;
 
   private final SwerveModule m_frontLeft;
@@ -80,7 +100,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-    m_odometry = new SwerveDriveOdometry(m_kinematics, m_navx.getRotation2d(), getModulePositions());
+    pigeon = new Pigeon2(0, "rio");
+    yaw = pigeon.getRotation2d();
+
+
+    m_odometry = new SwerveDriveOdometry(m_kinematics, yaw, getModulePositions());
 
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
@@ -210,15 +234,36 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private class SwerveModule {
     private static final double kWheelRadius = 0.050165; // meters
-    private static final double kDriveGearRatio = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
+    private static final double kDriveGearRatio = (13.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
     private static final double kSteerGearRatio = 7.0 / 150.0;
 
-    private final CANSparkMax m_driveMotor;
-    private final CANSparkMax m_turningMotor;
+    private final TalonFXConfiguration driveTalonConfig = new TalonFXConfiguration();
+    private final TalonFXConfiguration turnTalonConfig = new TalonFXConfiguration();
 
-    private final RelativeEncoder m_driveEncoder;
+    
+    private final TalonFX driveTalon;
+    private final TalonFX turnTalon;
+  
+
+    private Double drivePosition;
+    private  Double driveVelocity;
+    private final StatusSignal<Double> driveAppliedVolts;
+    private final StatusSignal<Double> driveSupplyCurrent;
+    private final StatusSignal<Double> driveTorqueCurrent;
+
+    private final StatusSignal<Double> turnPosition;
+    private  Rotation2d turnAbsolutePosition;
+    private double rotationposition;
+    private final StatusSignal<Double> turnVelocity;
+    private final StatusSignal<Double> turnAppliedVolts;
+    private final StatusSignal<Double> turnSupplyCurrent;
+    private final StatusSignal<Double> turnTorqueCurrent;
+    // private final CANSparkMax m_driveMotor;
+    // private final CANSparkMax m_turningMotor;
+
+    // private final RelativeEncoder m_driveEncoder;
     private final CANcoder m_turningCANcoder;
-    private final RelativeEncoder m_turningMotorEncoder;
+    // private final RelativeEncoder m_turningMotorEncoder;
     private final double m_moduleOffset;
 
     private final PIDController m_drivePIDController = new PIDController(0, 0, 0);
@@ -234,29 +279,71 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @param moduleOffset The angle offset for the turning encoder (rad).
      */
     private SwerveModule(int driveMotorChannel, int turningMotorChannel, int turningEncoderChannel, double moduleOffset) {
-      m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
-      m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
+      // m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
+      // m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
-      m_driveMotor.setIdleMode(IdleMode.kBrake);
-      m_turningMotor.setIdleMode(IdleMode.kBrake);
+      // m_driveMotor.setIdleMode(IdleMode.kBrake);
+      // m_turningMotor.setIdleMode(IdleMode.kBrake);
 
-      m_turningMotor.setInverted(true);
+      // m_turningMotor.setInverted(true);
 
-      m_driveEncoder = m_driveMotor.getEncoder();
+      // m_driveEncoder = m_driveMotor.getEncoder();
       m_turningCANcoder = new CANcoder(turningEncoderChannel);
-      m_turningMotorEncoder = m_turningMotor.getEncoder();
+      // m_turningMotorEncoder = m_turningMotor.getEncoder();
 
-      m_driveEncoder.setPositionConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI); // meters
-      m_driveEncoder.setVelocityConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI / 60.0); // meters per second
+      // m_driveEncoder.setPositionConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI); // meters
+      // m_driveEncoder.setVelocityConversionFactor(kDriveGearRatio * kWheelRadius * 2 * Math.PI / 60.0); // meters per second
 
-      m_turningMotorEncoder.setPositionConversionFactor(kSteerGearRatio * 2 * Math.PI); // radians
-      m_turningMotorEncoder.setVelocityConversionFactor(kSteerGearRatio * 2 * Math.PI / 60.0); // radians per second
+      // m_turningMotorEncoder.setPositionConversionFactor(kSteerGearRatio * 2 * Math.PI); // radians
+      // m_turningMotorEncoder.setVelocityConversionFactor(kSteerGearRatio * 2 * Math.PI / 60.0); // radians per second
 
       m_moduleOffset = moduleOffset;
       
+    driveTalon = new TalonFX(driveMotorChannel, "rio");
+    turnTalon = new TalonFX(turningMotorChannel, "rio");
 
-      m_driveMotor.setSmartCurrentLimit(m_currentLimit);
-      m_turningMotor.setSmartCurrentLimit(m_currentLimit);
+    driveTalonConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80.0;
+    driveTalonConfig.TorqueCurrent.PeakReverseTorqueCurrent = -80.0;
+    driveTalonConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.02;
+    
+
+    turnTalonConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40.0;
+    turnTalonConfig.TorqueCurrent.PeakReverseTorqueCurrent = -40.0;
+    // turnTalonConfig.MotorOutput.Inverted =
+    //     config.turnMotorInverted()
+    //         ? InvertedValue.Clockwise_Positive
+    //         : InvertedValue.CounterClockwise_Positive;
+    // turnTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    // Conversions affect getPosition()/setPosition() and getVelocity()
+    // driveTalonConfig.Feedback.SensorToMechanismRatio = moduleConstants.driveReduction();
+    // turnTalonConfig.Feedback.SensorToMechanismRatio = moduleConstants.turnReduction();
+    turnTalonConfig.ClosedLoopGeneral.ContinuousWrap = true;
+
+
+    for (int i = 0; i < 4; i++) {
+      boolean error = driveTalon.getConfigurator().apply(driveTalonConfig, 0.1) == StatusCode.OK;
+      error = error && (turnTalon.getConfigurator().apply(turnTalonConfig, 0.1) == StatusCode.OK);
+      if (!error) break;
+    }
+
+    drivePosition = driveTalon.getPosition().getValueAsDouble() * kDriveGearRatio * kWheelRadius * 2 * Math.PI;
+    turnPosition = turnTalon.getPosition();
+    driveVelocity = driveTalon.getVelocity().getValueAsDouble() * kDriveGearRatio * kWheelRadius * 2 * Math.PI / 60.0;
+    driveAppliedVolts = driveTalon.getMotorVoltage();
+    driveSupplyCurrent = driveTalon.getSupplyCurrent();
+    driveTorqueCurrent = driveTalon.getTorqueCurrent();
+    turnAbsolutePosition = Rotation2d.fromRadians(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - Units.degreesToRotations(m_moduleOffset));
+    rotationposition = turnAbsolutePosition.getRadians();
+    turnVelocity = turnTalon.getVelocity();
+    turnAppliedVolts = turnTalon.getMotorVoltage();
+    turnSupplyCurrent = turnTalon.getSupplyCurrent();
+    turnTorqueCurrent = turnTalon.getTorqueCurrent();
+    
+      
+
+      // m_driveMotor.setSmartCurrentLimit(m_currentLimit);
+      // m_turningMotor.setSmartCurrentLimit(m_currentLimit);
 
       m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -269,7 +356,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-      return new SwerveModuleState(m_driveEncoder.getVelocity(), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset));
+      return new SwerveModuleState((driveVelocity), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset));
     }
 
     /**
@@ -278,7 +365,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current distance of the drive encoder in meters as a SwerveModulePosition.
      */
     public SwerveModulePosition getDrivePosition() {
-      return new SwerveModulePosition(m_driveEncoder.getPosition(), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset));
+      return new SwerveModulePosition((drivePosition), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset));
     }
 
     /**
@@ -288,25 +375,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
       // Optimizes the reference state to avoid spinning further than 90 degrees.
-      SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(m_turningMotorEncoder.getPosition()));
+      SwerveModuleState state = SwerveModuleState.optimize(desiredState, turnAbsolutePosition);
       // Calculates the turning motor output from the variable turning PID controller.
-      final double turnOutput = m_turningPIDController.calculate(m_turningMotorEncoder.getPosition(), state.angle.getRadians());
-      m_turningMotor.set(turnOutput);
+      final double turnOutput = m_turningPIDController.calculate(turnAbsolutePosition.getRadians(), state.angle.getRadians());
+      turnTalon.setVoltage(turnOutput);
 
       // Updates velocity based on turn error.
       state.speedMetersPerSecond *= Math.cos(getState().angle.getRadians() - state.angle.getRadians());
 
       // Calculates the drive output from the drive PID controller and feedforward controller.
-      final double driveOutput = m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
+      final double driveOutput = m_drivePIDController.calculate(driveVelocity, state.speedMetersPerSecond);
       final double driveFeedForward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
-      m_driveMotor.setVoltage(Math.abs(state.speedMetersPerSecond) > 0.001 ? (driveFeedForward + driveOutput) : 0);
+      driveTalon.setVoltage(Math.abs(state.speedMetersPerSecond) > 0.001 ? (driveFeedForward + driveOutput) : 0);
     }
 
     /**
      * Sets the relative turning encoder used in PID to the absolute turning encoder position. Do not call periodically.
      */
     public void alignTurningEncoders() {
-      m_turningMotorEncoder.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset).getRadians());
+      turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset).getRadians());
     }
   }
 }

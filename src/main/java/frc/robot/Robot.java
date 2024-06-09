@@ -162,7 +162,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     CommandScheduler.getInstance().cancelAll();
 
-    m_container.autonomousCommands(m_startX, m_startY, m_startTheta, m_autonomousNotes).schedule();
+    // m_container.autonomousCommands(m_startX, m_startY, m_startTheta, m_autonomousNotes).schedule();
   }
 
   @Override

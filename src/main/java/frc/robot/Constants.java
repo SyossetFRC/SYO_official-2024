@@ -9,23 +9,23 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 20;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 4;
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 5;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 1;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 53;
     public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -147.4 / 360.0; // Input between -180 and 180 degrees.
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 7;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 8;
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 6;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 52;
     public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 60.2 / 360.0; // Input between -180 and 180 degrees.
        
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 9;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 2;
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 3;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 50;
     public static final double BACK_LEFT_MODULE_STEER_OFFSET = 25 / 360.0; // Input between -180 and 180 degrees.
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 5;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 6;
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 8;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 4;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 51;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -154.7 / 360.0; // Input between -180 and 180 degrees.
 
