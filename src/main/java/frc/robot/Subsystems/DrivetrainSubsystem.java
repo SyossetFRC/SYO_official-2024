@@ -317,7 +317,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final double m_moduleOffset;
 
     private final PIDController m_drivePIDController = new PIDController(0.0, 0, 0);
-    private final PIDController m_turningPIDController = new PIDController(.05, 0, 0.01);
+    private final PIDController m_turningPIDController = new PIDController(.5, 0, 0.01);
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 2.4);
 
     /**
@@ -326,7 +326,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     //  * @param driveMotorChannel The CAN output for the drive motor.
      * @param turningMotorChannel The CAN output for the turning motor.
      * @param turningEncoderChannel The CAN input for the turning encoder.
-     * @param moduleOffset The angle offset for the turning encoder (rad).
+     * @param moduleOffset The angle offset for the turning encoder (rot).
      */
     private SwerveModule(int driveMotorChannel, int turningMotorChannel, int turningEncoderChannel, double moduleOffset) {
       // m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
@@ -356,6 +356,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     driveTalonConfig.TorqueCurrent.PeakReverseTorqueCurrent = -80.0;
     driveTalonConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.02;
     
+
 
     turnTalonConfig.TorqueCurrent.PeakForwardTorqueCurrent = 40.0;
     turnTalonConfig.TorqueCurrent.PeakReverseTorqueCurrent = -40.0;
@@ -454,7 +455,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * Sets the relative turning encoder used in PID to the absolute turning encoder position. Do not call periodically.
      */
     public void alignTurningEncoders() {
-      turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset).getRadians());
+      // turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset).getRotations());
+      turnTalon.setPosition(0);
+
     }
   }
 }
