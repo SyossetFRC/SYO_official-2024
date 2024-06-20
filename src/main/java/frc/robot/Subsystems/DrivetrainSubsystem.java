@@ -80,7 +80,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private final SwerveDriveOdometry m_odometry;
   StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
-    .getStructArrayTopic("Swerve", SwerveModuleState.struct).publish();
+    .getStructArrayTopic("/Swerve", SwerveModuleState.struct).publish();
 
   private final GenericEntry m_frontLeftDriveSpeedEntry;
   private final GenericEntry m_frontLeftSteerAngleEntry;
@@ -225,9 +225,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     m_backRightDriveSpeedEntry.setString(m_backRight.getState().speedMetersPerSecond + " m/s");
     m_backRightSteerAngleEntry.setString(m_backRight.getState().angle.getDegrees() + " deg");
-
+    yaw.refresh();
     m_odometryXEntry.setString(getPosition().getX() + " m");
-m_odometryYEntry.setString(getPosition().getY() + " m");
+    m_odometryYEntry.setString(getPosition().getY() + " m");
     m_odometryThetaEntry.setString(getAngle().getDegrees() + " deg");
   }
 
@@ -241,13 +241,20 @@ m_odometryYEntry.setString(getPosition().getY() + " m");
 
     // WPILib
     
-    publisher.set(swerveModuleStates);
+    publisher.set(new SwerveModuleState[]{
+      swerveModuleStates[0],
+      swerveModuleStates[1],
+      swerveModuleStates[2],
+      swerveModuleStates[3]
+
+    });
     
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
+
     yaw.refresh();
     m_odometry.update(
         Rotation2d.fromDegrees(yaw.getValueAsDouble()),
@@ -299,7 +306,7 @@ m_odometryYEntry.setString(getPosition().getY() + " m");
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
      *
-     * @param driveMotorChannel The CAN output for the drive motor.
+    //  * @param driveMotorChannel The CAN output for the drive motor.
      * @param turningMotorChannel The CAN output for the turning motor.
      * @param turningEncoderChannel The CAN input for the turning encoder.
      * @param moduleOffset The angle offset for the turning encoder (rad).
