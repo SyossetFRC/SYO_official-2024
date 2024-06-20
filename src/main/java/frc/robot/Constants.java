@@ -17,17 +17,17 @@ public final class Constants {
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 6;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 53;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 45 / 360.0; // Input between -180 and 180 degrees.
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = 30 / 360.0; // Input between -180 and 180 degrees.
        
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 7;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 3;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 51;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = 0 / 360.0; // Input between -180 and 180 degrees.
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -13 / 360.0; // Input between -180 and 180 degrees.
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 8;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 4;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 52;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = 0 / 360.0; // Input between -180 and 180 degrees.
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = 45 / 360.0; // Input between -180 and 180 degrees.
 
     public static final int INTAKE_MOTOR = 24;
     public static final int ROTATE_MOTOR = 41;

@@ -302,12 +302,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final StatusSignal<Double> driveTorqueCurrent;
 
     private final StatusSignal<Double> turnPosition;
+    private final StatusSignal<Double> CANPosition;
     private  final Rotation2d turnAbsolutePosition;
     private StatusSignal<Double> rotationposition;
     private final StatusSignal<Double> turnVelocity;
     private final StatusSignal<Double> turnAppliedVolts;
     private final StatusSignal<Double> turnSupplyCurrent;
     private final StatusSignal<Double> turnTorqueCurrent;
+
+    
     // private final CANSparkMax m_driveMotor;
     // private final CANSparkMax m_turningMotor;
 
@@ -380,14 +383,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
       error = error && (turnTalon.getConfigurator().apply(turnTalonConfig, 0.1) == StatusCode.OK);
       if (!error) break;
     }
-
+    
     drivePosition = driveTalon.getPosition();
     turnPosition = turnTalon.getPosition();
+    CANPosition = m_turningCANcoder.getPosition();
     driveVelocity = driveTalon.getVelocity();
     driveAppliedVolts = driveTalon.getMotorVoltage();
     driveSupplyCurrent = driveTalon.getSupplyCurrent();
     driveTorqueCurrent = driveTalon.getTorqueCurrent();
-    turnAbsolutePosition = Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - Units.degreesToRotations(m_moduleOffset));
+    turnAbsolutePosition = Rotation2d.fromRotations(CANPosition.getValueAsDouble() - (m_moduleOffset));
     turnVelocity = turnTalon.getVelocity();
     turnAppliedVolts = turnTalon.getMotorVoltage();
     turnSupplyCurrent = turnTalon.getSupplyCurrent();
@@ -456,7 +460,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void alignTurningEncoders() {
       // turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset).getRotations());
-      turnTalon.setPosition(0);
+      turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset).getRotations());
 
     }
   }
