@@ -95,6 +95,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final GenericEntry m_odometryXEntry;
   private final GenericEntry m_odometryYEntry;
   private final GenericEntry m_odometryThetaEntry;
+  private Double[] frontleftstuff;
+  private Double[] frontrightstuff;
+  private Double[] backleftstuff;
+  private Double[] backrightstuff;
+
 
   private double m_xSpeed;
   private double m_ySpeed;
@@ -210,10 +215,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /** Displays the periodically updated robot poses on the Shuffleboard */
   public void updateShuffleboard() {
     
+    m_frontLeftDriveSpeedEntry.setString(frontleftstuff[0] + " turn set value");
+    m_frontLeftSteerAngleEntry.setString(frontleftstuff [2] + " deg by motor");
     // m_frontLeftDriveSpeedEntry.setString(m_frontLeft.getState().speedMetersPerSecond + " m/s");
     // m_frontLeftSteerAngleEntry.setString(m_frontLeft.getState().angle.getDegrees() + " deg");
-    m_frontLeftDriveSpeedEntry.setString(m_frontLeft.getState().speedMetersPerSecond + " m/s");
-    m_frontLeftSteerAngleEntry.setString(m_frontLeft.getState().angle.getDegrees() + " deg");
 
     m_frontRightDriveSpeedEntry.setString(m_frontRight.getState().speedMetersPerSecond + " m/s");
     m_frontRightSteerAngleEntry.setString(m_frontRight.getState().angle.getDegrees() + " deg");
@@ -261,10 +266,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_backLeft.setDesiredState(swerveModuleStates[2]);
-    m_backRight.setDesiredState(swerveModuleStates[3]);
+    frontleftstuff = m_frontLeft.setDesiredState(swerveModuleStates[0]);
+    frontrightstuff = m_frontRight.setDesiredState(swerveModuleStates[1]);
+    backleftstuff = m_backLeft.setDesiredState(swerveModuleStates[2]);
+    backrightstuff = m_backRight.setDesiredState(swerveModuleStates[3]);
 
     yaw.refresh();
     m_odometry.update(
@@ -278,8 +283,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private class SwerveModule {
     private static final double kWheelRadius = 0.050165; // meters
-    private static final double kDriveGearRatio = (13.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
-    private static final double kSteerGearRatio = 7.0 / 150.0;
+    private static final double kDriveGearRatio = ((13.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0));
+    // private static final double kDriveGearRatio = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0); Mechanical Advantage uses this, makes motors go supedr fast???
+    private static final double kSteerGearRatio = 1.0 / (7.0 / 150.0);
 
     private final TalonFXConfiguration driveTalonConfig = new TalonFXConfiguration();
     private final TalonFXConfiguration turnTalonConfig = new TalonFXConfiguration();
@@ -289,14 +295,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final TalonFX turnTalon;
   
 
-    private StatusSignal<Double> drivePosition;
-    private  StatusSignal<Double> driveVelocity;
+    private final StatusSignal<Double> drivePosition;
+    private final StatusSignal<Double> driveVelocity;
     private final StatusSignal<Double> driveAppliedVolts;
     private final StatusSignal<Double> driveSupplyCurrent;
     private final StatusSignal<Double> driveTorqueCurrent;
 
     private final StatusSignal<Double> turnPosition;
-    private  Rotation2d turnAbsolutePosition;
+    private  final Rotation2d turnAbsolutePosition;
     private StatusSignal<Double> rotationposition;
     private final StatusSignal<Double> turnVelocity;
     private final StatusSignal<Double> turnAppliedVolts;
@@ -311,7 +317,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final double m_moduleOffset;
 
     private final PIDController m_drivePIDController = new PIDController(0.0, 0, 0);
-    private final PIDController m_turningPIDController = new PIDController(0.05, 0, 0.01);
+    private final PIDController m_turningPIDController = new PIDController(1, 0, 0.01);
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 2.4);
 
     /**
@@ -401,8 +407,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-      // return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
-      return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRadians(turnPosition.getValueAsDouble() /*- m_moduleOffset*/));
+      driveVelocity.refresh();
+      
+      return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
+      // return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRadians(turnPosition.getValueAsDouble() /*- m_moduleOffset*/));
     }
 
     /**
@@ -419,13 +427,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *
      * @param desiredState The desired state with speed and angle.
      */
-    public void setDesiredState(SwerveModuleState desiredState) {
+    public Double[] setDesiredState(SwerveModuleState desiredState) {
+      turnPosition.refresh();
       // Optimizes the reference state to avoid spinning further than 90 degrees.
-      SwerveModuleState state = SwerveModuleState.optimize(desiredState,  Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
+      // SwerveModuleState state = SwerveModuleState.optimize(desiredState,  Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));  USING CANCODER
+      SwerveModuleState state = SwerveModuleState.optimize(desiredState,  Rotation2d.fromRotations(turnPosition.getValueAsDouble()));
+
       // Calculates the turning motor output from the variable turning PID controller.
       
-      final double turnOutput = m_turningPIDController.calculate(Units.rotationsToRadians(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/), state.angle.getRadians());
-      turnTalon.set(turnOutput / 10.0);
+      final double turnOutput = m_turningPIDController.calculate(Units.rotationsToRadians(turnPosition.getValueAsDouble() /*- m_moduleOffset*/), state.angle.getRadians());
+      turnTalon.set(turnOutput);
 
       // Updates velocity based on turn error.
       state.speedMetersPerSecond *= Math.cos(getState().angle.getRadians() - state.angle.getRadians());
@@ -434,13 +445,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
       final double driveOutput = m_drivePIDController.calculate(driveVelocity.getValueAsDouble(), state.speedMetersPerSecond);
       final double driveFeedForward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
       driveTalon.setVoltage(Math.abs(state.speedMetersPerSecond) > 0.001 ? (driveFeedForward + driveOutput) : 0);
+
+      return new Double[] {turnOutput, driveOutput, turnPosition.getValueAsDouble()};
     }
 
     /**
      * Sets the relative turning encoder used in PID to the absolute turning encoder position. Do not call periodically.
      */
     public void alignTurningEncoders() {
-      turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/).getRadians());
+      turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/).getRotations());
     }
   }
 }
