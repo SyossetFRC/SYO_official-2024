@@ -367,7 +367,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     driveTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Conversions affect getPosition()/setPosition() and getVelocity()
-    driveTalonConfig.Feedback.SensorToMechanismRatio = kDriveGearRatio;
+    driveTalonConfig.Feedback.SensorToMechanismRatio = kDriveGearRatio * 2 * Math.PI;
     turnTalonConfig.Feedback.SensorToMechanismRatio = kSteerGearRatio;
     
     turnTalonConfig.ClosedLoopGeneral.ContinuousWrap = true;
