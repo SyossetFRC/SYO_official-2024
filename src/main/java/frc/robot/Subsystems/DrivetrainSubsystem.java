@@ -80,7 +80,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private final SwerveDriveOdometry m_odometry;
   StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
-    .getStructArrayTopic("/Swerve", SwerveModuleState.struct).publish();
+    .getStructArrayTopic("/DesiredSwerve", SwerveModuleState.struct).publish();
+    StructArrayPublisher<SwerveModuleState> publisher2 = NetworkTableInstance.getDefault()
+    .getStructArrayTopic("/ActualSwerve", SwerveModuleState.struct).publish();
 
   private final GenericEntry m_frontLeftDriveSpeedEntry;
   private final GenericEntry m_frontLeftSteerAngleEntry;
@@ -241,6 +243,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // WPILib
     
+    publisher2.set(new SwerveModuleState[]{
+      m_frontLeft.getState(),
+      m_frontRight.getState(),
+      m_backLeft.getState(),
+      m_backRight.getState()
+    });
+
+
     publisher.set(new SwerveModuleState[]{
       swerveModuleStates[0],
       swerveModuleStates[1],
@@ -248,6 +258,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
       swerveModuleStates[3]
 
     });
+
     
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -350,8 +361,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     driveTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Conversions affect getPosition()/setPosition() and getVelocity()
-    driveTalonConfig.Feedback.SensorToMechanismRatio = kDriveGearRatio * kWheelRadius * 2 * Math.PI;
-    turnTalonConfig.Feedback.SensorToMechanismRatio = kSteerGearRatio * 2 * Math.PI;
+    driveTalonConfig.Feedback.SensorToMechanismRatio = kDriveGearRatio;
+    turnTalonConfig.Feedback.SensorToMechanismRatio = kSteerGearRatio;
     
     turnTalonConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
@@ -409,11 +420,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
       // Optimizes the reference state to avoid spinning further than 90 degrees.
-      SwerveModuleState state = SwerveModuleState.optimize(desiredState,  Rotation2d.fromRotations(turnPosition.getValueAsDouble()));
+      SwerveModuleState state = SwerveModuleState.optimize(desiredState,  Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
       // Calculates the turning motor output from the variable turning PID controller.
       
-      final double turnOutput = m_turningPIDController.calculate(Units.rotationsToRadians(turnPosition.getValueAsDouble()), state.angle.getRadians());
-      turnTalon.set(turnOutput);
+      final double turnOutput = m_turningPIDController.calculate(Units.rotationsToRadians(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/), state.angle.getRadians());
+      turnTalon.set(turnOutput / 10.0);
 
       // Updates velocity based on turn error.
       state.speedMetersPerSecond *= Math.cos(getState().angle.getRadians() - state.angle.getRadians());
