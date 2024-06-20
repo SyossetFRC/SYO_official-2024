@@ -401,7 +401,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-      return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
+      // return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
+      return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRadians(turnPosition.getValueAsDouble() /*- m_moduleOffset*/));
     }
 
     /**
