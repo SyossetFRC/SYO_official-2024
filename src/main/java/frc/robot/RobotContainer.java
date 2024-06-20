@@ -46,7 +46,7 @@ public class RobotContainer {
   private final Joystick m_driveController = new Joystick(0);
   private final Joystick m_operatorController = new Joystick(1);
   private final Joystick m_buttonBoard = new Joystick(2);
-  private double m_powerLimit = 0.7;
+  private double m_powerLimit = 1;
 
   /**
    * This class stores all robot related subsystems, commands, and methods that

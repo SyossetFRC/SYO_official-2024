@@ -56,7 +56,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private static final double kTrackWidth = 0.60; // meters
 
-  public static final double kMaxSpeed = (5676.0 / 60.0) * SwerveModule.kDriveGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
+  public static final double kMaxSpeed = (5800.0 / 60.0) * SwerveModule.kDriveGearRatio * SwerveModule.kWheelRadius * 2 * Math.PI; // meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / Math.hypot(kTrackWidth / 2.0, kTrackWidth / 2.0); // radians per second
 
   private static final Translation2d m_frontLeftLocation = new Translation2d(kTrackWidth / 2.0, kTrackWidth / 2.0);
@@ -282,7 +282,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
 
   private class SwerveModule {
-    private static final double kWheelRadius = 0.050165; // meters
+    private static final double kWheelRadius = Units.inchesToMeters(2); // meters
     private static final double kDriveGearRatio = ((13.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0));
     // private static final double kDriveGearRatio = (50.0 / 14.0) * (16.0 / 28.0) * (45.0 / 15.0); Mechanical Advantage uses this, makes motors go supedr fast???
     private static final double kSteerGearRatio = 1.0 / (7.0 / 150.0);
@@ -317,7 +317,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final double m_moduleOffset;
 
     private final PIDController m_drivePIDController = new PIDController(0.0, 0, 0);
-    private final PIDController m_turningPIDController = new PIDController(1, 0, 0.01);
+    private final PIDController m_turningPIDController = new PIDController(.05, 0, 0.01);
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 2.4);
 
     /**
@@ -367,10 +367,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     driveTalonConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Conversions affect getPosition()/setPosition() and getVelocity()
-    driveTalonConfig.Feedback.SensorToMechanismRatio = kDriveGearRatio * 2 * Math.PI;
+    driveTalonConfig.Feedback.SensorToMechanismRatio = (1.0/(kDriveGearRatio));
     turnTalonConfig.Feedback.SensorToMechanismRatio = kSteerGearRatio;
     
     turnTalonConfig.ClosedLoopGeneral.ContinuousWrap = true;
+
 
 
     for (int i = 0; i < 4; i++) {
@@ -409,7 +410,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public SwerveModuleState getState() {
       driveVelocity.refresh();
       
-      return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
+      return new SwerveModuleState((driveVelocity.getValueAsDouble() * 2 * Math.PI * kWheelRadius), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset));
       // return new SwerveModuleState((driveVelocity.getValueAsDouble()), Rotation2d.fromRadians(turnPosition.getValueAsDouble() /*- m_moduleOffset*/));
     }
 
@@ -419,7 +420,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * @return The current distance of the drive encoder in meters as a SwerveModulePosition.
      */
     public SwerveModulePosition getDrivePosition() {
-      return new SwerveModulePosition(drivePosition.getValueAsDouble(), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/));
+      return new SwerveModulePosition(drivePosition.getValueAsDouble(), Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset));
     }
 
     /**
@@ -435,7 +436,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
       // Calculates the turning motor output from the variable turning PID controller.
       
-      final double turnOutput = m_turningPIDController.calculate(Units.rotationsToRadians(turnPosition.getValueAsDouble() /*- m_moduleOffset*/), state.angle.getRadians());
+      final double turnOutput = m_turningPIDController.calculate(Units.rotationsToRadians(turnPosition.getValueAsDouble() - m_moduleOffset), state.angle.getRadians());
       turnTalon.set(turnOutput);
 
       // Updates velocity based on turn error.
@@ -453,7 +454,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * Sets the relative turning encoder used in PID to the absolute turning encoder position. Do not call periodically.
      */
     public void alignTurningEncoders() {
-      turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() /*- m_moduleOffset*/).getRotations());
+      turnTalon.setPosition(Rotation2d.fromRotations(m_turningCANcoder.getAbsolutePosition().getValueAsDouble() - m_moduleOffset).getRadians());
     }
   }
 }
